@@ -1,140 +1,921 @@
-const SHEET_ID = 'PON_AQUI_TU_SHEET_ID';
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Tu Turno ZUtaIK</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a1a;font-size:14px}
+.app{max-width:420px;margin:0 auto;min-height:100vh}
+.header{background:#2d5a3d;color:#fff;padding:12px 16px;position:sticky;top:0;z-index:100}
+.header h1{font-size:17px;font-weight:500}
+.header p{font-size:11px;opacity:0.8;margin-top:2px}
+.nav{display:flex;gap:4px;padding:10px 12px;background:#fff;border-bottom:0.5px solid #e0ddd6;overflow-x:auto;scrollbar-width:none;position:sticky;top:56px;z-index:99}
+.nav::-webkit-scrollbar{display:none}
+.nav-btn{padding:6px 12px;border-radius:20px;border:0.5px solid #ccc;background:transparent;color:#555;font-size:12px;cursor:pointer;white-space:nowrap}
+.nav-btn.active{background:#2d5a3d;color:#fff;border-color:#2d5a3d}
+.section{padding:12px;display:none}
+.section.active{display:block}
+.card{background:#fff;border:0.5px solid #e0ddd6;border-radius:12px;padding:12px;margin-bottom:10px}
+.card-title{font-size:13px;font-weight:500;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+input,select,textarea{width:100%;padding:8px 10px;border:0.5px solid #ccc;border-radius:8px;background:#f8f7f4;color:#1a1a1a;font-size:13px;font-family:inherit;margin-top:0}
+input:focus,select:focus{outline:none;border-color:#2d5a3d}
+.btn{padding:8px 14px;border-radius:8px;border:0.5px solid #ccc;background:transparent;color:#1a1a1a;font-size:13px;cursor:pointer;font-family:inherit}
+.btn-primary{background:#2d5a3d;color:#fff;border-color:#2d5a3d}
+.btn-danger{background:#A32D2D;color:#fff;border-color:#A32D2D}
+.btn-sm{padding:5px 10px;font-size:11px}
+.label{font-size:11px;color:#666;margin-bottom:4px;margin-top:8px}
+.label:first-child{margin-top:0}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.badge-bm{background:#B5D4F4;color:#0C447C}
+.badge-fk{background:#9FE1CB;color:#085041}
+.badge-ext{background:#FAC775;color:#633806}
+.day-card{background:#fff;border:0.5px solid #e0ddd6;border-radius:12px;margin-bottom:8px;overflow:hidden}
+.day-header{padding:10px 14px;font-weight:500;font-size:13px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.day-header.wed{background:#EEF2FF;color:#3730a3}
+.day-header.thu{background:#FFF7ED;color:#9a3412}
+.day-header.fri{background:#F0FDF4;color:#166534}
+.day-header.sat{background:#FDF4FF;color:#7e22ce}
+.day-header.sun{background:#FFF1F2;color:#9f1239}
+.day-header.mon{background:#F0F9FF;color:#075985}
+.day-header.tue{background:#FEFCE8;color:#854d0e}
+.task-row{padding:8px 14px;border-top:0.5px solid #e0ddd6}
+.task-name{font-size:12px;font-weight:500;display:flex;align-items:center;gap:5px;margin-bottom:4px}
+.slot-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:11px;cursor:pointer}
+.slot-label{color:#666;display:flex;align-items:center;gap:4px}
+.progress-bar{height:4px;border-radius:2px;background:#e0ddd6;margin-top:3px;overflow:hidden}
+.progress-fill{height:100%;border-radius:2px;transition:width 0.3s}
+.vol-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid #e0ddd6}
+.vol-item:last-child{border-bottom:none}
+.vol-name{font-weight:500;font-size:13px}
+.vol-meta{font-size:11px;color:#666;margin-top:2px}
+.slot-signup{background:#f8f7f4;border-radius:8px;padding:10px;margin-bottom:8px}
+.slot-header{font-size:12px;font-weight:500;margin-bottom:6px}
+.person-slot{display:flex;justify-content:space-between;align-items:center;padding:4px 8px;border-radius:6px;background:#fff;border:0.5px solid #e0ddd6;font-size:11px;margin-bottom:3px}
+.person-slot.empty-slot{color:#aaa;border-style:dashed}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:200;display:flex;align-items:flex-end;justify-content:center}
+.modal{background:#fff;border-radius:16px 16px 0 0;padding:20px;width:100%;max-width:420px;max-height:85vh;overflow-y:auto}
+.modal-title{font-size:15px;font-weight:500;margin-bottom:12px}
+.msg{padding:8px 12px;border-radius:8px;font-size:12px;margin-top:8px}
+.msg-ok{background:#EAF3DE;color:#3B6D11}
+.msg-err{background:#FCEBEB;color:#A32D2D}
+.msg-info{background:#E6F1FB;color:#0C447C}
+.admin-badge{background:#FAC775;color:#633806;font-size:10px;padding:1px 6px;border-radius:10px;margin-left:6px}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.chip{display:inline-flex;align-items:center;padding:3px 8px;border-radius:12px;font-size:11px;margin:2px;border:0.5px solid #ccc;cursor:pointer;background:#f8f7f4}
+.chip.selected{background:#2d5a3d;color:#fff;border-color:#2d5a3d}
+.sep{height:0.5px;background:#e0ddd6;margin:12px 0}
+.pills-scroll{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.pills-scroll::-webkit-scrollbar{display:none}
+.day-pill{padding:5px 10px;border-radius:16px;font-size:11px;border:0.5px solid #ccc;background:transparent;cursor:pointer;white-space:nowrap;color:#555}
+.day-pill.active{background:#2d5a3d;color:#fff;border-color:#2d5a3d}
+.row-flex{display:flex;gap:8px}
+.row-flex>*{flex:1}
+.loading{text-align:center;padding:30px;color:#888;font-size:13px}
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid #e0ddd6;border-top-color:#2d5a3d;border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <h1>&#9917; Tu Turno ZUtaIK</h1>
+    <p>Txozna ZUtaIK &middot; BM Zuazo &amp; Ikhoba KK</p>
+  </div>
+  <div class="nav">
+    <button class="nav-btn active" onclick="showSection('calendario')">&#128197; Calendario</button>
+    <button class="nav-btn" onclick="showSection('apuntarse')">&#128100; Apuntarse</button>
+    <button class="nav-btn" onclick="showSection('voluntarios')">&#128101; Voluntarios</button>
+    <button class="nav-btn" onclick="showSection('admin')">&#9881; Admin</button>
+  </div>
 
-function doGet(e) {
-  return handleRequest(e);
-}
+  <div id="sec-calendario" class="section active">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="font-size:12px;color:#666">Vista general</span>
+      <span style="font-size:11px;color:#666" id="cal-summary"></span>
+    </div>
+    <div class="pills-scroll" id="day-pills" style="margin-bottom:10px"></div>
+    <div id="calendar-view"><div class="loading"><div class="spinner"></div><br>Cargando datos...</div></div>
+  </div>
 
-function doPost(e) {
-  return handleRequest(e);
-}
+  <div id="sec-apuntarse" class="section">
+    <div class="card">
+      <div class="card-title">&#128100; Mis datos</div>
+      <div class="label">Nombre y apellidos</div>
+      <input type="text" id="vol-nombre" placeholder="Nombre Apellido1 Apellido2">
+      <div class="label">Club</div>
+      <select id="vol-club">
+        <option value="">Selecciona club...</option>
+        <option value="BM Zuazo">BM Zuazo</option>
+        <option value="Ikhoba KK">Ikhoba KK</option>
+        <option value="Externo/a">Externo/a</option>
+      </select>
+      <div class="label">V&iacute;nculo con el club</div>
+      <select id="vol-vinculo">
+        <option value="">Selecciona v&iacute;nculo...</option>
+        <option value="Jugador/a">Jugador/a</option>
+        <option value="Entrenador/a">Entrenador/a</option>
+        <option value="Directivo/a">Directivo/a</option>
+        <option value="Padre/Madre">Padre/Madre</option>
+        <option value="Familiar">Familiar</option>
+        <option value="Colaborador/a">Colaborador/a</option>
+        <option value="Otro">Otro</option>
+      </select>
+      <div class="label">Tel&eacute;fono</div>
+      <input type="tel" id="vol-tel" placeholder="600 000 000">
+      <button class="btn btn-primary" style="margin-top:12px;width:100%" onclick="guardarVoluntario()">Guardar mis datos</button>
+      <div id="vol-msg"></div>
+    </div>
+    <div class="card" id="signup-panel" style="display:none">
+      <div class="card-title">&#128197; Apuntarme a turnos</div>
+      <div class="label">D&iacute;a</div>
+      <select id="signup-dia" onchange="renderSignupTasks()">
+        <option value="">Selecciona d&iacute;a...</option>
+      </select>
+      <div id="signup-tasks"></div>
+    </div>
+  </div>
 
-function handleRequest(e) {
-  const params = e.parameter || {};
-  const body = e.postData ? JSON.parse(e.postData.contents || '{}') : {};
-  const action = params.action || body.action;
+  <div id="sec-voluntarios" class="section">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <span style="font-size:13px;font-weight:500">Voluntarios registrados</span>
+      <span class="badge badge-bm" id="vol-count">0 personas</span>
+    </div>
+    <div class="card">
+      <input type="text" id="vol-search" placeholder="Buscar por nombre..." style="margin-bottom:8px" oninput="renderVolList()">
+      <div id="vol-list"></div>
+    </div>
+  </div>
 
-  let result;
+  <div id="sec-admin" class="section">
+    <div id="admin-login" class="card">
+      <div class="card-title">&#128274; Acceso administrador</div>
+      <div class="label">Contrase&ntilde;a</div>
+      <input type="password" id="admin-pass" placeholder="Contrase&ntilde;a de admin" onkeydown="if(event.key==='Enter')loginAdmin()">
+      <button class="btn btn-primary" style="margin-top:10px;width:100%" onclick="loginAdmin()">Entrar</button>
+      <div id="admin-login-msg"></div>
+    </div>
+    <div id="admin-panel" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <span style="font-size:13px;font-weight:500">Panel Admin <span class="admin-badge">ADMIN</span></span>
+        <button class="btn btn-sm" onclick="logoutAdmin()">Salir</button>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
+        <button class="btn btn-sm" id="atab-dias" onclick="showAdminTab('dias')" style="background:#2d5a3d;color:#fff;border-color:#2d5a3d">D&iacute;as</button>
+        <button class="btn btn-sm" id="atab-tareas" onclick="showAdminTab('tareas')">Tareas</button>
+        <button class="btn btn-sm" id="atab-franjas" onclick="showAdminTab('franjas')">Franjas</button>
+        <button class="btn btn-sm" id="atab-vols" onclick="showAdminTab('vols')">Voluntarios</button>
+        <button class="btn btn-sm" id="atab-asignar" onclick="showAdminTab('asignar')">Asignar</button>
+      </div>
+
+      <div id="admin-tab-dias" class="tab-content active">
+        <div class="card">
+          <div class="card-title">&#128197; Gestionar d&iacute;as</div>
+          <div class="label">Etiqueta del d&iacute;a</div>
+          <input type="text" id="new-dia-label" placeholder="Ej: Mi&eacute;rcoles 8 de julio">
+          <div class="label">Color (d&iacute;a de la semana)</div>
+          <select id="new-dia-tipo">
+            <option value="wed">Mi&eacute;rcoles</option>
+            <option value="thu">Jueves</option>
+            <option value="fri">Viernes</option>
+            <option value="sat">S&aacute;bado</option>
+            <option value="sun">Domingo</option>
+            <option value="mon">Lunes</option>
+            <option value="tue">Martes</option>
+          </select>
+          <button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="addDia()">A&ntilde;adir d&iacute;a</button>
+          <div class="sep"></div>
+          <div id="dias-list"></div>
+        </div>
+      </div>
+
+      <div id="admin-tab-tareas" class="tab-content">
+        <div class="card">
+          <div class="card-title">&#9989; Gestionar tareas</div>
+          <div class="label">Nombre de tarea</div>
+          <div class="row-flex">
+            <input type="text" id="new-tarea" placeholder="Ej: Barra">
+            <select id="new-tarea-icon" style="max-width:70px">
+              <option value="🔧">🔧</option>
+              <option value="✨">✨</option>
+              <option value="🛒">🛒</option>
+              <option value="🥣">🥣</option>
+              <option value="🔥">🔥</option>
+              <option value="🍺">🍺</option>
+              <option value="📍">📍</option>
+              <option value="📋">📋</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="addTarea()">A&ntilde;adir tarea</button>
+          <div class="sep"></div>
+          <div id="tareas-list"></div>
+        </div>
+      </div>
+
+      <div id="admin-tab-franjas" class="tab-content">
+        <div class="card">
+          <div class="card-title">&#128336; Gestionar franjas horarias</div>
+          <div class="label">Franja (Ej: 11:00 - 15:00)</div>
+          <input type="text" id="new-franja" placeholder="11:00 - 15:00">
+          <div class="label">Personas necesarias</div>
+          <input type="number" id="new-franja-slots" value="3" min="1" max="20">
+          <button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="addFranja()">A&ntilde;adir franja</button>
+          <div class="sep"></div>
+          <div id="franjas-list"></div>
+        </div>
+      </div>
+
+      <div id="admin-tab-vols" class="tab-content">
+        <div class="card">
+          <div class="card-title">&#128100; Gestionar voluntarios</div>
+          <div id="admin-vols-list"></div>
+        </div>
+      </div>
+
+      <div id="admin-tab-asignar" class="tab-content">
+        <div class="card">
+          <div class="card-title">&#128197; Tareas y franjas por d&iacute;a</div>
+          <div class="label">D&iacute;a</div>
+          <select id="asig-dia" onchange="renderAsigTareas()">
+            <option value="">Selecciona d&iacute;a...</option>
+          </select>
+          <div id="asig-tareas-panel"></div>
+        </div>
+        <div class="card" style="margin-top:8px">
+          <div class="card-title">&#128101; Asignar voluntario manualmente</div>
+          <div class="label">D&iacute;a</div>
+          <select id="man-dia" onchange="renderManTareas()"><option value="">Selecciona...</option></select>
+          <div class="label">Tarea</div>
+          <select id="man-tarea" onchange="renderManFranjas()"><option value="">Selecciona...</option></select>
+          <div class="label">Franja</div>
+          <select id="man-franja"><option value="">Selecciona...</option></select>
+          <div class="label">Voluntario</div>
+          <select id="man-vol"><option value="">Selecciona...</option></select>
+          <button class="btn btn-primary" style="margin-top:10px;width:100%" onclick="asignarManual()">Asignar</button>
+          <div id="man-msg"></div>
+        </div>
+        <div class="card" style="margin-top:8px">
+          <div class="card-title">&#10060; Quitar voluntario de turno</div>
+          <div class="label">D&iacute;a</div>
+          <select id="del-dia" onchange="renderDelTareas()"><option value="">Selecciona...</option></select>
+          <div class="label">Tarea</div>
+          <select id="del-tarea" onchange="renderDelFranjas()"><option value="">Selecciona...</option></select>
+          <div class="label">Franja</div>
+          <select id="del-franja" onchange="renderDelVols()"><option value="">Selecciona...</option></select>
+          <div class="label">Voluntario a quitar</div>
+          <select id="del-vol"><option value="">Selecciona...</option></select>
+          <button class="btn btn-danger" style="margin-top:10px;width:100%" onclick="quitarVoluntario()">Quitar voluntario</button>
+          <div id="del-msg"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal-container"></div>
+
+<script>
+const JSONBIN_KEY = '$2a$10$.U2QNn/8PUxq0SbvXDrfnur9W2CwN1SuhPlZGNOrd3hhUvEd3lgBu';
+const JSONBIN_URL = 'https://api.jsonbin.io/v3/b';
+const ADMIN_PASS = 'zutaik2025';
+
+let BIN_ID = localStorage.getItem('zutaik_bin_id') || '';
+let state = {
+  adminLoggedIn: false,
+  dias: [
+    {id:'d1',label:'Miércoles 8 de julio',tipo:'wed'},
+    {id:'d2',label:'Jueves 9 de julio',tipo:'thu'},
+    {id:'d3',label:'Viernes 10 de julio',tipo:'fri'},
+    {id:'d4',label:'Sábado 11 de julio',tipo:'sat'},
+    {id:'d5',label:'Domingo 12 de julio',tipo:'sun'},
+    {id:'d6',label:'Lunes 13 de julio',tipo:'mon'},
+    {id:'d7',label:'Martes 14 de julio',tipo:'tue'},
+    {id:'d8',label:'Miércoles 15 de julio',tipo:'wed'},
+    {id:'d9',label:'Jueves 16 de julio',tipo:'thu'},
+    {id:'d10',label:'Viernes 17 de julio',tipo:'fri'},
+    {id:'d11',label:'Sábado 18 de julio',tipo:'sat'},
+    {id:'d12',label:'Domingo 19 de julio',tipo:'sun'},
+    {id:'d13',label:'Lunes 20 de julio',tipo:'mon'},
+    {id:'d14',label:'Martes 21 de julio',tipo:'tue'}
+  ],
+  tareas: [
+    {id:'t1',nombre:'Montaje',icon:'🔧'},
+    {id:'t2',nombre:'Limpieza',icon:'✨'},
+    {id:'t3',nombre:'Compras',icon:'🛒'},
+    {id:'t4',nombre:'Pre-Cocina',icon:'🥣'},
+    {id:'t5',nombre:'Cocina',icon:'🔥'},
+    {id:'t6',nombre:'Barra',icon:'🍺'},
+    {id:'t7',nombre:'Herriko Plaza',icon:'📍'}
+  ],
+  franjas: [
+    {id:'f1',label:'08:00 - 12:00',slots:3},
+    {id:'f2',label:'10:00 - 14:00',slots:3},
+    {id:'f3',label:'11:00 - 15:00',slots:4},
+    {id:'f4',label:'13:00 - 17:00',slots:4},
+    {id:'f5',label:'15:00 - 19:00',slots:3},
+    {id:'f6',label:'17:00 - 21:00',slots:4},
+    {id:'f7',label:'19:00 - 23:00',slots:5},
+    {id:'f8',label:'21:00 - 01:00',slots:5},
+    {id:'f9',label:'23:00 - 03:00',slots:4}
+  ],
+  diaConfig: {
+    d1:{tareas:{t1:['f1','f2'],t2:['f2','f3'],t6:['f5','f6','f7']}},
+    d2:{tareas:{t2:['f2','f3'],t4:['f4'],t5:['f5','f6'],t6:['f5','f6','f7','f8']}},
+    d3:{tareas:{t2:['f2','f3'],t3:['f3'],t4:['f4'],t5:['f5','f6'],t6:['f5','f6','f7','f8'],t7:['f6','f7']}},
+    d4:{tareas:{t2:['f2','f3'],t3:['f3'],t4:['f4'],t5:['f5','f6'],t6:['f4','f5','f6','f7','f8'],t7:['f5','f6','f7']}},
+    d5:{tareas:{t2:['f2','f3'],t4:['f4'],t5:['f5','f6'],t6:['f4','f5','f6','f7','f8'],t7:['f5','f6','f7']}},
+    d6:{tareas:{t2:['f2','f3'],t4:['f4'],t5:['f5','f6'],t6:['f5','f6','f7','f8']}},
+    d7:{tareas:{t2:['f2','f3'],t4:['f4'],t5:['f5','f6'],t6:['f5','f6','f7','f8']}},
+    d8:{tareas:{t2:['f2','f3'],t4:['f4'],t5:['f5','f6'],t6:['f5','f6','f7','f8'],t7:['f6','f7']}},
+    d9:{tareas:{t2:['f2','f3'],t3:['f3'],t4:['f4'],t5:['f5','f6'],t6:['f5','f6','f7','f8'],t7:['f6','f7']}},
+    d10:{tareas:{t2:['f2','f3'],t3:['f3'],t4:['f4'],t5:['f5','f6'],t6:['f4','f5','f6','f7','f8'],t7:['f5','f6','f7']}},
+    d11:{tareas:{t2:['f2','f3'],t3:['f3'],t4:['f4'],t5:['f5','f6'],t6:['f4','f5','f6','f7','f8'],t7:['f5','f6','f7']}},
+    d12:{tareas:{t2:['f2','f3'],t4:['f4'],t5:['f5','f6'],t6:['f4','f5','f6','f7','f8'],t7:['f5','f6','f7']}},
+    d13:{tareas:{t2:['f2','f3'],t4:['f4'],t5:['f5','f6'],t6:['f5','f6','f7','f8']}},
+    d14:{tareas:{t2:['f2','f3'],t6:['f5','f6','f7','f8']}}
+  },
+  voluntarios: [],
+  turnos: {}
+};
+
+async function apiGet() {
+  if (!BIN_ID) return null;
   try {
-    switch (action) {
-      case 'getAll':        result = getAll(); break;
-      case 'saveVoluntario': result = saveVoluntario(body.data); break;
-      case 'deleteVoluntario': result = deleteVoluntario(body.nombre); break;
-      case 'saveTurno':     result = saveTurno(body.data); break;
-      case 'deleteTurno':   result = deleteTurno(body.data); break;
-      case 'saveConfig':    result = saveConfig(body.data); break;
-      default: result = { error: 'Acción desconocida: ' + action };
-    }
-  } catch (err) {
-    result = { error: err.toString() };
-  }
-
-  return ContentService
-    .createTextOutput(JSON.stringify(result))
-    .setMimeType(ContentService.MimeType.JSON);
+    const r = await fetch(`${JSONBIN_URL}/${BIN_ID}/latest`, {
+      headers: {'X-Master-Key': JSONBIN_KEY}
+    });
+    if (!r.ok) return null;
+    const d = await r.json();
+    return d.record;
+  } catch(e) { return null; }
 }
 
-// ── Leer todo de golpe ──────────────────────────────────────────────
-function getAll() {
-  const ss = SpreadsheetApp.openById(SHEET_ID);
+async function apiSave(data) {
+  try {
+    if (!BIN_ID) {
+      const r = await fetch(JSONBIN_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Master-Key': JSONBIN_KEY,
+          'X-Bin-Name': 'TuTurnoZUtaIK',
+          'X-Bin-Private': 'false'
+        },
+        body: JSON.stringify(data)
+      });
+      const d = await r.json();
+      BIN_ID = d.metadata.id;
+      localStorage.setItem('zutaik_bin_id', BIN_ID);
+    } else {
+      await fetch(`${JSONBIN_URL}/${BIN_ID}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Master-Key': JSONBIN_KEY
+        },
+        body: JSON.stringify(data)
+      });
+    }
+    return true;
+  } catch(e) { return false; }
+}
+
+function getRemoteSaveData() {
   return {
-    voluntarios: getSheetData(ss, 'voluntarios'),
-    turnos:      getSheetData(ss, 'turnos'),
-    config:      getSheetData(ss, 'config')
+    dias: state.dias,
+    tareas: state.tareas,
+    franjas: state.franjas,
+    diaConfig: state.diaConfig,
+    voluntarios: state.voluntarios,
+    turnos: state.turnos
   };
 }
 
-function getSheetData(ss, name) {
-  const sheet = ss.getSheetByName(name);
-  if (!sheet) return [];
-  const data = sheet.getDataRange().getValues();
-  if (data.length < 2) return [];
-  const headers = data[0];
-  return data.slice(1).map(row => {
-    const obj = {};
-    headers.forEach((h, i) => obj[h] = row[i]);
-    return obj;
+async function saveState() {
+  await apiSave(getRemoteSaveData());
+}
+
+async function loadState() {
+  const remote = await apiGet();
+  if (remote) {
+    if (remote.dias) state.dias = remote.dias;
+    if (remote.tareas) state.tareas = remote.tareas;
+    if (remote.franjas) state.franjas = remote.franjas;
+    if (remote.diaConfig) state.diaConfig = remote.diaConfig;
+    if (remote.voluntarios) state.voluntarios = remote.voluntarios;
+    if (remote.turnos) state.turnos = remote.turnos;
+  }
+}
+
+function getTarea(id) { return state.tareas.find(t=>t.id===id)||{nombre:'?',icon:'?'}; }
+function getFranja(id) { return state.franjas.find(f=>f.id===id)||{label:'?',slots:0}; }
+function getTurnoKey(d,t,f) { return `${d}_${t}_${f}`; }
+function getVols(d,t,f) { return state.turnos[getTurnoKey(d,t,f)]||[]; }
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  event.target.classList.add('active');
+  if(id==='calendario') renderCalendar();
+  if(id==='voluntarios') renderVolList();
+  if(id==='apuntarse') initApuntarse();
+  if(id==='admin' && state.adminLoggedIn) renderAdminPanels();
+}
+
+function renderCalendar() {
+  const view = document.getElementById('calendar-view');
+  const pills = document.getElementById('day-pills');
+  pills.innerHTML = '';
+  view.innerHTML = '';
+  let total=0, filled=0;
+
+  state.dias.forEach((dia, di) => {
+    const pill = document.createElement('button');
+    pill.className = 'day-pill' + (di===0?' active':'');
+    pill.textContent = dia.label.split(' ').slice(0,2).join(' ');
+    pill.onclick = () => {
+      document.querySelectorAll('.day-pill').forEach(p=>p.classList.remove('active'));
+      pill.classList.add('active');
+      document.querySelectorAll('.day-card').forEach((c,i)=>c.style.display=(i===di?'block':'none'));
+    };
+    pills.appendChild(pill);
+
+    const cfg = state.diaConfig[dia.id]||{tareas:{}};
+    const dc = document.createElement('div');
+    dc.className = 'day-card';
+    dc.style.display = di===0?'block':'none';
+
+    let html = `<div class="day-header ${dia.tipo}" onclick="toggleDayBody(this)">
+      <span>${dia.label}</span><span style="font-size:11px" id="ds-${dia.id}"></span>
+    </div><div class="day-body">`;
+
+    const tareaEntries = Object.entries(cfg.tareas||{});
+    if (!tareaEntries.length) {
+      html += '<div style="padding:12px;color:#aaa;font-size:12px;text-align:center">Sin tareas configuradas</div>';
+    } else {
+      tareaEntries.forEach(([tid, fids]) => {
+        const t = getTarea(tid);
+        html += `<div class="task-row"><div class="task-name"><span>${t.icon}</span>${t.nombre}</div>`;
+        (fids||[]).forEach(fid => {
+          const f = getFranja(fid);
+          const v = getVols(dia.id,tid,fid);
+          total += f.slots; filled += Math.min(v.length,f.slots);
+          const pct = Math.min(100,Math.round((v.length/f.slots)*100));
+          const col = v.length>=f.slots?'#2d5a3d':(v.length>0?'#BA7517':'#E24B4A');
+          html += `<div class="slot-row" onclick="showSlotDetail('${dia.id}','${tid}','${fid}')">
+            <span class="slot-label">&#128336; ${f.label}</span>
+            <span style="font-size:10px;color:${col};font-weight:500">${v.length}/${f.slots}</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${col}"></div></div>`;
+        });
+        html += '</div>';
+      });
+    }
+    html += '</div>';
+    dc.innerHTML = html;
+    view.appendChild(dc);
+  });
+  document.getElementById('cal-summary').textContent = `${filled}/${total} plazas`;
+}
+
+function toggleDayBody(h) {
+  const b = h.nextElementSibling;
+  b.style.display = b.style.display==='none'?'block':'none';
+}
+
+function showSlotDetail(diaId,tareaId,franjaId) {
+  const dia = state.dias.find(d=>d.id===diaId);
+  const t = getTarea(tareaId);
+  const f = getFranja(franjaId);
+  const v = getVols(diaId,tareaId,franjaId);
+  let html = `<div class="modal-title">${t.icon} ${t.nombre}</div>
+  <p style="font-size:12px;color:#666;margin-bottom:12px">${dia.label} &middot; ${f.label}</p>`;
+  for(let i=0;i<f.slots;i++){
+    if(v[i]){
+      const vol = state.voluntarios.find(x=>x.nombre===v[i]);
+      const bc = vol?vol.club:'';
+      const bcls = bc==='BM Zuazo'?'badge-bm':bc==='Ikhoba KK'?'badge-fk':'badge-ext';
+      html += `<div class="person-slot" style="margin-bottom:4px">
+        <span style="font-weight:500">${i+1}. ${v[i]}</span>
+        ${bc?`<span class="badge ${bcls}" style="font-size:10px">${bc}</span>`:''}
+      </div>`;
+    } else {
+      html += `<div class="person-slot empty-slot" style="margin-bottom:4px">
+        <span>${i+1}. Libre</span><span style="color:#2d5a3d;font-size:10px">&#9679; Disponible</span>
+      </div>`;
+    }
+  }
+  if(v.length < f.slots){
+    html += `<button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="closeModal();showSectionDirect('apuntarse')">Apuntarme a este turno</button>`;
+  } else {
+    html += `<div class="msg msg-err" style="text-align:center;margin-top:10px">Turno completo</div>`;
+  }
+  openModal(html);
+}
+
+function openModal(html) {
+  document.getElementById('modal-container').innerHTML =
+    `<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal">${html}
+        <button class="btn" style="width:100%;margin-top:10px" onclick="closeModal()">Cerrar</button>
+      </div>
+    </div>`;
+}
+function closeModal() { document.getElementById('modal-container').innerHTML=''; }
+
+function showSectionDirect(id) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  if(id==='apuntarse') initApuntarse();
+}
+
+async function guardarVoluntario() {
+  const n = document.getElementById('vol-nombre').value.trim();
+  const c = document.getElementById('vol-club').value;
+  const v = document.getElementById('vol-vinculo').value;
+  const t = document.getElementById('vol-tel').value.trim();
+  const msg = document.getElementById('vol-msg');
+  if(!n||!c||!v){msg.innerHTML='<div class="msg msg-err">Rellena nombre, club y vínculo</div>';return;}
+  msg.innerHTML='<div class="msg msg-info">Guardando...</div>';
+  const ex = state.voluntarios.findIndex(x=>x.nombre===n);
+  if(ex>=0) state.voluntarios[ex]={nombre:n,club:c,vinculo:v,tel:t};
+  else state.voluntarios.push({nombre:n,club:c,vinculo:v,tel:t});
+  await saveState();
+  msg.innerHTML='<div class="msg msg-ok">&#10003; Datos guardados correctamente</div>';
+  document.getElementById('signup-panel').style.display='block';
+  initApuntarse();
+  setTimeout(()=>msg.innerHTML='',3000);
+}
+
+function initApuntarse() {
+  const sel = document.getElementById('signup-dia');
+  sel.innerHTML = '<option value="">Selecciona día...</option>';
+  state.dias.forEach(d=>sel.innerHTML+=`<option value="${d.id}">${d.label}</option>`);
+  const n = document.getElementById('vol-nombre').value.trim();
+  if(n && state.voluntarios.find(v=>v.nombre===n)){
+    document.getElementById('signup-panel').style.display='block';
+  }
+}
+
+function renderSignupTasks() {
+  const diaId = document.getElementById('signup-dia').value;
+  const cont = document.getElementById('signup-tasks');
+  if(!diaId){cont.innerHTML='';return;}
+  const cfg = state.diaConfig[diaId]||{tareas:{}};
+  const nombre = document.getElementById('vol-nombre').value.trim();
+  let html='';
+  Object.entries(cfg.tareas||{}).forEach(([tid,fids])=>{
+    const t = getTarea(tid);
+    html+=`<div style="margin-top:10px"><div style="font-size:12px;font-weight:500;margin-bottom:4px">${t.icon} ${t.nombre}</div>`;
+    (fids||[]).forEach(fid=>{
+      const f = getFranja(fid);
+      const v = getVols(diaId,tid,fid);
+      const yaApuntado = v.includes(nombre);
+      const lleno = v.length>=f.slots && !yaApuntado;
+      const pct = Math.min(100,Math.round((v.length/f.slots)*100));
+      const col = v.length>=f.slots?'#2d5a3d':(v.length>0?'#BA7517':'#E24B4A');
+      html+=`<div class="slot-signup" style="${yaApuntado?'border:1px solid #2d5a3d':''}">
+        <div class="slot-header">&#128336; ${f.label} &middot; ${v.length}/${f.slots} personas</div>
+        <div class="progress-bar" style="margin-bottom:6px"><div class="progress-fill" style="width:${pct}%;background:${col}"></div></div>
+        ${yaApuntado
+          ?`<button class="btn btn-sm" style="color:#A32D2D;border-color:#A32D2D;width:100%" onclick="desapuntarse('${diaId}','${tid}','${fid}','${nombre}')">Desapuntarme</button>`
+          :lleno
+            ?`<div style="font-size:11px;color:#A32D2D;text-align:center">Turno completo</div>`
+            :`<button class="btn btn-primary btn-sm" style="width:100%" onclick="apuntarse('${diaId}','${tid}','${fid}','${nombre}')">Apuntarme</button>`
+        }
+      </div>`;
+    });
+    html+='</div>';
+  });
+  if(!html) html='<div style="color:#aaa;font-size:12px;margin-top:8px">Sin tareas para este día</div>';
+  cont.innerHTML=html;
+}
+
+async function apuntarse(diaId,tareaId,franjaId,nombre) {
+  if(!nombre){alert('Escribe tu nombre primero');return;}
+  const key = getTurnoKey(diaId,tareaId,franjaId);
+  if(!state.turnos[key]) state.turnos[key]=[];
+  const f = getFranja(franjaId);
+  if(state.turnos[key].length>=f.slots){alert('Turno completo');return;}
+  if(state.turnos[key].includes(nombre)){alert('Ya estás apuntado/a');return;}
+  state.turnos[key].push(nombre);
+  await saveState();
+  renderSignupTasks();
+}
+
+async function desapuntarse(diaId,tareaId,franjaId,nombre) {
+  const key = getTurnoKey(diaId,tareaId,franjaId);
+  if(state.turnos[key]) state.turnos[key]=state.turnos[key].filter(n=>n!==nombre);
+  await saveState();
+  renderSignupTasks();
+}
+
+function renderVolList() {
+  const search = document.getElementById('vol-search')?.value.toLowerCase()||'';
+  const list = document.getElementById('vol-list');
+  const filtered = state.voluntarios.filter(v=>v.nombre.toLowerCase().includes(search));
+  document.getElementById('vol-count').textContent=`${state.voluntarios.length} personas`;
+  if(!filtered.length){list.innerHTML='<div style="color:#aaa;font-size:12px;text-align:center;padding:12px">Sin voluntarios registrados</div>';return;}
+  list.innerHTML=filtered.map(v=>{
+    const bc=v.club==='BM Zuazo'?'badge-bm':v.club==='Ikhoba KK'?'badge-fk':'badge-ext';
+    return `<div class="vol-item">
+      <div><div class="vol-name">${v.nombre}</div><div class="vol-meta">${v.vinculo||''} ${v.tel?'&middot; '+v.tel:''}</div></div>
+      <span class="badge ${bc}">${v.club}</span>
+    </div>`;
+  }).join('');
+}
+
+function loginAdmin() {
+  const pass = document.getElementById('admin-pass').value;
+  const msg = document.getElementById('admin-login-msg');
+  if(pass===ADMIN_PASS){
+    state.adminLoggedIn=true;
+    document.getElementById('admin-login').style.display='none';
+    document.getElementById('admin-panel').style.display='block';
+    renderAdminPanels();
+  } else {
+    msg.innerHTML='<div class="msg msg-err">Contraseña incorrecta</div>';
+  }
+}
+function logoutAdmin() {
+  state.adminLoggedIn=false;
+  document.getElementById('admin-login').style.display='block';
+  document.getElementById('admin-panel').style.display='none';
+  document.getElementById('admin-pass').value='';
+}
+
+function showAdminTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.getElementById('admin-tab-'+tab).classList.add('active');
+  document.querySelectorAll('[id^="atab-"]').forEach(b=>{b.style.background='';b.style.color='';b.style.borderColor='';});
+  const btn=document.getElementById('atab-'+tab);
+  btn.style.background='#2d5a3d';btn.style.color='#fff';btn.style.borderColor='#2d5a3d';
+}
+
+function renderAdminPanels() {
+  renderDiasList(); renderTareasList(); renderFranjasList();
+  renderAdminVols(); populateAdminSelects();
+}
+
+function renderDiasList() {
+  document.getElementById('dias-list').innerHTML=state.dias.map(d=>`
+    <div class="vol-item">
+      <div><div style="font-size:13px;font-weight:500">${d.label}</div><div style="font-size:11px;color:#666">${d.tipo}</div></div>
+      <button class="btn btn-sm btn-danger" onclick="removeDia('${d.id}')">&#128465;</button>
+    </div>`).join('');
+}
+
+async function addDia() {
+  const label=document.getElementById('new-dia-label').value.trim();
+  const tipo=document.getElementById('new-dia-tipo').value;
+  if(!label) return;
+  const id='d'+Date.now();
+  state.dias.push({id,label,tipo});
+  state.diaConfig[id]={tareas:{}};
+  document.getElementById('new-dia-label').value='';
+  await saveState(); renderDiasList(); populateAdminSelects(); renderCalendar();
+}
+
+async function removeDia(id) {
+  if(!confirm('¿Eliminar este día?')) return;
+  state.dias=state.dias.filter(d=>d.id!==id);
+  delete state.diaConfig[id];
+  await saveState(); renderDiasList(); populateAdminSelects(); renderCalendar();
+}
+
+function renderTareasList() {
+  document.getElementById('tareas-list').innerHTML=state.tareas.map(t=>`
+    <div class="vol-item">
+      <div style="font-size:13px;font-weight:500">${t.icon} ${t.nombre}</div>
+      <button class="btn btn-sm btn-danger" onclick="removeTarea('${t.id}')">&#128465;</button>
+    </div>`).join('');
+}
+
+async function addTarea() {
+  const nombre=document.getElementById('new-tarea').value.trim();
+  const icon=document.getElementById('new-tarea-icon').value;
+  if(!nombre) return;
+  state.tareas.push({id:'t'+Date.now(),nombre,icon});
+  document.getElementById('new-tarea').value='';
+  await saveState(); renderTareasList();
+}
+
+async function removeTarea(id) {
+  if(!confirm('¿Eliminar esta tarea?')) return;
+  state.tareas=state.tareas.filter(t=>t.id!==id);
+  await saveState(); renderTareasList();
+}
+
+function renderFranjasList() {
+  document.getElementById('franjas-list').innerHTML=state.franjas.map(f=>`
+    <div class="vol-item">
+      <div><div style="font-size:13px;font-weight:500">${f.label}</div><div style="font-size:11px;color:#666">${f.slots} personas</div></div>
+      <button class="btn btn-sm btn-danger" onclick="removeFranja('${f.id}')">&#128465;</button>
+    </div>`).join('');
+}
+
+async function addFranja() {
+  const label=document.getElementById('new-franja').value.trim();
+  const slots=parseInt(document.getElementById('new-franja-slots').value)||3;
+  if(!label) return;
+  state.franjas.push({id:'f'+Date.now(),label,slots});
+  document.getElementById('new-franja').value='';
+  await saveState(); renderFranjasList();
+}
+
+async function removeFranja(id) {
+  if(!confirm('¿Eliminar esta franja?')) return;
+  state.franjas=state.franjas.filter(f=>f.id!==id);
+  await saveState(); renderFranjasList();
+}
+
+function renderAdminVols() {
+  const list=document.getElementById('admin-vols-list');
+  if(!state.voluntarios.length){list.innerHTML='<div style="color:#aaa;font-size:12px;text-align:center;padding:12px">Sin voluntarios</div>';return;}
+  list.innerHTML=state.voluntarios.map((v,i)=>{
+    const bc=v.club==='BM Zuazo'?'badge-bm':v.club==='Ikhoba KK'?'badge-fk':'badge-ext';
+    return `<div class="vol-item">
+      <div><div class="vol-name">${v.nombre}</div><div class="vol-meta"><span class="badge ${bc}">${v.club}</span> &middot; ${v.vinculo}</div></div>
+      <button class="btn btn-sm btn-danger" onclick="removeVoluntario(${i})">&#128465;</button>
+    </div>`;
+  }).join('');
+}
+
+async function removeVoluntario(idx) {
+  if(!confirm('¿Eliminar este voluntario?')) return;
+  state.voluntarios.splice(idx,1);
+  await saveState(); renderAdminVols(); renderVolList();
+}
+
+function populateAdminSelects() {
+  ['asig-dia','man-dia','del-dia'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el) return;
+    el.innerHTML='<option value="">Selecciona día...</option>';
+    state.dias.forEach(d=>el.innerHTML+=`<option value="${d.id}">${d.label}</option>`);
+  });
+  const mv=document.getElementById('man-vol');
+  if(mv){
+    mv.innerHTML='<option value="">Selecciona voluntario...</option>';
+    state.voluntarios.forEach(v=>mv.innerHTML+=`<option value="${v.nombre}">${v.nombre} (${v.club})</option>`);
+  }
+}
+
+function renderAsigTareas() {
+  const diaId=document.getElementById('asig-dia').value;
+  const panel=document.getElementById('asig-tareas-panel');
+  if(!diaId){panel.innerHTML='';return;}
+  if(!state.diaConfig[diaId]) state.diaConfig[diaId]={tareas:{}};
+  const cfg=state.diaConfig[diaId];
+  let html='<div class="sep"></div>';
+  state.tareas.forEach(t=>{
+    const isActive=!!cfg.tareas[t.id];
+    const activeFranjas=cfg.tareas[t.id]||[];
+    html+=`<div style="padding:8px 0;border-bottom:0.5px solid #e0ddd6">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <span style="font-size:12px;font-weight:500">${t.icon} ${t.nombre}</span>
+        <label style="display:flex;align-items:center;gap:4px;font-size:11px">
+          <input type="checkbox" ${isActive?'checked':''} onchange="toggleTareaEnDia('${diaId}','${t.id}',this.checked)"> Activa
+        </label>
+      </div>`;
+    if(isActive){
+      html+=`<div style="display:flex;flex-wrap:wrap;gap:4px">`;
+      state.franjas.forEach(f=>{
+        const sel=activeFranjas.includes(f.id);
+        html+=`<span class="chip ${sel?'selected':''}" onclick="toggleFranjaEnDia('${diaId}','${t.id}','${f.id}',this)">${f.label}</span>`;
+      });
+      html+='</div>';
+    }
+    html+='</div>';
+  });
+  panel.innerHTML=html;
+}
+
+async function toggleTareaEnDia(diaId,tareaId,active) {
+  if(!state.diaConfig[diaId]) state.diaConfig[diaId]={tareas:{}};
+  if(active) state.diaConfig[diaId].tareas[tareaId]=[];
+  else delete state.diaConfig[diaId].tareas[tareaId];
+  await saveState(); renderAsigTareas(); renderCalendar();
+}
+
+async function toggleFranjaEnDia(diaId,tareaId,franjaId,el) {
+  if(!state.diaConfig[diaId]||!state.diaConfig[diaId].tareas[tareaId]) return;
+  const arr=state.diaConfig[diaId].tareas[tareaId];
+  const idx=arr.indexOf(franjaId);
+  if(idx>=0){arr.splice(idx,1);el.classList.remove('selected');}
+  else{arr.push(franjaId);el.classList.add('selected');}
+  await saveState(); renderCalendar();
+}
+
+function renderManTareas() {
+  const diaId=document.getElementById('man-dia').value;
+  const sel=document.getElementById('man-tarea');
+  sel.innerHTML='<option value="">Selecciona tarea...</option>';
+  if(!diaId) return;
+  const cfg=state.diaConfig[diaId]||{tareas:{}};
+  Object.keys(cfg.tareas||{}).forEach(tid=>{
+    const t=getTarea(tid);
+    sel.innerHTML+=`<option value="${tid}">${t.icon} ${t.nombre}</option>`;
+  });
+  document.getElementById('man-franja').innerHTML='<option value="">Selecciona franja...</option>';
+}
+
+function renderManFranjas() {
+  const diaId=document.getElementById('man-dia').value;
+  const tareaId=document.getElementById('man-tarea').value;
+  const sel=document.getElementById('man-franja');
+  sel.innerHTML='<option value="">Selecciona franja...</option>';
+  if(!diaId||!tareaId) return;
+  const cfg=state.diaConfig[diaId]||{tareas:{}};
+  (cfg.tareas[tareaId]||[]).forEach(fid=>{
+    const f=getFranja(fid);
+    sel.innerHTML+=`<option value="${fid}">${f.label}</option>`;
   });
 }
 
-// ── Voluntarios ─────────────────────────────────────────────────────
-function saveVoluntario(data) {
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-  const sheet = ss.getSheetByName('voluntarios');
-  ensureHeaders(sheet, ['nombre', 'club', 'vinculo', 'tel']);
-
-  const rows = sheet.getDataRange().getValues();
-  const idx = rows.findIndex((r, i) => i > 0 && r[0] === data.nombre);
-
-  if (idx >= 0) {
-    sheet.getRange(idx + 1, 1, 1, 4).setValues([[data.nombre, data.club, data.vinculo, data.tel]]);
-  } else {
-    sheet.appendRow([data.nombre, data.club, data.vinculo, data.tel]);
-  }
-  return { ok: true };
+async function asignarManual() {
+  const diaId=document.getElementById('man-dia').value;
+  const tareaId=document.getElementById('man-tarea').value;
+  const franjaId=document.getElementById('man-franja').value;
+  const nombre=document.getElementById('man-vol').value;
+  const msg=document.getElementById('man-msg');
+  if(!diaId||!tareaId||!franjaId||!nombre){msg.innerHTML='<div class="msg msg-err">Selecciona todos los campos</div>';return;}
+  const key=getTurnoKey(diaId,tareaId,franjaId);
+  if(!state.turnos[key]) state.turnos[key]=[];
+  const f=getFranja(franjaId);
+  if(state.turnos[key].includes(nombre)){msg.innerHTML='<div class="msg msg-err">Ya está en este turno</div>';return;}
+  if(state.turnos[key].length>=f.slots){msg.innerHTML='<div class="msg msg-err">Turno completo</div>';return;}
+  msg.innerHTML='<div class="msg msg-info">Guardando...</div>';
+  state.turnos[key].push(nombre);
+  await saveState(); renderCalendar();
+  msg.innerHTML='<div class="msg msg-ok">&#10003; Asignado correctamente</div>';
+  setTimeout(()=>msg.innerHTML='',3000);
 }
 
-function deleteVoluntario(nombre) {
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-  const sheet = ss.getSheetByName('voluntarios');
-  const rows = sheet.getDataRange().getValues();
-  for (let i = rows.length - 1; i >= 1; i--) {
-    if (rows[i][0] === nombre) { sheet.deleteRow(i + 1); break; }
-  }
-  return { ok: true };
+function renderDelTareas() {
+  const diaId=document.getElementById('del-dia').value;
+  const sel=document.getElementById('del-tarea');
+  sel.innerHTML='<option value="">Selecciona tarea...</option>';
+  if(!diaId) return;
+  const cfg=state.diaConfig[diaId]||{tareas:{}};
+  Object.keys(cfg.tareas||{}).forEach(tid=>{
+    const t=getTarea(tid);
+    sel.innerHTML+=`<option value="${tid}">${t.icon} ${t.nombre}</option>`;
+  });
+  document.getElementById('del-franja').innerHTML='<option value="">Selecciona franja...</option>';
+  document.getElementById('del-vol').innerHTML='<option value="">Selecciona voluntario...</option>';
 }
 
-// ── Turnos ──────────────────────────────────────────────────────────
-function saveTurno(data) {
-  // data: { key, nombres: [...] }
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-  const sheet = ss.getSheetByName('turnos');
-  ensureHeaders(sheet, ['key', 'nombres']);
-
-  const rows = sheet.getDataRange().getValues();
-  const idx = rows.findIndex((r, i) => i > 0 && r[0] === data.key);
-  const nombresStr = JSON.stringify(data.nombres);
-
-  if (idx >= 0) {
-    sheet.getRange(idx + 1, 1, 1, 2).setValues([[data.key, nombresStr]]);
-  } else {
-    sheet.appendRow([data.key, nombresStr]);
-  }
-  return { ok: true };
+function renderDelFranjas() {
+  const diaId=document.getElementById('del-dia').value;
+  const tareaId=document.getElementById('del-tarea').value;
+  const sel=document.getElementById('del-franja');
+  sel.innerHTML='<option value="">Selecciona franja...</option>';
+  if(!diaId||!tareaId) return;
+  const cfg=state.diaConfig[diaId]||{tareas:{}};
+  (cfg.tareas[tareaId]||[]).forEach(fid=>{
+    const f=getFranja(fid);
+    sel.innerHTML+=`<option value="${fid}">${f.label}</option>`;
+  });
+  document.getElementById('del-vol').innerHTML='<option value="">Selecciona voluntario...</option>';
 }
 
-function deleteTurno(data) {
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-  const sheet = ss.getSheetByName('turnos');
-  const rows = sheet.getDataRange().getValues();
-  for (let i = rows.length - 1; i >= 1; i--) {
-    if (rows[i][0] === data.key) { sheet.deleteRow(i + 1); break; }
-  }
-  return { ok: true };
+function renderDelVols() {
+  const diaId=document.getElementById('del-dia').value;
+  const tareaId=document.getElementById('del-tarea').value;
+  const franjaId=document.getElementById('del-franja').value;
+  const sel=document.getElementById('del-vol');
+  sel.innerHTML='<option value="">Selecciona voluntario...</option>';
+  if(!diaId||!tareaId||!franjaId) return;
+  const v=getVols(diaId,tareaId,franjaId);
+  v.forEach(nombre=>sel.innerHTML+=`<option value="${nombre}">${nombre}</option>`);
 }
 
-// ── Config (días, tareas, franjas, diaConfig) ────────────────────────
-function saveConfig(data) {
-  // data: { key, value } — guardamos config como pares clave/JSON
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-  const sheet = ss.getSheetByName('config');
-  ensureHeaders(sheet, ['key', 'value']);
-
-  const rows = sheet.getDataRange().getValues();
-  const idx = rows.findIndex((r, i) => i > 0 && r[0] === data.key);
-  const valStr = JSON.stringify(data.value);
-
-  if (idx >= 0) {
-    sheet.getRange(idx + 1, 1, 1, 2).setValues([[data.key, valStr]]);
-  } else {
-    sheet.appendRow([data.key, valStr]);
-  }
-  return { ok: true };
+async function quitarVoluntario() {
+  const diaId=document.getElementById('del-dia').value;
+  const tareaId=document.getElementById('del-tarea').value;
+  const franjaId=document.getElementById('del-franja').value;
+  const nombre=document.getElementById('del-vol').value;
+  const msg=document.getElementById('del-msg');
+  if(!diaId||!tareaId||!franjaId||!nombre){msg.innerHTML='<div class="msg msg-err">Selecciona todos los campos</div>';return;}
+  if(!confirm(`¿Quitar a ${nombre} de este turno?`)) return;
+  const key=getTurnoKey(diaId,tareaId,franjaId);
+  state.turnos[key]=state.turnos[key].filter(n=>n!==nombre);
+  await saveState(); renderCalendar(); renderDelVols();
+  msg.innerHTML='<div class="msg msg-ok">&#10003; Voluntario quitado</div>';
+  setTimeout(()=>msg.innerHTML='',3000);
 }
 
-// ── Utilidad ─────────────────────────────────────────────────────────
-function ensureHeaders(sheet, headers) {
-  const first = sheet.getRange(1, 1, 1, headers.length).getValues()[0];
-  if (!first[0]) {
-    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-  }
-}
+(async()=>{
+  await loadState();
+  renderCalendar();
+  initApuntarse();
+})();
+</script>
+</body>
+</html>
