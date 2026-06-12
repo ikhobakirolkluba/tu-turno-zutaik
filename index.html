@@ -1,0 +1,140 @@
+const SHEET_ID = 'PON_AQUI_TU_SHEET_ID';
+
+function doGet(e) {
+  return handleRequest(e);
+}
+
+function doPost(e) {
+  return handleRequest(e);
+}
+
+function handleRequest(e) {
+  const params = e.parameter || {};
+  const body = e.postData ? JSON.parse(e.postData.contents || '{}') : {};
+  const action = params.action || body.action;
+
+  let result;
+  try {
+    switch (action) {
+      case 'getAll':        result = getAll(); break;
+      case 'saveVoluntario': result = saveVoluntario(body.data); break;
+      case 'deleteVoluntario': result = deleteVoluntario(body.nombre); break;
+      case 'saveTurno':     result = saveTurno(body.data); break;
+      case 'deleteTurno':   result = deleteTurno(body.data); break;
+      case 'saveConfig':    result = saveConfig(body.data); break;
+      default: result = { error: 'Acción desconocida: ' + action };
+    }
+  } catch (err) {
+    result = { error: err.toString() };
+  }
+
+  return ContentService
+    .createTextOutput(JSON.stringify(result))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// ── Leer todo de golpe ──────────────────────────────────────────────
+function getAll() {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  return {
+    voluntarios: getSheetData(ss, 'voluntarios'),
+    turnos:      getSheetData(ss, 'turnos'),
+    config:      getSheetData(ss, 'config')
+  };
+}
+
+function getSheetData(ss, name) {
+  const sheet = ss.getSheetByName(name);
+  if (!sheet) return [];
+  const data = sheet.getDataRange().getValues();
+  if (data.length < 2) return [];
+  const headers = data[0];
+  return data.slice(1).map(row => {
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = row[i]);
+    return obj;
+  });
+}
+
+// ── Voluntarios ─────────────────────────────────────────────────────
+function saveVoluntario(data) {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sheet = ss.getSheetByName('voluntarios');
+  ensureHeaders(sheet, ['nombre', 'club', 'vinculo', 'tel']);
+
+  const rows = sheet.getDataRange().getValues();
+  const idx = rows.findIndex((r, i) => i > 0 && r[0] === data.nombre);
+
+  if (idx >= 0) {
+    sheet.getRange(idx + 1, 1, 1, 4).setValues([[data.nombre, data.club, data.vinculo, data.tel]]);
+  } else {
+    sheet.appendRow([data.nombre, data.club, data.vinculo, data.tel]);
+  }
+  return { ok: true };
+}
+
+function deleteVoluntario(nombre) {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sheet = ss.getSheetByName('voluntarios');
+  const rows = sheet.getDataRange().getValues();
+  for (let i = rows.length - 1; i >= 1; i--) {
+    if (rows[i][0] === nombre) { sheet.deleteRow(i + 1); break; }
+  }
+  return { ok: true };
+}
+
+// ── Turnos ──────────────────────────────────────────────────────────
+function saveTurno(data) {
+  // data: { key, nombres: [...] }
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sheet = ss.getSheetByName('turnos');
+  ensureHeaders(sheet, ['key', 'nombres']);
+
+  const rows = sheet.getDataRange().getValues();
+  const idx = rows.findIndex((r, i) => i > 0 && r[0] === data.key);
+  const nombresStr = JSON.stringify(data.nombres);
+
+  if (idx >= 0) {
+    sheet.getRange(idx + 1, 1, 1, 2).setValues([[data.key, nombresStr]]);
+  } else {
+    sheet.appendRow([data.key, nombresStr]);
+  }
+  return { ok: true };
+}
+
+function deleteTurno(data) {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sheet = ss.getSheetByName('turnos');
+  const rows = sheet.getDataRange().getValues();
+  for (let i = rows.length - 1; i >= 1; i--) {
+    if (rows[i][0] === data.key) { sheet.deleteRow(i + 1); break; }
+  }
+  return { ok: true };
+}
+
+// ── Config (días, tareas, franjas, diaConfig) ────────────────────────
+function saveConfig(data) {
+  // data: { key, value } — guardamos config como pares clave/JSON
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sheet = ss.getSheetByName('config');
+  ensureHeaders(sheet, ['key', 'value']);
+
+  const rows = sheet.getDataRange().getValues();
+  const idx = rows.findIndex((r, i) => i > 0 && r[0] === data.key);
+  const valStr = JSON.stringify(data.value);
+
+  if (idx >= 0) {
+    sheet.getRange(idx + 1, 1, 1, 2).setValues([[data.key, valStr]]);
+  } else {
+    sheet.appendRow([data.key, valStr]);
+  }
+  return { ok: true };
+}
+
+// ── Utilidad ─────────────────────────────────────────────────────────
+function ensureHeaders(sheet, headers) {
+  const first = sheet.getRange(1, 1, 1, headers.length).getValues()[0];
+  if (!first[0]) {
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+  }
+}
