@@ -546,6 +546,10 @@ async function guardarVoluntario() {
   if(ex>=0) state.voluntarios[ex]={nombre:n,club:c,vinculo:v,tel:t};
   else state.voluntarios.push({nombre:n,club:c,vinculo:v,tel:t});
   await saveState();
+  localStorage.setItem('zutaik_mi_nombre', n);
+  localStorage.setItem('zutaik_mi_club', c);
+  localStorage.setItem('zutaik_mi_vinculo', v);
+  localStorage.setItem('zutaik_mi_tel', t);
   msg.innerHTML='<div class="msg msg-ok">&#10003; Datos guardados correctamente</div>';
   document.getElementById('signup-panel').style.display='block';
   initApuntarse();
@@ -605,6 +609,10 @@ async function apuntarse(diaId,tareaId,franjaId,nombre) {
   if(state.turnos[key].includes(nombre)){alert('Ya estás apuntado/a');return;}
   state.turnos[key].push(nombre);
   await saveState();
+  localStorage.setItem('zutaik_mi_nombre', n);
+  localStorage.setItem('zutaik_mi_club', c);
+  localStorage.setItem('zutaik_mi_vinculo', v);
+  localStorage.setItem('zutaik_mi_tel', t);
   renderSignupTasks();
 }
 
@@ -612,6 +620,10 @@ async function desapuntarse(diaId,tareaId,franjaId,nombre) {
   const key = getTurnoKey(diaId,tareaId,franjaId);
   if(state.turnos[key]) state.turnos[key]=state.turnos[key].filter(n=>n!==nombre);
   await saveState();
+  localStorage.setItem('zutaik_mi_nombre', n);
+  localStorage.setItem('zutaik_mi_club', c);
+  localStorage.setItem('zutaik_mi_vinculo', v);
+  localStorage.setItem('zutaik_mi_tel', t);
   renderSignupTasks();
 }
 
@@ -912,6 +924,15 @@ async function quitarVoluntario() {
 }
 
 (async()=>{
+  // Recuperar datos guardados en este dispositivo
+  const sN = localStorage.getItem('zutaik_mi_nombre');
+  const sC = localStorage.getItem('zutaik_mi_club');
+  const sV = localStorage.getItem('zutaik_mi_vinculo');
+  const sT = localStorage.getItem('zutaik_mi_tel');
+  if(sN) document.getElementById('vol-nombre').value = sN;
+  if(sC) document.getElementById('vol-club').value = sC;
+  if(sV) document.getElementById('vol-vinculo').value = sV;
+  if(sT) document.getElementById('vol-tel').value = sT;
   await loadState();
   renderCalendar();
   initApuntarse();
