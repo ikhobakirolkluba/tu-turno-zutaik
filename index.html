@@ -278,15 +278,6 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
         <select id="new-franja-fin">
           <option value="">Selecciona hora...</option>
         </select>
-        <div class="label">Personas necesarias</div>
-        <select id="new-franja-slots">
-          <option value="1">1 persona</option><option value="2">2 personas</option>
-          <option value="3">3 personas</option><option value="4">4 personas</option>
-          <option value="5">5 personas</option><option value="6">6 personas</option>
-          <option value="7">7 personas</option><option value="8">8 personas</option>
-          <option value="9">9 personas</option><option value="10">10 personas</option>
-          <option value="11">11 personas</option><option value="12">12 personas</option>
-        </select>
         <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="addFranja()">Añadir franja</button>
         <div class="sep"></div>
         <div id="franjas-list"></div>
@@ -784,9 +775,8 @@ function renderFranjasList(){
 async function addFranja(){
   const ini=document.getElementById('new-franja-ini').value;
   const fin=document.getElementById('new-franja-fin').value;
-  const slots=parseInt(document.getElementById('new-franja-slots').value)||3;
   if(!ini||!fin){alert('Selecciona hora de inicio y fin');return;}
-  state.franjas.push({id:'f'+Date.now(),label:ini,labelFin:fin,slots});
+  state.franjas.push({id:'f'+Date.now(),label:ini,labelFin:fin});
   await saveConfig('franjas',state.franjas);
   renderFranjasList();
 }
