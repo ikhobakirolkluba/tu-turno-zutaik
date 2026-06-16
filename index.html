@@ -4,118 +4,148 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Tu Turno ZUtaIK</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23c2185b'/><text y='72' x='50' text-anchor='middle' font-size='48' font-family='Arial Black,sans-serif' font-weight='900' fill='white'>ZtI</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a1a;font-size:14px}
-.app{max-width:420px;margin:0 auto;min-height:100vh}
-.header{background:#2d5a3d;color:#fff;padding:12px 16px;position:sticky;top:0;z-index:100}
-.header h1{font-size:17px;font-weight:500}
-.header p{font-size:11px;opacity:0.8;margin-top:2px}
-.nav{display:flex;gap:4px;padding:10px 12px;background:#fff;border-bottom:0.5px solid #e0ddd6;overflow-x:auto;scrollbar-width:none;position:sticky;top:56px;z-index:99}
+:root{
+  --pk:#c2185b;--pk-light:#fce4ec;--pk-dark:#880e4f;--pk-mid:#e91e63;
+  --bg:#fff8f9;--surface:#fff;--border:#f8bbd0;--border2:#f48fb1;
+  --text:#1a1a1a;--text2:#666;--text3:#999;
+  --ok-bg:#e8f5e9;--ok-text:#2e7d32;
+  --err-bg:#ffebee;--err-text:#c62828;
+  --info-bg:#fce4ec;--info-text:#880e4f;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:15px}
+.app{max-width:440px;margin:0 auto;min-height:100vh}
+.header{background:var(--pk);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:10px}
+.header-logo{width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;letter-spacing:-0.5px;color:#fff;flex-shrink:0}
+.header h1{font-size:18px;font-weight:600;line-height:1.2}
+.header p{font-size:12px;opacity:0.85;margin-top:1px}
+.nav{display:flex;gap:4px;padding:10px 12px;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;position:sticky;top:64px;z-index:99}
 .nav::-webkit-scrollbar{display:none}
-.nav-btn{padding:6px 12px;border-radius:20px;border:0.5px solid #ccc;background:transparent;color:#555;font-size:12px;cursor:pointer;white-space:nowrap}
-.nav-btn.active{background:#2d5a3d;color:#fff;border-color:#2d5a3d}
-.section{padding:12px;display:none}
+.nav-btn{padding:7px 14px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--pk);font-size:13px;cursor:pointer;white-space:nowrap;font-weight:500}
+.nav-btn.active{background:var(--pk);color:#fff;border-color:var(--pk)}
+.section{padding:14px;display:none}
 .section.active{display:block}
-.card{background:#fff;border:0.5px solid #e0ddd6;border-radius:12px;padding:12px;margin-bottom:10px}
-.card-title{font-size:13px;font-weight:500;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-input,select,textarea{width:100%;padding:8px 10px;border:0.5px solid #ccc;border-radius:8px;background:#f8f7f4;color:#1a1a1a;font-size:13px;font-family:inherit;margin-top:0}
-input:focus,select:focus{outline:none;border-color:#2d5a3d}
-.btn{padding:8px 14px;border-radius:8px;border:0.5px solid #ccc;background:transparent;color:#1a1a1a;font-size:13px;cursor:pointer;font-family:inherit}
-.btn-primary{background:#2d5a3d;color:#fff;border-color:#2d5a3d}
-.btn-danger{background:#A32D2D;color:#fff;border-color:#A32D2D}
-.btn-sm{padding:5px 10px;font-size:11px}
-.label{font-size:11px;color:#666;margin-bottom:4px;margin-top:8px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px}
+.card-title{font-size:15px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px;color:var(--pk-dark)}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--border2);border-radius:10px;background:#fff;color:var(--text);font-size:14px;font-family:inherit;transition:border-color 0.15s}
+input:focus,select:focus{outline:none;border-color:var(--pk)}
+.btn{padding:10px 16px;border-radius:10px;border:1px solid var(--border2);background:transparent;color:var(--pk);font-size:14px;cursor:pointer;font-family:inherit;font-weight:500;transition:all 0.15s}
+.btn:active{opacity:0.8;transform:scale(0.98)}
+.btn-primary{background:var(--pk);color:#fff;border-color:var(--pk)}
+.btn-danger{background:#c62828;color:#fff;border-color:#c62828}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-ghost{border-color:transparent;color:var(--text2)}
+.label{font-size:12px;color:var(--text2);margin-bottom:5px;margin-top:10px;font-weight:500}
 .label:first-child{margin-top:0}
-.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
-.badge-bm{background:#B5D4F4;color:#0C447C}
-.badge-fk{background:#9FE1CB;color:#085041}
-.badge-ext{background:#FAC775;color:#633806}
-.day-card{background:#fff;border:0.5px solid #e0ddd6;border-radius:12px;margin-bottom:8px;overflow:hidden}
-.day-header{padding:10px 14px;font-weight:500;font-size:13px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
-.day-header.wed{background:#EEF2FF;color:#3730a3}
-.day-header.thu{background:#FFF7ED;color:#9a3412}
-.day-header.fri{background:#F0FDF4;color:#166534}
-.day-header.sat{background:#FDF4FF;color:#7e22ce}
-.day-header.sun{background:#FFF1F2;color:#9f1239}
-.day-header.mon{background:#F0F9FF;color:#075985}
-.day-header.tue{background:#FEFCE8;color:#854d0e}
-.task-row{padding:8px 14px;border-top:0.5px solid #e0ddd6}
-.task-name{font-size:12px;font-weight:500;display:flex;align-items:center;gap:5px;margin-bottom:4px}
-.slot-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:11px;cursor:pointer}
-.slot-label{color:#666;display:flex;align-items:center;gap:4px}
-.progress-bar{height:4px;border-radius:2px;background:#e0ddd6;margin-top:3px;overflow:hidden}
-.progress-fill{height:100%;border-radius:2px;transition:width 0.3s}
-.vol-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid #e0ddd6}
-.vol-item:last-child{border-bottom:none}
-.vol-name{font-weight:500;font-size:13px}
-.vol-meta{font-size:11px;color:#666;margin-top:2px}
-.slot-signup{background:#f8f7f4;border-radius:8px;padding:10px;margin-bottom:8px}
-.slot-header{font-size:12px;font-weight:500;margin-bottom:6px}
-.person-slot{display:flex;justify-content:space-between;align-items:center;padding:4px 8px;border-radius:6px;background:#fff;border:0.5px solid #e0ddd6;font-size:11px;margin-bottom:3px}
-.person-slot.empty-slot{color:#aaa;border-style:dashed}
-.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:200;display:flex;align-items:flex-end;justify-content:center}
-.modal{background:#fff;border-radius:16px 16px 0 0;padding:20px;width:100%;max-width:420px;max-height:85vh;overflow-y:auto}
-.modal-title{font-size:15px;font-weight:500;margin-bottom:12px}
-.msg{padding:8px 12px;border-radius:8px;font-size:12px;margin-top:8px}
-.msg-ok{background:#EAF3DE;color:#3B6D11}
-.msg-err{background:#FCEBEB;color:#A32D2D}
-.msg-info{background:#E6F1FB;color:#0C447C}
-.admin-badge{background:#FAC775;color:#633806;font-size:10px;padding:1px 6px;border-radius:10px;margin-left:6px}
-.tab-content{display:none}
-.tab-content.active{display:block}
-.chip{display:inline-flex;align-items:center;padding:3px 8px;border-radius:12px;font-size:11px;margin:2px;border:0.5px solid #ccc;cursor:pointer;background:#f8f7f4}
-.chip.selected{background:#2d5a3d;color:#fff;border-color:#2d5a3d}
-.sep{height:0.5px;background:#e0ddd6;margin:12px 0}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500}
+.badge-bm{background:#e3f2fd;color:#1565c0}
+.badge-fk{background:#e8f5e9;color:#2e7d32}
+.badge-ext{background:#fff3e0;color:#e65100}
+.badge-admin{background:var(--pk-light);color:var(--pk-dark);font-size:11px;padding:2px 8px}
+.msg{padding:10px 12px;border-radius:10px;font-size:13px;margin-top:8px}
+.msg-ok{background:var(--ok-bg);color:var(--ok-text)}
+.msg-err{background:var(--err-bg);color:var(--err-text)}
+.msg-info{background:var(--info-bg);color:var(--info-text)}
+.sep{height:1px;background:var(--border);margin:12px 0}
 .pills-scroll{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
 .pills-scroll::-webkit-scrollbar{display:none}
-.day-pill{padding:5px 10px;border-radius:16px;font-size:11px;border:0.5px solid #ccc;background:transparent;cursor:pointer;white-space:nowrap;color:#555}
-.day-pill.active{background:#2d5a3d;color:#fff;border-color:#2d5a3d}
+.day-pill{padding:6px 12px;border-radius:16px;font-size:12px;border:1px solid var(--border2);background:transparent;cursor:pointer;white-space:nowrap;color:var(--pk);font-weight:500}
+.day-pill.active{background:var(--pk);color:#fff;border-color:var(--pk)}
+.day-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden}
+.day-header{padding:12px 16px;font-weight:600;font-size:14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.day-header.wed{background:#ede7f6;color:#4527a0}
+.day-header.thu{background:#fff3e0;color:#bf360c}
+.day-header.fri{background:#e8f5e9;color:#1b5e20}
+.day-header.sat{background:#fce4ec;color:#880e4f}
+.day-header.sun{background:#ffebee;color:#b71c1c}
+.day-header.mon{background:#e3f2fd;color:#0d47a1}
+.day-header.tue{background:#fffde7;color:#f57f17}
+.task-row{padding:10px 16px;border-top:1px solid var(--border)}
+.task-name{font-size:13px;font-weight:600;display:flex;align-items:center;gap:5px;margin-bottom:6px;color:var(--pk-dark)}
+.slot-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:13px;cursor:pointer}
+.slot-label{color:var(--text2);display:flex;align-items:center;gap:4px}
+.progress-bar{height:5px;border-radius:3px;background:var(--border);margin-top:4px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;transition:width 0.3s}
+.vol-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.vol-item:last-child{border-bottom:none}
+.vol-name{font-weight:600;font-size:14px}
+.vol-meta{font-size:12px;color:var(--text2);margin-top:2px}
+.slot-signup{background:var(--bg);border-radius:10px;padding:12px;margin-bottom:8px;border:1px solid var(--border)}
+.slot-signup.apuntado{border-color:var(--pk);background:var(--pk-light)}
+.slot-header{font-size:13px;font-weight:600;margin-bottom:6px;color:var(--pk-dark)}
+.person-slot{display:flex;justify-content:space-between;align-items:center;padding:5px 10px;border-radius:8px;background:var(--surface);border:1px solid var(--border);font-size:12px;margin-bottom:4px}
+.person-slot.empty-slot{color:var(--text3);border-style:dashed}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.55);z-index:200;display:flex;align-items:flex-end;justify-content:center}
+.modal{background:var(--surface);border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:440px;max-height:88vh;overflow-y:auto}
+.modal-title{font-size:16px;font-weight:600;margin-bottom:12px;color:var(--pk-dark)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.chip{display:inline-flex;align-items:center;padding:4px 10px;border-radius:12px;font-size:12px;margin:2px;border:1px solid var(--border2);cursor:pointer;background:var(--surface);color:var(--pk)}
+.chip.selected{background:var(--pk);color:#fff;border-color:var(--pk)}
 .row-flex{display:flex;gap:8px}
 .row-flex>*{flex:1}
-.loading{text-align:center;padding:30px;color:#888;font-size:13px}
-.spinner{display:inline-block;width:20px;height:20px;border:2px solid #e0ddd6;border-top-color:#2d5a3d;border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:8px}
+.loading{text-align:center;padding:40px;color:var(--text2);font-size:14px}
+.spinner{display:inline-block;width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--pk);border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:10px}
 @keyframes spin{to{transform:rotate(360deg)}}
+.login-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:var(--bg)}
+.login-logo{width:72px;height:72px;background:var(--pk);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#fff;letter-spacing:-1px;margin-bottom:16px}
+.login-title{font-size:22px;font-weight:700;color:var(--pk-dark);margin-bottom:4px}
+.login-sub{font-size:13px;color:var(--text2);margin-bottom:28px;text-align:center}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px;width:100%;max-width:360px}
+.tabs-login{display:flex;background:var(--bg);border-radius:10px;padding:3px;margin-bottom:16px}
+.tab-login{flex:1;padding:8px;text-align:center;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;color:var(--text2);border:none;background:transparent}
+.tab-login.active{background:var(--pk);color:#fff}
+.vol-turnos{background:var(--bg);border-radius:10px;padding:10px;margin-top:6px}
+.vol-turno-item{font-size:12px;color:var(--text2);padding:3px 0;display:flex;align-items:center;gap:6px}
+.admin-tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.admin-tab-btn{padding:6px 12px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--pk);font-size:12px;cursor:pointer;font-weight:500}
+.admin-tab-btn.active{background:var(--pk);color:#fff;border-color:var(--pk)}
+.hora-select{flex:1}
+.export-btn{background:var(--pk-light);color:var(--pk-dark);border:1px solid var(--border2);border-radius:10px;padding:10px 16px;font-size:14px;cursor:pointer;font-weight:500;width:100%;margin-top:8px}
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="header">
-    <h1>&#9917; Tu Turno ZUtaIK</h1>
-    <p>Txozna ZUtaIK &middot; BM Zuazo &amp; Ikhoba KK</p>
-  </div>
-  <div class="nav">
-    <button class="nav-btn active" onclick="showSection('calendario')">&#128197; Calendario</button>
-    <button class="nav-btn" onclick="showSection('apuntarse')">&#128100; Apuntarse</button>
-    <button class="nav-btn" onclick="showSection('voluntarios')">&#128101; Voluntarios</button>
-    <button class="nav-btn" onclick="showSection('admin')">&#9881; Admin</button>
-  </div>
 
-  <div id="sec-calendario" class="section active">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <span style="font-size:12px;color:#666">Vista general</span>
-      <span style="font-size:11px;color:#666" id="cal-summary"></span>
+<div id="login-screen" class="login-screen">
+  <div class="login-logo">ZtI</div>
+  <div class="login-title">Tu Turno ZUtaIK</div>
+  <div class="login-sub">Txozna ZUtaIK · BM Zuazo &amp; Ikhoba KK</div>
+  <div class="login-card">
+    <div class="tabs-login">
+      <button class="tab-login active" id="tab-login-btn" onclick="switchLoginTab('login')">Iniciar sesión</button>
+      <button class="tab-login" id="tab-reg-btn" onclick="switchLoginTab('registro')">Registrarse</button>
     </div>
-    <div class="pills-scroll" id="day-pills" style="margin-bottom:10px"></div>
-    <div id="calendar-view"><div class="loading"><div class="spinner"></div><br>Cargando datos...</div></div>
-  </div>
-
-  <div id="sec-apuntarse" class="section">
-    <div class="card">
-      <div class="card-title">&#128100; Mis datos</div>
-      <div class="label">Nombre y apellidos</div>
-      <input type="text" id="vol-nombre" placeholder="Nombre Apellido1 Apellido2">
+    <div id="login-form">
+      <div class="label">Correo electrónico</div>
+      <input type="email" id="login-email" placeholder="tu@email.com" onkeydown="if(event.key==='Enter')doLogin()">
+      <div class="label">Contraseña</div>
+      <input type="password" id="login-pass" placeholder="Mínimo 8 caracteres" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="btn btn-primary" style="width:100%;margin-top:14px" onclick="doLogin()">Iniciar sesión</button>
+      <div id="login-msg"></div>
+    </div>
+    <div id="reg-form" style="display:none">
+      <div class="label">Correo electrónico</div>
+      <input type="email" id="reg-email" placeholder="tu@email.com">
+      <div class="label">Contraseña (mínimo 8 caracteres)</div>
+      <input type="password" id="reg-pass" placeholder="Mínimo 8 caracteres">
+      <div class="label">Nombre</div>
+      <input type="text" id="reg-nombre" placeholder="Nombre">
+      <div class="label">Primer apellido</div>
+      <input type="text" id="reg-ap1" placeholder="Apellido 1">
+      <div class="label">Segundo apellido</div>
+      <input type="text" id="reg-ap2" placeholder="Apellido 2 (opcional)">
       <div class="label">Club</div>
-      <select id="vol-club">
+      <select id="reg-club">
         <option value="">Selecciona club...</option>
         <option value="BM Zuazo">BM Zuazo</option>
         <option value="Ikhoba KK">Ikhoba KK</option>
         <option value="Externo/a">Externo/a</option>
       </select>
-      <div class="label">V&iacute;nculo con el club</div>
-      <select id="vol-vinculo">
-        <option value="">Selecciona v&iacute;nculo...</option>
+      <div class="label">Vínculo con el club</div>
+      <select id="reg-vinculo">
+        <option value="">Selecciona vínculo...</option>
         <option value="Jugador/a">Jugador/a</option>
         <option value="Entrenador/a">Entrenador/a</option>
         <option value="Directivo/a">Directivo/a</option>
@@ -124,16 +154,54 @@ input:focus,select:focus{outline:none;border-color:#2d5a3d}
         <option value="Colaborador/a">Colaborador/a</option>
         <option value="Otro">Otro</option>
       </select>
-      <div class="label">Tel&eacute;fono</div>
-      <input type="tel" id="vol-tel" placeholder="600 000 000">
-      <button class="btn btn-primary" style="margin-top:12px;width:100%" onclick="guardarVoluntario()">Guardar mis datos</button>
-      <div id="vol-msg"></div>
+      <div class="label">Teléfono</div>
+      <input type="tel" id="reg-tel" placeholder="600 000 000">
+      <button class="btn btn-primary" style="width:100%;margin-top:14px" onclick="doRegister()">Registrarse</button>
+      <div id="reg-msg"></div>
     </div>
-    <div class="card" id="signup-panel" style="display:none">
-      <div class="card-title">&#128197; Apuntarme a turnos</div>
-      <div class="label">D&iacute;a</div>
+  </div>
+</div>
+
+<div id="main-app" class="app" style="display:none">
+  <div class="header">
+    <div class="header-logo">ZtI</div>
+    <div>
+      <h1>Tu Turno ZUtaIK</h1>
+      <p id="header-user">Txozna ZUtaIK</p>
+    </div>
+    <button class="btn btn-sm btn-ghost" style="margin-left:auto;color:#fff;border-color:rgba(255,255,255,0.4)" onclick="doLogout()">Salir</button>
+  </div>
+  <div class="nav">
+    <button class="nav-btn active" onclick="showSection('calendario',this)">📅 Calendario</button>
+    <button class="nav-btn" onclick="showSection('apuntarse',this)">✋ Apuntarse</button>
+    <button class="nav-btn" onclick="showSection('voluntarios',this)">👥 Voluntarios</button>
+    <button class="nav-btn" id="admin-nav-btn" onclick="showSection('admin',this)" style="display:none">⚙️ Admin</button>
+  </div>
+
+  <div id="sec-calendario" class="section active">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <span style="font-size:13px;color:var(--text2);font-weight:500">Vista general de turnos</span>
+      <span style="font-size:12px;color:var(--text2)" id="cal-summary"></span>
+    </div>
+    <div class="pills-scroll" id="day-pills" style="margin-bottom:12px"></div>
+    <div id="calendar-view"><div class="loading"><div class="spinner"></div><br>Cargando...</div></div>
+  </div>
+
+  <div id="sec-apuntarse" class="section">
+    <div class="card" style="background:var(--pk-light);border-color:var(--border2)">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:42px;height:42px;border-radius:50%;background:var(--pk);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px" id="user-avatar">?</div>
+        <div>
+          <div style="font-weight:600;font-size:15px" id="user-display-name">-</div>
+          <div style="font-size:12px;color:var(--pk-dark)" id="user-display-club">-</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📅 Elegir turno</div>
+      <div class="label">Día</div>
       <select id="signup-dia" onchange="renderSignupTasks()">
-        <option value="">Selecciona d&iacute;a...</option>
+        <option value="">Selecciona día...</option>
       </select>
       <div id="signup-tasks"></div>
     </div>
@@ -141,135 +209,142 @@ input:focus,select:focus{outline:none;border-color:#2d5a3d}
 
   <div id="sec-voluntarios" class="section">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-      <span style="font-size:13px;font-weight:500">Voluntarios registrados</span>
+      <span style="font-size:15px;font-weight:600;color:var(--pk-dark)">Voluntarios</span>
       <span class="badge badge-bm" id="vol-count">0 personas</span>
     </div>
     <div class="card">
-      <input type="text" id="vol-search" placeholder="Buscar por nombre..." style="margin-bottom:8px" oninput="renderVolList()">
+      <input type="text" id="vol-search" placeholder="Buscar por nombre..." style="margin-bottom:10px" oninput="renderVolList()">
       <div id="vol-list"></div>
     </div>
   </div>
 
   <div id="sec-admin" class="section">
-    <div id="admin-login" class="card">
-      <div class="card-title">&#128274; Acceso administrador</div>
-      <div class="label">Contrase&ntilde;a</div>
-      <input type="password" id="admin-pass" placeholder="Contrase&ntilde;a de admin" onkeydown="if(event.key==='Enter')loginAdmin()">
-      <button class="btn btn-primary" style="margin-top:10px;width:100%" onclick="loginAdmin()">Entrar</button>
-      <div id="admin-login-msg"></div>
+    <div class="admin-tabs">
+      <button class="admin-tab-btn active" onclick="showAdminTab('dias',this)">Días</button>
+      <button class="admin-tab-btn" onclick="showAdminTab('tareas',this)">Tareas</button>
+      <button class="admin-tab-btn" onclick="showAdminTab('franjas',this)">Franjas</button>
+      <button class="admin-tab-btn" onclick="showAdminTab('configurar',this)">Configurar</button>
+      <button class="admin-tab-btn" onclick="showAdminTab('gestionar',this)">Gestionar</button>
+      <button class="admin-tab-btn" onclick="showAdminTab('usuarios',this)">Usuarios</button>
+      <button class="admin-tab-btn" onclick="showAdminTab('exportar',this)">Exportar</button>
     </div>
-    <div id="admin-panel" style="display:none">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-        <span style="font-size:13px;font-weight:500">Panel Admin <span class="admin-badge">ADMIN</span></span>
-        <button class="btn btn-sm" onclick="logoutAdmin()">Salir</button>
-      </div>
-      <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
-        <button class="btn btn-sm" id="atab-dias" onclick="showAdminTab('dias')" style="background:#2d5a3d;color:#fff;border-color:#2d5a3d">D&iacute;as</button>
-        <button class="btn btn-sm" id="atab-tareas" onclick="showAdminTab('tareas')">Tareas</button>
-        <button class="btn btn-sm" id="atab-franjas" onclick="showAdminTab('franjas')">Franjas</button>
-        <button class="btn btn-sm" id="atab-vols" onclick="showAdminTab('vols')">Voluntarios</button>
-        <button class="btn btn-sm" id="atab-asignar" onclick="showAdminTab('asignar')">Asignar</button>
-      </div>
 
-      <div id="admin-tab-dias" class="tab-content active">
-        <div class="card">
-          <div class="card-title">&#128197; Gestionar d&iacute;as</div>
-          <div class="label">Etiqueta del d&iacute;a</div>
-          <input type="text" id="new-dia-label" placeholder="Ej: Mi&eacute;rcoles 8 de julio">
-          <div class="label">Color (d&iacute;a de la semana)</div>
-          <select id="new-dia-tipo">
-            <option value="wed">Mi&eacute;rcoles</option>
-            <option value="thu">Jueves</option>
-            <option value="fri">Viernes</option>
-            <option value="sat">S&aacute;bado</option>
-            <option value="sun">Domingo</option>
-            <option value="mon">Lunes</option>
-            <option value="tue">Martes</option>
+    <div id="admin-tab-dias" class="tab-content active">
+      <div class="card">
+        <div class="card-title">📅 Gestionar días</div>
+        <div class="label">Etiqueta del día</div>
+        <input type="text" id="new-dia-label" placeholder="Ej: Miércoles 8 de julio">
+        <div class="label">Color (día de la semana)</div>
+        <select id="new-dia-tipo">
+          <option value="wed">Miércoles</option><option value="thu">Jueves</option>
+          <option value="fri">Viernes</option><option value="sat">Sábado</option>
+          <option value="sun">Domingo</option><option value="mon">Lunes</option>
+          <option value="tue">Martes</option>
+        </select>
+        <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="addDia()">Añadir día</button>
+        <div class="sep"></div>
+        <div id="dias-list"></div>
+      </div>
+    </div>
+
+    <div id="admin-tab-tareas" class="tab-content">
+      <div class="card">
+        <div class="card-title">✅ Gestionar tareas</div>
+        <div class="label">Nombre de tarea</div>
+        <div class="row-flex">
+          <input type="text" id="new-tarea" placeholder="Ej: Barra">
+          <select id="new-tarea-icon" style="max-width:75px">
+            <option value="🔧">🔧</option><option value="✨">✨</option>
+            <option value="🛒">🛒</option><option value="🥣">🥣</option>
+            <option value="🔥">🔥</option><option value="🍺">🍺</option>
+            <option value="📍">📍</option><option value="🤾">🤾</option>
+            <option value="📋">📋</option>
           </select>
-          <button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="addDia()">A&ntilde;adir d&iacute;a</button>
-          <div class="sep"></div>
-          <div id="dias-list"></div>
         </div>
+        <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="addTarea()">Añadir tarea</button>
+        <div class="sep"></div>
+        <div id="tareas-list"></div>
       </div>
+    </div>
 
-      <div id="admin-tab-tareas" class="tab-content">
-        <div class="card">
-          <div class="card-title">&#9989; Gestionar tareas</div>
-          <div class="label">Nombre de tarea</div>
-          <div class="row-flex">
-            <input type="text" id="new-tarea" placeholder="Ej: Barra">
-            <select id="new-tarea-icon" style="max-width:70px">
-              <option value="🔧">🔧</option>
-              <option value="✨">✨</option>
-              <option value="🛒">🛒</option>
-              <option value="🥣">🥣</option>
-              <option value="🔥">🔥</option>
-              <option value="🍺">🍺</option>
-              <option value="📍">📍</option>
-              <option value="📋">📋</option>
-            </select>
-          </div>
-          <button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="addTarea()">A&ntilde;adir tarea</button>
-          <div class="sep"></div>
-          <div id="tareas-list"></div>
-        </div>
+    <div id="admin-tab-franjas" class="tab-content">
+      <div class="card">
+        <div class="card-title">🕐 Gestionar franjas horarias</div>
+        <div class="label">Hora de inicio</div>
+        <select id="new-franja-ini">
+          <option value="">Selecciona hora...</option>
+        </select>
+        <div class="label">Hora de fin</div>
+        <select id="new-franja-fin">
+          <option value="">Selecciona hora...</option>
+        </select>
+        <div class="label">Personas necesarias</div>
+        <select id="new-franja-slots">
+          <option value="1">1 persona</option><option value="2">2 personas</option>
+          <option value="3">3 personas</option><option value="4">4 personas</option>
+          <option value="5">5 personas</option><option value="6">6 personas</option>
+          <option value="7">7 personas</option><option value="8">8 personas</option>
+          <option value="9">9 personas</option><option value="10">10 personas</option>
+          <option value="11">11 personas</option><option value="12">12 personas</option>
+        </select>
+        <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="addFranja()">Añadir franja</button>
+        <div class="sep"></div>
+        <div id="franjas-list"></div>
       </div>
+    </div>
 
-      <div id="admin-tab-franjas" class="tab-content">
-        <div class="card">
-          <div class="card-title">&#128336; Gestionar franjas horarias</div>
-          <div class="label">Franja (Ej: 11:00 - 15:00)</div>
-          <input type="text" id="new-franja" placeholder="11:00 - 15:00">
-          <div class="label">Personas necesarias</div>
-          <input type="number" id="new-franja-slots" value="3" min="1" max="20">
-          <button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="addFranja()">A&ntilde;adir franja</button>
-          <div class="sep"></div>
-          <div id="franjas-list"></div>
-        </div>
+    <div id="admin-tab-configurar" class="tab-content">
+      <div class="card">
+        <div class="card-title">⚙️ Configurar turnos por día</div>
+        <div class="label">Día</div>
+        <select id="asig-dia" onchange="renderAsigTareas()"><option value="">Selecciona día...</option></select>
+        <div id="asig-tareas-panel"></div>
       </div>
+    </div>
 
-      <div id="admin-tab-vols" class="tab-content">
-        <div class="card">
-          <div class="card-title">&#128100; Gestionar voluntarios</div>
-          <div id="admin-vols-list"></div>
-        </div>
+    <div id="admin-tab-gestionar" class="tab-content">
+      <div class="card">
+        <div class="card-title">➕ Apuntar voluntario a turno</div>
+        <div class="label">Día</div>
+        <select id="man-dia" onchange="renderManTareas()"><option value="">Selecciona...</option></select>
+        <div class="label">Tarea</div>
+        <select id="man-tarea" onchange="renderManFranjas()"><option value="">Selecciona...</option></select>
+        <div class="label">Franja</div>
+        <select id="man-franja"><option value="">Selecciona...</option></select>
+        <div class="label">Voluntario</div>
+        <select id="man-vol"><option value="">Selecciona voluntario...</option></select>
+        <button class="btn btn-primary" style="margin-top:12px;width:100%" onclick="asignarManual()">Apuntar voluntario</button>
+        <div id="man-msg"></div>
       </div>
+      <div class="card">
+        <div class="card-title">➖ Quitar voluntario de turno</div>
+        <div class="label">Día</div>
+        <select id="del-dia" onchange="renderDelTareas()"><option value="">Selecciona...</option></select>
+        <div class="label">Tarea</div>
+        <select id="del-tarea" onchange="renderDelFranjas()"><option value="">Selecciona...</option></select>
+        <div class="label">Franja</div>
+        <select id="del-franja" onchange="renderDelVols()"><option value="">Selecciona...</option></select>
+        <div class="label">Voluntario a quitar</div>
+        <select id="del-vol"><option value="">Selecciona...</option></select>
+        <button class="btn btn-danger" style="margin-top:12px;width:100%" onclick="quitarVoluntario()">Quitar voluntario</button>
+        <div id="del-msg"></div>
+      </div>
+    </div>
 
-      <div id="admin-tab-asignar" class="tab-content">
-        <div class="card">
-          <div class="card-title">&#128197; Tareas y franjas por d&iacute;a</div>
-          <div class="label">D&iacute;a</div>
-          <select id="asig-dia" onchange="renderAsigTareas()">
-            <option value="">Selecciona d&iacute;a...</option>
-          </select>
-          <div id="asig-tareas-panel"></div>
-        </div>
-        <div class="card" style="margin-top:8px">
-          <div class="card-title">&#128101; Asignar voluntario manualmente</div>
-          <div class="label">D&iacute;a</div>
-          <select id="man-dia" onchange="renderManTareas()"><option value="">Selecciona...</option></select>
-          <div class="label">Tarea</div>
-          <select id="man-tarea" onchange="renderManFranjas()"><option value="">Selecciona...</option></select>
-          <div class="label">Franja</div>
-          <select id="man-franja"><option value="">Selecciona...</option></select>
-          <div class="label">Voluntario</div>
-          <select id="man-vol"><option value="">Selecciona...</option></select>
-          <button class="btn btn-primary" style="margin-top:10px;width:100%" onclick="asignarManual()">Asignar</button>
-          <div id="man-msg"></div>
-        </div>
-        <div class="card" style="margin-top:8px">
-          <div class="card-title">&#10060; Quitar voluntario de turno</div>
-          <div class="label">D&iacute;a</div>
-          <select id="del-dia" onchange="renderDelTareas()"><option value="">Selecciona...</option></select>
-          <div class="label">Tarea</div>
-          <select id="del-tarea" onchange="renderDelFranjas()"><option value="">Selecciona...</option></select>
-          <div class="label">Franja</div>
-          <select id="del-franja" onchange="renderDelVols()"><option value="">Selecciona...</option></select>
-          <div class="label">Voluntario a quitar</div>
-          <select id="del-vol"><option value="">Selecciona...</option></select>
-          <button class="btn btn-danger" style="margin-top:10px;width:100%" onclick="quitarVoluntario()">Quitar voluntario</button>
-          <div id="del-msg"></div>
-        </div>
+    <div id="admin-tab-usuarios" class="tab-content">
+      <div class="card">
+        <div class="card-title">👤 Usuarios registrados</div>
+        <input type="text" id="admin-user-search" placeholder="Buscar usuario..." style="margin-bottom:10px" oninput="renderAdminUsers()">
+        <div id="admin-users-list"></div>
+      </div>
+    </div>
+
+    <div id="admin-tab-exportar" class="tab-content">
+      <div class="card">
+        <div class="card-title">📊 Exportar a Excel</div>
+        <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Descarga el calendario completo de turnos con todos los voluntarios asignados.</p>
+        <button class="export-btn" onclick="exportarExcel()">⬇️ Descargar Excel (.xlsx)</button>
+        <div id="export-msg"></div>
       </div>
     </div>
   </div>
@@ -277,412 +352,362 @@ input:focus,select:focus{outline:none;border-color:#2d5a3d}
 
 <div id="modal-container"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
-const JSONBIN_KEY = '$2a$10$.U2QNn/8PUxq0SbvXDrfnur9W2CwN1SuhPlZGNOrd3hhUvEd3lgBu';
-const JSONBIN_URL = 'https://api.jsonbin.io/v3/b';
-const ADMIN_PASS = 'zutaik2025';
+const SB_URL = 'https://gyhmskhjqrfmrlkhnsmb.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5aG1za2hqcXJmbXJsa2huc21iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NjM1MzMsImV4cCI6MjA5NzEzOTUzM30.pb2-JujA3b7RLSnvl85kotFzmVNHKkjTfUWU0uJGGps';
+const ADMIN_EMAIL = 'admin@zutaik.com';
 
-let BIN_ID = '6a2be68eda38895dfeb42fc6';
-let state = {
-  adminLoggedIn: false,
-  dias: [
-    {id:'d1',label:'Miércoles 8 de julio',tipo:'wed'},
-    {id:'d2',label:'Jueves 9 de julio',tipo:'thu'},
-    {id:'d3',label:'Viernes 10 de julio',tipo:'fri'},
-    {id:'d4',label:'Sábado 11 de julio',tipo:'sat'},
-    {id:'d5',label:'Domingo 12 de julio',tipo:'sun'},
-    {id:'d6',label:'Lunes 13 de julio',tipo:'mon'},
-    {id:'d7',label:'Martes 14 de julio',tipo:'tue'},
-    {id:'d8',label:'Miércoles 15 de julio',tipo:'wed'},
-    {id:'d9',label:'Jueves 16 de julio',tipo:'thu'},
-    {id:'d10',label:'Viernes 17 de julio',tipo:'fri'},
-    {id:'d11',label:'Sábado 18 de julio',tipo:'sat'},
-    {id:'d12',label:'Domingo 19 de julio',tipo:'sun'},
-    {id:'d13',label:'Lunes 20 de julio',tipo:'mon'},
-    {id:'d14',label:'Martes 21 de julio',tipo:'tue'}
-  ],
-  tareas: [
-    {id:'t1',nombre:'Montaje',icon:'🔧'},
-    {id:'t2',nombre:'Limpieza',icon:'✨'},
-    {id:'t3',nombre:'Compras',icon:'🛒'},
-    {id:'t4',nombre:'Pre-Cocina',icon:'🥣'},
-    {id:'t5',nombre:'Cocina',icon:'🔥'},
-    {id:'t6',nombre:'Barra',icon:'🍺'},
-    {id:'t7',nombre:'Herriko Plaza',icon:'📍'}
-  ],
-  franjas: [
-    {id:'f1',label:'08:00 - 12:00',slots:3},
-    {id:'f2',label:'10:00 - 14:00',slots:3},
-    {id:'f3',label:'11:00 - 15:00',slots:4},
-    {id:'f4',label:'13:00 - 17:00',slots:4},
-    {id:'f5',label:'15:00 - 19:00',slots:3},
-    {id:'f6',label:'17:00 - 21:00',slots:4},
-    {id:'f7',label:'19:00 - 23:00',slots:5},
-    {id:'f8',label:'21:00 - 01:00',slots:5},
-    {id:'f9',label:'23:00 - 03:00',slots:4}
-  ],
-  diaConfig: {
-    d1:{tareas:{t1:['f1','f2'],t2:['f2','f3'],t6:['f5','f6','f7']}},
-    d2:{tareas:{t2:['f2','f3'],t4:['f4'],t5:['f5','f6'],t6:['f5','f6','f7','f8']}},
-    d3:{tareas:{t2:['f2','f3'],t3:['f3'],t4:['f4'],t5:['f5','f6'],t6:['f5','f6','f7','f8'],t7:['f6','f7']}},
-    d4:{tareas:{t2:['f2','f3'],t3:['f3'],t4:['f4'],t5:['f5','f6'],t6:['f4','f5','f6','f7','f8'],t7:['f5','f6','f7']}},
-    d5:{tareas:{t2:['f2','f3'],t4:['f4'],t5:['f5','f6'],t6:['f4','f5','f6','f7','f8'],t7:['f5','f6','f7']}},
-    d6:{tareas:{t2:['f2','f3'],t4:['f4'],t5:['f5','f6'],t6:['f5','f6','f7','f8']}},
-    d7:{tareas:{t2:['f2','f3'],t4:['f4'],t5:['f5','f6'],t6:['f5','f6','f7','f8']}},
-    d8:{tareas:{t2:['f2','f3'],t4:['f4'],t5:['f5','f6'],t6:['f5','f6','f7','f8'],t7:['f6','f7']}},
-    d9:{tareas:{t2:['f2','f3'],t3:['f3'],t4:['f4'],t5:['f5','f6'],t6:['f5','f6','f7','f8'],t7:['f6','f7']}},
-    d10:{tareas:{t2:['f2','f3'],t3:['f3'],t4:['f4'],t5:['f5','f6'],t6:['f4','f5','f6','f7','f8'],t7:['f5','f6','f7']}},
-    d11:{tareas:{t2:['f2','f3'],t3:['f3'],t4:['f4'],t5:['f5','f6'],t6:['f4','f5','f6','f7','f8'],t7:['f5','f6','f7']}},
-    d12:{tareas:{t2:['f2','f3'],t4:['f4'],t5:['f5','f6'],t6:['f4','f5','f6','f7','f8'],t7:['f5','f6','f7']}},
-    d13:{tareas:{t2:['f2','f3'],t4:['f4'],t5:['f5','f6'],t6:['f5','f6','f7','f8']}},
-    d14:{tareas:{t2:['f2','f3'],t6:['f5','f6','f7','f8']}}
-  },
-  voluntarios: [],
-  turnos: {}
-};
+let currentUser = null;
+let state = { dias:[], tareas:[], franjas:[], diaConfig:{} };
+let allTurnos = [];
+let allUsers = [];
 
-async function apiGet() {
-  if (!BIN_ID) return null;
+async function sb(path, opts={}) {
+  const r = await fetch(`${SB_URL}/rest/v1/${path}`, {
+    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`,
+      'Content-Type': 'application/json', 'Prefer': 'return=representation', ...opts.headers },
+    ...opts
+  });
+  if (!r.ok) { const e = await r.json(); throw new Error(e.message||r.status); }
+  const t = await r.text();
+  return t ? JSON.parse(t) : null;
+}
+
+function simpleHash(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h |= 0; }
+  return 'h' + Math.abs(h).toString(16);
+}
+
+function switchLoginTab(tab) {
+  document.getElementById('login-form').style.display = tab==='login'?'block':'none';
+  document.getElementById('reg-form').style.display = tab==='registro'?'block':'none';
+  document.getElementById('tab-login-btn').classList.toggle('active', tab==='login');
+  document.getElementById('tab-reg-btn').classList.toggle('active', tab==='registro');
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const pass = document.getElementById('login-pass').value;
+  const msg = document.getElementById('login-msg');
+  if (!email||!pass) { msg.innerHTML='<div class="msg msg-err">Rellena todos los campos</div>'; return; }
+  msg.innerHTML='<div class="msg msg-info">Comprobando...</div>';
   try {
-    const r = await fetch(`${JSONBIN_URL}/${BIN_ID}/latest`, {
-      headers: {'X-Master-Key': JSONBIN_KEY}
-    });
-    if (!r.ok) return null;
-    const d = await r.json();
-    return d.record;
-  } catch(e) { return null; }
+    const hash = simpleHash(pass);
+    const rows = await sb(`usuarios?email=eq.${encodeURIComponent(email)}&select=*`);
+    if (!rows||!rows.length) { msg.innerHTML='<div class="msg msg-err">Usuario no encontrado</div>'; return; }
+    const u = rows[0];
+    if (u.password_hash !== hash) { msg.innerHTML='<div class="msg msg-err">Contraseña incorrecta</div>'; return; }
+    currentUser = u;
+    localStorage.setItem('zutaik_user_id', u.id);
+    await initApp();
+  } catch(e) { msg.innerHTML=`<div class="msg msg-err">Error: ${e.message}</div>`; }
 }
 
-async function apiSave(data) {
+async function doRegister() {
+  const email = document.getElementById('reg-email').value.trim().toLowerCase();
+  const pass = document.getElementById('reg-pass').value;
+  const nombre = document.getElementById('reg-nombre').value.trim();
+  const ap1 = document.getElementById('reg-ap1').value.trim();
+  const ap2 = document.getElementById('reg-ap2').value.trim();
+  const club = document.getElementById('reg-club').value;
+  const vinculo = document.getElementById('reg-vinculo').value;
+  const tel = document.getElementById('reg-tel').value.trim();
+  const msg = document.getElementById('reg-msg');
+  if (!email||!pass||!nombre||!ap1||!club||!vinculo) { msg.innerHTML='<div class="msg msg-err">Rellena todos los campos obligatorios</div>'; return; }
+  if (pass.length < 8) { msg.innerHTML='<div class="msg msg-err">La contraseña debe tener al menos 8 caracteres</div>'; return; }
+  msg.innerHTML='<div class="msg msg-info">Registrando...</div>';
   try {
-    if (!BIN_ID) {
-      const r = await fetch(JSONBIN_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Master-Key': JSONBIN_KEY,
-          'X-Bin-Name': 'TuTurnoZUtaIK',
-          'X-Bin-Private': 'false'
-        },
-        body: JSON.stringify(data)
-      });
-      const d = await r.json();
-      BIN_ID = d.metadata.id;
-      localStorage.setItem('zutaik_bin_id', BIN_ID);
-    } else {
-      await fetch(`${JSONBIN_URL}/${BIN_ID}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Master-Key': JSONBIN_KEY
-        },
-        body: JSON.stringify(data)
-      });
-    }
-    return true;
-  } catch(e) { return false; }
+    const existing = await sb(`usuarios?email=eq.${encodeURIComponent(email)}&select=id`);
+    if (existing&&existing.length) { msg.innerHTML='<div class="msg msg-err">Este email ya está registrado</div>'; return; }
+    const hash = simpleHash(pass);
+    const rows = await sb('usuarios', { method:'POST', body: JSON.stringify({
+      email, password_hash: hash, nombre, apellido1: ap1, apellido2: ap2,
+      club, vinculo, telefono: tel, es_admin: false
+    })});
+    currentUser = rows[0];
+    localStorage.setItem('zutaik_user_id', currentUser.id);
+    await initApp();
+  } catch(e) { msg.innerHTML=`<div class="msg msg-err">Error: ${e.message}</div>`; }
 }
 
-function getRemoteSaveData() {
-  return {
-    dias: state.dias,
-    tareas: state.tareas,
-    franjas: state.franjas,
-    diaConfig: state.diaConfig,
-    voluntarios: state.voluntarios,
-    turnos: state.turnos
-  };
+async function tryAutoLogin() {
+  const uid = localStorage.getItem('zutaik_user_id');
+  if (!uid) return false;
+  try {
+    const rows = await sb(`usuarios?id=eq.${uid}&select=*`);
+    if (rows&&rows.length) { currentUser = rows[0]; return true; }
+  } catch(e) {}
+  return false;
 }
 
-async function saveState() {
-  await apiSave(getRemoteSaveData());
+function doLogout() {
+  localStorage.removeItem('zutaik_user_id');
+  currentUser = null;
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('main-app').style.display='none';
 }
 
-async function loadState() {
-  const remote = await apiGet();
-  if (remote) {
-    if (remote.dias) state.dias = remote.dias;
-    if (remote.tareas) state.tareas = remote.tareas;
-    if (remote.franjas) state.franjas = remote.franjas;
-    if (remote.diaConfig) state.diaConfig = remote.diaConfig;
-    if (remote.voluntarios) state.voluntarios = remote.voluntarios;
-    if (remote.turnos) state.turnos = remote.turnos;
-  }
+async function initApp() {
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('main-app').style.display='block';
+  const fullName = `${currentUser.nombre} ${currentUser.apellido1}${currentUser.apellido2?' '+currentUser.apellido2:''}`;
+  document.getElementById('header-user').textContent = fullName;
+  document.getElementById('user-display-name').textContent = fullName;
+  document.getElementById('user-display-club').textContent = `${currentUser.club} · ${currentUser.vinculo}`;
+  document.getElementById('user-avatar').textContent = (currentUser.nombre[0]+(currentUser.apellido1[0]||'')).toUpperCase();
+  if (currentUser.es_admin) document.getElementById('admin-nav-btn').style.display='block';
+  await loadConfig();
+  await loadTurnos();
+  await loadUsers();
+  renderCalendar();
+  initApuntarse();
+  populateHoras();
+}
+
+async function loadConfig() {
+  const rows = await sb('configuracion?select=clave,valor');
+  rows.forEach(r => {
+    if (r.clave==='dias') state.dias = r.valor;
+    else if (r.clave==='tareas') state.tareas = r.valor;
+    else if (r.clave==='franjas') state.franjas = r.valor;
+    else if (r.clave==='diaConfig') state.diaConfig = r.valor;
+  });
+}
+
+async function saveConfig(clave, valor) {
+  await sb(`configuracion?clave=eq.${clave}`, {
+    method:'PATCH', body: JSON.stringify({ valor, updated_at: new Date().toISOString() })
+  });
+}
+
+async function loadTurnos() {
+  allTurnos = await sb('turnos?select=*') || [];
+}
+
+async function loadUsers() {
+  allUsers = await sb('usuarios?select=id,nombre,apellido1,apellido2,club,vinculo,telefono,es_admin,email,password_hash') || [];
 }
 
 function getTarea(id) { return state.tareas.find(t=>t.id===id)||{nombre:'?',icon:'?'}; }
-function getFranja(id) { return state.franjas.find(f=>f.id===id)||{label:'?',slots:0}; }
-function getTurnoKey(d,t,f) { return `${d}_${t}_${f}`; }
-function getVols(d,t,f) { return state.turnos[getTurnoKey(d,t,f)]||[]; }
+function getFranja(id) { return state.franjas.find(f=>f.id===id)||{label:'?',labelFin:'?',slots:0}; }
+function franjaLabel(f) { return `${f.label} - ${f.labelFin}`; }
+function getVolsEnTurno(dId,tId,fId) { return allTurnos.filter(t=>t.dia_id===dId&&t.tarea_id===tId&&t.franja_id===fId); }
+function estaApuntado(dId,tId,fId) { return allTurnos.some(t=>t.dia_id===dId&&t.tarea_id===tId&&t.franja_id===fId&&t.usuario_id===currentUser.id); }
+function nombreCompleto(u) { return `${u.nombre} ${u.apellido1}${u.apellido2?' '+u.apellido2:''}`; }
 
-function showSection(id) {
+function showSection(id, btn) {
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('sec-'+id).classList.add('active');
-  event.target.classList.add('active');
+  if(btn) btn.classList.add('active');
   if(id==='calendario') renderCalendar();
   if(id==='voluntarios') renderVolList();
   if(id==='apuntarse') initApuntarse();
-  if(id==='admin' && state.adminLoggedIn) renderAdminPanels();
+  if(id==='admin') renderAdminPanels();
 }
 
 function renderCalendar() {
   const view = document.getElementById('calendar-view');
   const pills = document.getElementById('day-pills');
-  pills.innerHTML = '';
-  view.innerHTML = '';
+  pills.innerHTML=''; view.innerHTML='';
   let total=0, filled=0;
-
-  state.dias.forEach((dia, di) => {
+  state.dias.forEach((dia,di)=>{
     const pill = document.createElement('button');
-    pill.className = 'day-pill' + (di===0?' active':'');
+    pill.className='day-pill'+(di===0?' active':'');
     pill.textContent = dia.label.split(' ').slice(0,2).join(' ');
-    pill.onclick = () => {
+    pill.onclick = ()=>{
       document.querySelectorAll('.day-pill').forEach(p=>p.classList.remove('active'));
       pill.classList.add('active');
       document.querySelectorAll('.day-card').forEach((c,i)=>c.style.display=(i===di?'block':'none'));
     };
     pills.appendChild(pill);
-
     const cfg = state.diaConfig[dia.id]||{tareas:{}};
     const dc = document.createElement('div');
-    dc.className = 'day-card';
-    dc.style.display = di===0?'block':'none';
-
-    let html = `<div class="day-header ${dia.tipo}" onclick="toggleDayBody(this)">
-      <span>${dia.label}</span><span style="font-size:11px" id="ds-${dia.id}"></span>
-    </div><div class="day-body">`;
-
-    const tareaEntries = Object.entries(cfg.tareas||{});
-    if (!tareaEntries.length) {
-      html += '<div style="padding:12px;color:#aaa;font-size:12px;text-align:center">Sin tareas configuradas</div>';
-    } else {
-      tareaEntries.forEach(([tid, fids]) => {
-        const t = getTarea(tid);
-        html += `<div class="task-row"><div class="task-name"><span>${t.icon}</span>${t.nombre}</div>`;
-        (fids||[]).forEach(fid => {
-          const f = getFranja(fid);
-          const v = getVols(dia.id,tid,fid);
-          total += f.slots; filled += Math.min(v.length,f.slots);
-          const pct = Math.min(100,Math.round((v.length/f.slots)*100));
-          const col = v.length>=f.slots?'#2d5a3d':(v.length>0?'#BA7517':'#E24B4A');
-          html += `<div class="slot-row" onclick="showSlotDetail('${dia.id}','${tid}','${fid}')">
-            <span class="slot-label">&#128336; ${f.label}</span>
-            <span style="font-size:10px;color:${col};font-weight:500">${v.length}/${f.slots}</span>
-          </div>
-          <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${col}"></div></div>`;
-        });
-        html += '</div>';
+    dc.className='day-card'; dc.style.display=di===0?'block':'none';
+    let html=`<div class="day-header ${dia.tipo}" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+      <span>${dia.label}</span><span style="font-size:12px">▾</span></div><div class="day-body">`;
+    const entries = Object.entries(cfg.tareas||{});
+    if(!entries.length) html+='<div style="padding:14px;color:var(--text3);font-size:13px;text-align:center">Sin tareas configuradas</div>';
+    else entries.forEach(([tid,fids])=>{
+      const t=getTarea(tid);
+      html+=`<div class="task-row"><div class="task-name"><span>${t.icon}</span>${t.nombre}</div>`;
+      (fids||[]).forEach(fid=>{
+        const f=getFranja(fid); const v=getVolsEnTurno(dia.id,tid,fid);
+        total+=f.slots; filled+=Math.min(v.length,f.slots);
+        const pct=Math.min(100,Math.round((v.length/f.slots)*100));
+        const col=v.length>=f.slots?'#2e7d32':(v.length>0?'#e65100':'#c62828');
+        html+=`<div class="slot-row" onclick="showSlotDetail('${dia.id}','${tid}','${fid}')">
+          <span class="slot-label">🕐 ${franjaLabel(f)}</span>
+          <span style="font-size:12px;color:${col};font-weight:600">${v.length}/${f.slots}</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${col}"></div></div>`;
       });
-    }
-    html += '</div>';
-    dc.innerHTML = html;
-    view.appendChild(dc);
+      html+='</div>';
+    });
+    html+='</div>';
+    dc.innerHTML=html; view.appendChild(dc);
   });
-  document.getElementById('cal-summary').textContent = `${filled}/${total} plazas`;
-}
-
-function toggleDayBody(h) {
-  const b = h.nextElementSibling;
-  b.style.display = b.style.display==='none'?'block':'none';
+  document.getElementById('cal-summary').textContent=`${filled}/${total} plazas`;
 }
 
 function showSlotDetail(diaId,tareaId,franjaId) {
-  const dia = state.dias.find(d=>d.id===diaId);
-  const t = getTarea(tareaId);
-  const f = getFranja(franjaId);
-  const v = getVols(diaId,tareaId,franjaId);
-  let html = `<div class="modal-title">${t.icon} ${t.nombre}</div>
-  <p style="font-size:12px;color:#666;margin-bottom:12px">${dia.label} &middot; ${f.label}</p>`;
+  const dia=state.dias.find(d=>d.id===diaId);
+  const t=getTarea(tareaId); const f=getFranja(franjaId);
+  const v=getVolsEnTurno(diaId,tareaId,franjaId);
+  const yaApuntado=estaApuntado(diaId,tareaId,franjaId);
+  let html=`<div class="modal-title">${t.icon} ${t.nombre}</div>
+  <p style="font-size:13px;color:var(--text2);margin-bottom:14px">${dia.label} · ${franjaLabel(f)}</p>`;
   for(let i=0;i<f.slots;i++){
     if(v[i]){
-      const vol = state.voluntarios.find(x=>x.nombre===v[i]);
-      const bc = vol?vol.club:'';
-      const bcls = bc==='BM Zuazo'?'badge-bm':bc==='Ikhoba KK'?'badge-fk':'badge-ext';
-      html += `<div class="person-slot" style="margin-bottom:4px">
-        <span style="font-weight:500">${i+1}. ${v[i]}</span>
-        ${bc?`<span class="badge ${bcls}" style="font-size:10px">${bc}</span>`:''}
+      const u=allUsers.find(x=>x.id===v[i].usuario_id);
+      const bc=u?.club==='BM Zuazo'?'badge-bm':u?.club==='Ikhoba KK'?'badge-fk':'badge-ext';
+      html+=`<div class="person-slot" style="margin-bottom:5px">
+        <span style="font-weight:600">${i+1}. ${v[i].nombre_usuario}</span>
+        ${u?`<span class="badge ${bc}" style="font-size:11px">${u.club}</span>`:''}
       </div>`;
     } else {
-      html += `<div class="person-slot empty-slot" style="margin-bottom:4px">
-        <span>${i+1}. Libre</span><span style="color:#2d5a3d;font-size:10px">&#9679; Disponible</span>
+      html+=`<div class="person-slot empty-slot" style="margin-bottom:5px">
+        <span>${i+1}. Libre</span><span style="color:var(--pk);font-size:11px">● Disponible</span>
       </div>`;
     }
   }
-  if(v.length < f.slots){
-    html += `<button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="closeModal();showSectionDirect('apuntarse')">Apuntarme a este turno</button>`;
+  if(yaApuntado){
+    html+=`<button class="btn btn-danger" style="width:100%;margin-top:12px" onclick="desapuntarseModal('${diaId}','${tareaId}','${franjaId}')">Desapuntarme de este turno</button>`;
+  } else if(v.length<f.slots){
+    html+=`<button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="apuntarseDesdeModal('${diaId}','${tareaId}','${franjaId}')">✋ Apuntarme a este turno</button>`;
   } else {
-    html += `<div class="msg msg-err" style="text-align:center;margin-top:10px">Turno completo</div>`;
+    html+=`<div class="msg msg-err" style="text-align:center;margin-top:12px">Turno completo</div>`;
   }
   openModal(html);
 }
 
-function openModal(html) {
-  document.getElementById('modal-container').innerHTML =
-    `<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal">${html}
-        <button class="btn" style="width:100%;margin-top:10px" onclick="closeModal()">Cerrar</button>
-      </div>
-    </div>`;
-}
-function closeModal() { document.getElementById('modal-container').innerHTML=''; }
-
-function showSectionDirect(id) {
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('sec-'+id).classList.add('active');
-  if(id==='apuntarse') initApuntarse();
+async function apuntarseDesdeModal(diaId,tareaId,franjaId){
+  closeModal();
+  await apuntarse(diaId,tareaId,franjaId);
+  renderCalendar();
 }
 
-async function guardarVoluntario() {
-  const n = document.getElementById('vol-nombre').value.trim();
-  const c = document.getElementById('vol-club').value;
-  const v = document.getElementById('vol-vinculo').value;
-  const t = document.getElementById('vol-tel').value.trim();
-  const msg = document.getElementById('vol-msg');
-  if(!n||!c||!v){msg.innerHTML='<div class="msg msg-err">Rellena nombre, club y vínculo</div>';return;}
-  msg.innerHTML='<div class="msg msg-info">Guardando...</div>';
-  const ex = state.voluntarios.findIndex(x=>x.nombre===n);
-  if(ex>=0) state.voluntarios[ex]={nombre:n,club:c,vinculo:v,tel:t};
-  else state.voluntarios.push({nombre:n,club:c,vinculo:v,tel:t});
-  await saveState();
-  localStorage.setItem('zutaik_mi_nombre', n);
-  localStorage.setItem('zutaik_mi_club', c);
-  localStorage.setItem('zutaik_mi_vinculo', v);
-  localStorage.setItem('zutaik_mi_tel', t);
-  msg.innerHTML='<div class="msg msg-ok">&#10003; Datos guardados correctamente</div>';
-  document.getElementById('signup-panel').style.display='block';
-  initApuntarse();
-  setTimeout(()=>msg.innerHTML='',3000);
+async function desapuntarseModal(diaId,tareaId,franjaId){
+  closeModal();
+  await desapuntarse(diaId,tareaId,franjaId);
+  renderCalendar();
 }
 
-function initApuntarse() {
-  const sel = document.getElementById('signup-dia');
-  sel.innerHTML = '<option value="">Selecciona día...</option>';
+function openModal(html){
+  document.getElementById('modal-container').innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal">${html}<button class="btn" style="width:100%;margin-top:12px" onclick="closeModal()">Cerrar</button></div></div>`;
+}
+function closeModal(){ document.getElementById('modal-container').innerHTML=''; }
+
+function initApuntarse(){
+  const sel=document.getElementById('signup-dia');
+  sel.innerHTML='<option value="">Selecciona día...</option>';
   state.dias.forEach(d=>sel.innerHTML+=`<option value="${d.id}">${d.label}</option>`);
-  const n = document.getElementById('vol-nombre').value.trim();
-  if(n && state.voluntarios.find(v=>v.nombre===n)){
-    document.getElementById('signup-panel').style.display='block';
-  }
 }
 
-function renderSignupTasks() {
-  const diaId = document.getElementById('signup-dia').value;
-  const cont = document.getElementById('signup-tasks');
+function renderSignupTasks(){
+  const diaId=document.getElementById('signup-dia').value;
+  const cont=document.getElementById('signup-tasks');
   if(!diaId){cont.innerHTML='';return;}
-  const cfg = state.diaConfig[diaId]||{tareas:{}};
-  const nombre = document.getElementById('vol-nombre').value.trim();
+  const cfg=state.diaConfig[diaId]||{tareas:{}};
   let html='';
   Object.entries(cfg.tareas||{}).forEach(([tid,fids])=>{
-    const t = getTarea(tid);
-    html+=`<div style="margin-top:10px"><div style="font-size:12px;font-weight:500;margin-bottom:4px">${t.icon} ${t.nombre}</div>`;
+    const t=getTarea(tid);
+    html+=`<div style="margin-top:12px"><div style="font-size:14px;font-weight:600;color:var(--pk-dark);margin-bottom:6px">${t.icon} ${t.nombre}</div>`;
     (fids||[]).forEach(fid=>{
-      const f = getFranja(fid);
-      const v = getVols(diaId,tid,fid);
-      const yaApuntado = v.includes(nombre);
-      const lleno = v.length>=f.slots && !yaApuntado;
-      const pct = Math.min(100,Math.round((v.length/f.slots)*100));
-      const col = v.length>=f.slots?'#2d5a3d':(v.length>0?'#BA7517':'#E24B4A');
-      html+=`<div class="slot-signup" style="${yaApuntado?'border:1px solid #2d5a3d':''}">
-        <div class="slot-header">&#128336; ${f.label} &middot; ${v.length}/${f.slots} personas</div>
-        <div class="progress-bar" style="margin-bottom:6px"><div class="progress-fill" style="width:${pct}%;background:${col}"></div></div>
-        ${yaApuntado
-          ?`<button class="btn btn-sm" style="color:#A32D2D;border-color:#A32D2D;width:100%" onclick="desapuntarse('${diaId}','${tid}','${fid}','${nombre}')">Desapuntarme</button>`
-          :lleno
-            ?`<div style="font-size:11px;color:#A32D2D;text-align:center">Turno completo</div>`
-            :`<button class="btn btn-primary btn-sm" style="width:100%" onclick="apuntarse('${diaId}','${tid}','${fid}','${nombre}')">Apuntarme</button>`
-        }
+      const f=getFranja(fid); const v=getVolsEnTurno(diaId,tid,fid);
+      const ya=estaApuntado(diaId,tid,fid);
+      const lleno=v.length>=f.slots&&!ya;
+      const pct=Math.min(100,Math.round((v.length/f.slots)*100));
+      const col=v.length>=f.slots?'#2e7d32':(v.length>0?'#e65100':'#c62828');
+      html+=`<div class="slot-signup${ya?' apuntado':''}">
+        <div class="slot-header">🕐 ${franjaLabel(f)} · ${v.length}/${f.slots} personas</div>
+        <div class="progress-bar" style="margin-bottom:8px"><div class="progress-fill" style="width:${pct}%;background:${col}"></div></div>
+        ${ya?`<button class="btn btn-sm btn-danger" style="width:100%" onclick="desapuntarseSignup('${diaId}','${tid}','${fid}')">Desapuntarme</button>`
+           :lleno?`<div style="font-size:12px;color:#c62828;text-align:center;font-weight:500">Turno completo</div>`
+           :`<button class="btn btn-primary btn-sm" style="width:100%" onclick="apuntarseSignup('${diaId}','${tid}','${fid}')">✋ Apuntarme</button>`}
       </div>`;
     });
     html+='</div>';
   });
-  if(!html) html='<div style="color:#aaa;font-size:12px;margin-top:8px">Sin tareas para este día</div>';
+  if(!html) html='<div style="color:var(--text3);font-size:13px;margin-top:10px">Sin tareas para este día</div>';
   cont.innerHTML=html;
 }
 
-async function apuntarse(diaId,tareaId,franjaId,nombre) {
-  if(!nombre){alert('Escribe tu nombre primero');return;}
-  const key = getTurnoKey(diaId,tareaId,franjaId);
-  if(!state.turnos[key]) state.turnos[key]=[];
-  const f = getFranja(franjaId);
-  if(state.turnos[key].length>=f.slots){alert('Turno completo');return;}
-  if(state.turnos[key].includes(nombre)){alert('Ya estás apuntado/a');return;}
-  state.turnos[key].push(nombre);
-  await saveState();
-  localStorage.setItem('zutaik_mi_nombre', n);
-  localStorage.setItem('zutaik_mi_club', c);
-  localStorage.setItem('zutaik_mi_vinculo', v);
-  localStorage.setItem('zutaik_mi_tel', t);
-  renderSignupTasks();
+async function apuntarse(diaId,tareaId,franjaId){
+  const f=getFranja(franjaId); const v=getVolsEnTurno(diaId,tareaId,franjaId);
+  if(v.length>=f.slots){alert('Lo sentimos, este turno acaba de completarse.');await loadTurnos();renderSignupTasks();return;}
+  if(estaApuntado(diaId,tareaId,franjaId)){alert('Ya estás apuntado/a a este turno.');return;}
+  const nombre=nombreCompleto(currentUser);
+  try {
+    await sb('turnos',{method:'POST',body:JSON.stringify({dia_id:diaId,tarea_id:tareaId,franja_id:franjaId,usuario_id:currentUser.id,nombre_usuario:nombre})});
+    await loadTurnos();
+  } catch(e){ alert('Error al apuntarse. Inténtalo de nuevo.'); }
 }
 
-async function desapuntarse(diaId,tareaId,franjaId,nombre) {
-  const key = getTurnoKey(diaId,tareaId,franjaId);
-  if(state.turnos[key]) state.turnos[key]=state.turnos[key].filter(n=>n!==nombre);
-  await saveState();
-  localStorage.setItem('zutaik_mi_nombre', n);
-  localStorage.setItem('zutaik_mi_club', c);
-  localStorage.setItem('zutaik_mi_vinculo', v);
-  localStorage.setItem('zutaik_mi_tel', t);
-  renderSignupTasks();
+async function desapuntarse(diaId,tareaId,franjaId){
+  try{
+    await sb(`turnos?dia_id=eq.${diaId}&tarea_id=eq.${tareaId}&franja_id=eq.${franjaId}&usuario_id=eq.${currentUser.id}`,{method:'DELETE',headers:{'Prefer':''}});
+    await loadTurnos();
+  }catch(e){alert('Error al desapuntarse.');}
 }
 
-function renderVolList() {
-  const search = document.getElementById('vol-search')?.value.toLowerCase()||'';
-  const list = document.getElementById('vol-list');
-  const filtered = state.voluntarios.filter(v=>v.nombre.toLowerCase().includes(search));
-  document.getElementById('vol-count').textContent=`${state.voluntarios.length} personas`;
-  if(!filtered.length){list.innerHTML='<div style="color:#aaa;font-size:12px;text-align:center;padding:12px">Sin voluntarios registrados</div>';return;}
+async function apuntarseSignup(d,t,f){await apuntarse(d,t,f);renderSignupTasks();}
+async function desapuntarseSignup(d,t,f){await desapuntarse(d,t,f);renderSignupTasks();}
+
+function renderVolList(){
+  const search=document.getElementById('vol-search')?.value.toLowerCase()||'';
+  const list=document.getElementById('vol-list');
+  const filtered=allUsers.filter(v=>nombreCompleto(v).toLowerCase().includes(search));
+  document.getElementById('vol-count').textContent=`${allUsers.length} personas`;
+  if(!filtered.length){list.innerHTML='<div style="color:var(--text3);font-size:13px;text-align:center;padding:14px">Sin voluntarios</div>';return;}
   list.innerHTML=filtered.map(v=>{
     const bc=v.club==='BM Zuazo'?'badge-bm':v.club==='Ikhoba KK'?'badge-fk':'badge-ext';
-    return `<div class="vol-item">
-      <div><div class="vol-name">${v.nombre}</div><div class="vol-meta">${v.vinculo||''} ${v.tel?'&middot; '+v.tel:''}</div></div>
-      <span class="badge ${bc}">${v.club}</span>
+    const turnosVol=allTurnos.filter(t=>t.usuario_id===v.id);
+    let turnosHtml='';
+    if(turnosVol.length){
+      turnosHtml='<div class="vol-turnos">';
+      turnosVol.forEach(t=>{
+        const dia=state.dias.find(d=>d.id===t.dia_id);
+        const tarea=getTarea(t.tarea_id);
+        const franja=getFranja(t.franja_id);
+        turnosHtml+=`<div class="vol-turno-item">📅 ${dia?.label||t.dia_id} · ${tarea.icon}${tarea.nombre} · 🕐${franjaLabel(franja)}</div>`;
+      });
+      turnosHtml+='</div>';
+    }
+    return `<div class="vol-item" style="flex-direction:column;align-items:flex-start;gap:6px">
+      <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+        <div><div class="vol-name">${nombreCompleto(v)}</div><div class="vol-meta">${v.vinculo} ${v.telefono?'· '+v.telefono:''}</div></div>
+        <span class="badge ${bc}">${v.club}</span>
+      </div>
+      ${turnosHtml}
     </div>`;
   }).join('');
 }
 
-function loginAdmin() {
-  const pass = document.getElementById('admin-pass').value;
-  const msg = document.getElementById('admin-login-msg');
-  if(pass===ADMIN_PASS){
-    state.adminLoggedIn=true;
-    document.getElementById('admin-login').style.display='none';
-    document.getElementById('admin-panel').style.display='block';
-    renderAdminPanels();
-  } else {
-    msg.innerHTML='<div class="msg msg-err">Contraseña incorrecta</div>';
-  }
-}
-function logoutAdmin() {
-  state.adminLoggedIn=false;
-  document.getElementById('admin-login').style.display='block';
-  document.getElementById('admin-panel').style.display='none';
-  document.getElementById('admin-pass').value='';
-}
-
-function showAdminTab(tab) {
+function showAdminTab(tab,btn){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.admin-tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('admin-tab-'+tab).classList.add('active');
-  document.querySelectorAll('[id^="atab-"]').forEach(b=>{b.style.background='';b.style.color='';b.style.borderColor='';});
-  const btn=document.getElementById('atab-'+tab);
-  btn.style.background='#2d5a3d';btn.style.color='#fff';btn.style.borderColor='#2d5a3d';
+  if(btn) btn.classList.add('active');
 }
 
-function renderAdminPanels() {
+function renderAdminPanels(){
   renderDiasList(); renderTareasList(); renderFranjasList();
-  renderAdminVols(); populateAdminSelects();
+  renderAdminUsers(); populateAdminSelects();
 }
 
-function renderDiasList() {
+function renderDiasList(){
   document.getElementById('dias-list').innerHTML=state.dias.map(d=>`
     <div class="vol-item">
-      <div><div style="font-size:13px;font-weight:500">${d.label}</div><div style="font-size:11px;color:#666">${d.tipo}</div></div>
-      <button class="btn btn-sm btn-danger" onclick="removeDia('${d.id}')">&#128465;</button>
+      <div><div style="font-size:14px;font-weight:600">${d.label}</div><div style="font-size:12px;color:var(--text2)">${d.tipo}</div></div>
+      <button class="btn btn-sm btn-danger" onclick="removeDia('${d.id}')">🗑</button>
     </div>`).join('');
 }
 
-async function addDia() {
+async function addDia(){
   const label=document.getElementById('new-dia-label').value.trim();
   const tipo=document.getElementById('new-dia-tipo').value;
   if(!label) return;
@@ -690,81 +715,101 @@ async function addDia() {
   state.dias.push({id,label,tipo});
   state.diaConfig[id]={tareas:{}};
   document.getElementById('new-dia-label').value='';
-  await saveState(); renderDiasList(); populateAdminSelects(); renderCalendar();
+  await saveConfig('dias',state.dias);
+  await saveConfig('diaConfig',state.diaConfig);
+  renderDiasList(); populateAdminSelects(); renderCalendar();
 }
 
-async function removeDia(id) {
+async function removeDia(id){
   if(!confirm('¿Eliminar este día?')) return;
   state.dias=state.dias.filter(d=>d.id!==id);
   delete state.diaConfig[id];
-  await saveState(); renderDiasList(); populateAdminSelects(); renderCalendar();
+  await saveConfig('dias',state.dias);
+  await saveConfig('diaConfig',state.diaConfig);
+  renderDiasList(); populateAdminSelects(); renderCalendar();
 }
 
-function renderTareasList() {
+function renderTareasList(){
   document.getElementById('tareas-list').innerHTML=state.tareas.map(t=>`
     <div class="vol-item">
-      <div style="font-size:13px;font-weight:500">${t.icon} ${t.nombre}</div>
-      <button class="btn btn-sm btn-danger" onclick="removeTarea('${t.id}')">&#128465;</button>
+      <div style="font-size:14px;font-weight:600">${t.icon} ${t.nombre}</div>
+      <button class="btn btn-sm btn-danger" onclick="removeTarea('${t.id}')">🗑</button>
     </div>`).join('');
 }
 
-async function addTarea() {
+async function addTarea(){
   const nombre=document.getElementById('new-tarea').value.trim();
   const icon=document.getElementById('new-tarea-icon').value;
   if(!nombre) return;
   state.tareas.push({id:'t'+Date.now(),nombre,icon});
   document.getElementById('new-tarea').value='';
-  await saveState(); renderTareasList();
+  await saveConfig('tareas',state.tareas);
+  renderTareasList();
 }
 
-async function removeTarea(id) {
+async function removeTarea(id){
   if(!confirm('¿Eliminar esta tarea?')) return;
   state.tareas=state.tareas.filter(t=>t.id!==id);
-  await saveState(); renderTareasList();
+  await saveConfig('tareas',state.tareas);
+  renderTareasList();
 }
 
-function renderFranjasList() {
+function populateHoras(){
+  const horas=[];
+  for(let h=0;h<24;h++) horas.push((h<10?'0':'')+h+':00');
+  ['new-franja-ini','new-franja-fin'].forEach(id=>{
+    const sel=document.getElementById(id);
+    if(!sel) return;
+    sel.innerHTML='<option value="">Selecciona hora...</option>';
+    horas.forEach(h=>sel.innerHTML+=`<option value="${h}">${h}</option>`);
+  });
+}
+
+function renderFranjasList(){
   document.getElementById('franjas-list').innerHTML=state.franjas.map(f=>`
     <div class="vol-item">
-      <div><div style="font-size:13px;font-weight:500">${f.label}</div><div style="font-size:11px;color:#666">${f.slots} personas</div></div>
-      <button class="btn btn-sm btn-danger" onclick="removeFranja('${f.id}')">&#128465;</button>
+      <div><div style="font-size:14px;font-weight:600">${franjaLabel(f)}</div><div style="font-size:12px;color:var(--text2)">${f.slots} personas</div></div>
+      <button class="btn btn-sm btn-danger" onclick="removeFranja('${f.id}')">🗑</button>
     </div>`).join('');
 }
 
-async function addFranja() {
-  const label=document.getElementById('new-franja').value.trim();
+async function addFranja(){
+  const ini=document.getElementById('new-franja-ini').value;
+  const fin=document.getElementById('new-franja-fin').value;
   const slots=parseInt(document.getElementById('new-franja-slots').value)||3;
-  if(!label) return;
-  state.franjas.push({id:'f'+Date.now(),label,slots});
-  document.getElementById('new-franja').value='';
-  await saveState(); renderFranjasList();
+  if(!ini||!fin){alert('Selecciona hora de inicio y fin');return;}
+  state.franjas.push({id:'f'+Date.now(),label:ini,labelFin:fin,slots});
+  await saveConfig('franjas',state.franjas);
+  renderFranjasList();
 }
 
-async function removeFranja(id) {
+async function removeFranja(id){
   if(!confirm('¿Eliminar esta franja?')) return;
   state.franjas=state.franjas.filter(f=>f.id!==id);
-  await saveState(); renderFranjasList();
+  await saveConfig('franjas',state.franjas);
+  renderFranjasList();
 }
 
-function renderAdminVols() {
-  const list=document.getElementById('admin-vols-list');
-  if(!state.voluntarios.length){list.innerHTML='<div style="color:#aaa;font-size:12px;text-align:center;padding:12px">Sin voluntarios</div>';return;}
-  list.innerHTML=state.voluntarios.map((v,i)=>{
+function renderAdminUsers(){
+  const search=document.getElementById('admin-user-search')?.value.toLowerCase()||'';
+  const list=document.getElementById('admin-users-list');
+  const filtered=allUsers.filter(v=>nombreCompleto(v).toLowerCase().includes(search)||v.email.toLowerCase().includes(search));
+  if(!filtered.length){list.innerHTML='<div style="color:var(--text3);font-size:13px;text-align:center;padding:14px">Sin usuarios</div>';return;}
+  list.innerHTML=filtered.map(v=>{
     const bc=v.club==='BM Zuazo'?'badge-bm':v.club==='Ikhoba KK'?'badge-fk':'badge-ext';
-    return `<div class="vol-item">
-      <div><div class="vol-name">${v.nombre}</div><div class="vol-meta"><span class="badge ${bc}">${v.club}</span> &middot; ${v.vinculo}</div></div>
-      <button class="btn btn-sm btn-danger" onclick="removeVoluntario(${i})">&#128465;</button>
+    return `<div class="vol-item" style="flex-direction:column;align-items:flex-start;gap:4px">
+      <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+        <div><div class="vol-name">${nombreCompleto(v)}</div><div class="vol-meta">${v.email}</div></div>
+        <span class="badge ${bc}">${v.club}</span>
+      </div>
+      <div style="font-size:11px;color:var(--text3);background:var(--bg);padding:4px 8px;border-radius:6px;width:100%;word-break:break-all">
+        🔑 Hash: ${v.password_hash}
+      </div>
     </div>`;
   }).join('');
 }
 
-async function removeVoluntario(idx) {
-  if(!confirm('¿Eliminar este voluntario?')) return;
-  state.voluntarios.splice(idx,1);
-  await saveState(); renderAdminVols(); renderVolList();
-}
-
-function populateAdminSelects() {
+function populateAdminSelects(){
   ['asig-dia','man-dia','del-dia'].forEach(id=>{
     const el=document.getElementById(id);
     if(!el) return;
@@ -774,11 +819,11 @@ function populateAdminSelects() {
   const mv=document.getElementById('man-vol');
   if(mv){
     mv.innerHTML='<option value="">Selecciona voluntario...</option>';
-    state.voluntarios.forEach(v=>mv.innerHTML+=`<option value="${v.nombre}">${v.nombre} (${v.club})</option>`);
+    allUsers.forEach(v=>mv.innerHTML+=`<option value="${v.id}|${nombreCompleto(v)}">${nombreCompleto(v)} (${v.club})</option>`);
   }
 }
 
-function renderAsigTareas() {
+function renderAsigTareas(){
   const diaId=document.getElementById('asig-dia').value;
   const panel=document.getElementById('asig-tareas-panel');
   if(!diaId){panel.innerHTML='';return;}
@@ -788,10 +833,10 @@ function renderAsigTareas() {
   state.tareas.forEach(t=>{
     const isActive=!!cfg.tareas[t.id];
     const activeFranjas=cfg.tareas[t.id]||[];
-    html+=`<div style="padding:8px 0;border-bottom:0.5px solid #e0ddd6">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-        <span style="font-size:12px;font-weight:500">${t.icon} ${t.nombre}</span>
-        <label style="display:flex;align-items:center;gap:4px;font-size:11px">
+    html+=`<div style="padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span style="font-size:14px;font-weight:600;color:var(--pk-dark)">${t.icon} ${t.nombre}</span>
+        <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--text2)">
           <input type="checkbox" ${isActive?'checked':''} onchange="toggleTareaEnDia('${diaId}','${t.id}',this.checked)"> Activa
         </label>
       </div>`;
@@ -799,7 +844,7 @@ function renderAsigTareas() {
       html+=`<div style="display:flex;flex-wrap:wrap;gap:4px">`;
       state.franjas.forEach(f=>{
         const sel=activeFranjas.includes(f.id);
-        html+=`<span class="chip ${sel?'selected':''}" onclick="toggleFranjaEnDia('${diaId}','${t.id}','${f.id}',this)">${f.label}</span>`;
+        html+=`<span class="chip ${sel?'selected':''}" onclick="toggleFranjaEnDia('${diaId}','${t.id}','${f.id}',this)">${franjaLabel(f)}</span>`;
       });
       html+='</div>';
     }
@@ -808,23 +853,25 @@ function renderAsigTareas() {
   panel.innerHTML=html;
 }
 
-async function toggleTareaEnDia(diaId,tareaId,active) {
+async function toggleTareaEnDia(diaId,tareaId,active){
   if(!state.diaConfig[diaId]) state.diaConfig[diaId]={tareas:{}};
   if(active) state.diaConfig[diaId].tareas[tareaId]=[];
   else delete state.diaConfig[diaId].tareas[tareaId];
-  await saveState(); renderAsigTareas(); renderCalendar();
+  await saveConfig('diaConfig',state.diaConfig);
+  renderAsigTareas(); renderCalendar();
 }
 
-async function toggleFranjaEnDia(diaId,tareaId,franjaId,el) {
-  if(!state.diaConfig[diaId]||!state.diaConfig[diaId].tareas[tareaId]) return;
+async function toggleFranjaEnDia(diaId,tareaId,franjaId,el){
+  if(!state.diaConfig[diaId]?.tareas[tareaId]) return;
   const arr=state.diaConfig[diaId].tareas[tareaId];
   const idx=arr.indexOf(franjaId);
   if(idx>=0){arr.splice(idx,1);el.classList.remove('selected');}
   else{arr.push(franjaId);el.classList.add('selected');}
-  await saveState(); renderCalendar();
+  await saveConfig('diaConfig',state.diaConfig);
+  renderCalendar();
 }
 
-function renderManTareas() {
+function renderManTareas(){
   const diaId=document.getElementById('man-dia').value;
   const sel=document.getElementById('man-tarea');
   sel.innerHTML='<option value="">Selecciona tarea...</option>';
@@ -837,45 +884,44 @@ function renderManTareas() {
   document.getElementById('man-franja').innerHTML='<option value="">Selecciona franja...</option>';
 }
 
-function renderManFranjas() {
+function renderManFranjas(){
   const diaId=document.getElementById('man-dia').value;
   const tareaId=document.getElementById('man-tarea').value;
   const sel=document.getElementById('man-franja');
   sel.innerHTML='<option value="">Selecciona franja...</option>';
   if(!diaId||!tareaId) return;
-  const cfg=state.diaConfig[diaId]||{tareas:{}};
-  (cfg.tareas[tareaId]||[]).forEach(fid=>{
+  (state.diaConfig[diaId]?.tareas[tareaId]||[]).forEach(fid=>{
     const f=getFranja(fid);
-    sel.innerHTML+=`<option value="${fid}">${f.label}</option>`;
+    sel.innerHTML+=`<option value="${fid}">${franjaLabel(f)}</option>`;
   });
 }
 
-async function asignarManual() {
+async function asignarManual(){
   const diaId=document.getElementById('man-dia').value;
   const tareaId=document.getElementById('man-tarea').value;
   const franjaId=document.getElementById('man-franja').value;
-  const nombre=document.getElementById('man-vol').value;
+  const volVal=document.getElementById('man-vol').value;
   const msg=document.getElementById('man-msg');
-  if(!diaId||!tareaId||!franjaId||!nombre){msg.innerHTML='<div class="msg msg-err">Selecciona todos los campos</div>';return;}
-  const key=getTurnoKey(diaId,tareaId,franjaId);
-  if(!state.turnos[key]) state.turnos[key]=[];
-  const f=getFranja(franjaId);
-  if(state.turnos[key].includes(nombre)){msg.innerHTML='<div class="msg msg-err">Ya está en este turno</div>';return;}
-  if(state.turnos[key].length>=f.slots){msg.innerHTML='<div class="msg msg-err">Turno completo</div>';return;}
+  if(!diaId||!tareaId||!franjaId||!volVal){msg.innerHTML='<div class="msg msg-err">Selecciona todos los campos</div>';return;}
+  const [uid,nombre]=volVal.split('|');
+  const f=getFranja(franjaId); const v=getVolsEnTurno(diaId,tareaId,franjaId);
+  if(v.find(x=>x.usuario_id===uid)){msg.innerHTML='<div class="msg msg-err">Ya está en este turno</div>';return;}
+  if(v.length>=f.slots){msg.innerHTML='<div class="msg msg-err">Turno completo</div>';return;}
   msg.innerHTML='<div class="msg msg-info">Guardando...</div>';
-  state.turnos[key].push(nombre);
-  await saveState(); renderCalendar();
-  msg.innerHTML='<div class="msg msg-ok">&#10003; Asignado correctamente</div>';
-  setTimeout(()=>msg.innerHTML='',3000);
+  try{
+    await sb('turnos',{method:'POST',body:JSON.stringify({dia_id:diaId,tarea_id:tareaId,franja_id:franjaId,usuario_id:uid,nombre_usuario:nombre})});
+    await loadTurnos(); renderCalendar();
+    msg.innerHTML='<div class="msg msg-ok">✓ Asignado correctamente</div>';
+    setTimeout(()=>msg.innerHTML='',3000);
+  }catch(e){msg.innerHTML=`<div class="msg msg-err">Error: ${e.message}</div>`;}
 }
 
-function renderDelTareas() {
+function renderDelTareas(){
   const diaId=document.getElementById('del-dia').value;
   const sel=document.getElementById('del-tarea');
   sel.innerHTML='<option value="">Selecciona tarea...</option>';
   if(!diaId) return;
-  const cfg=state.diaConfig[diaId]||{tareas:{}};
-  Object.keys(cfg.tareas||{}).forEach(tid=>{
+  Object.keys(state.diaConfig[diaId]?.tareas||{}).forEach(tid=>{
     const t=getTarea(tid);
     sel.innerHTML+=`<option value="${tid}">${t.icon} ${t.nombre}</option>`;
   });
@@ -883,59 +929,78 @@ function renderDelTareas() {
   document.getElementById('del-vol').innerHTML='<option value="">Selecciona voluntario...</option>';
 }
 
-function renderDelFranjas() {
+function renderDelFranjas(){
   const diaId=document.getElementById('del-dia').value;
   const tareaId=document.getElementById('del-tarea').value;
   const sel=document.getElementById('del-franja');
   sel.innerHTML='<option value="">Selecciona franja...</option>';
   if(!diaId||!tareaId) return;
-  const cfg=state.diaConfig[diaId]||{tareas:{}};
-  (cfg.tareas[tareaId]||[]).forEach(fid=>{
-    const f=getFranja(fid);
-    sel.innerHTML+=`<option value="${fid}">${f.label}</option>`;
+  (state.diaConfig[diaId]?.tareas[tareaId]||[]).forEach(fid=>{
+    sel.innerHTML+=`<option value="${fid}">${franjaLabel(getFranja(fid))}</option>`;
   });
   document.getElementById('del-vol').innerHTML='<option value="">Selecciona voluntario...</option>';
 }
 
-function renderDelVols() {
+function renderDelVols(){
   const diaId=document.getElementById('del-dia').value;
   const tareaId=document.getElementById('del-tarea').value;
   const franjaId=document.getElementById('del-franja').value;
   const sel=document.getElementById('del-vol');
   sel.innerHTML='<option value="">Selecciona voluntario...</option>';
   if(!diaId||!tareaId||!franjaId) return;
-  const v=getVols(diaId,tareaId,franjaId);
-  v.forEach(nombre=>sel.innerHTML+=`<option value="${nombre}">${nombre}</option>`);
+  getVolsEnTurno(diaId,tareaId,franjaId).forEach(t=>{
+    sel.innerHTML+=`<option value="${t.id}">${t.nombre_usuario}</option>`;
+  });
 }
 
-async function quitarVoluntario() {
-  const diaId=document.getElementById('del-dia').value;
-  const tareaId=document.getElementById('del-tarea').value;
-  const franjaId=document.getElementById('del-franja').value;
-  const nombre=document.getElementById('del-vol').value;
+async function quitarVoluntario(){
+  const turnoId=document.getElementById('del-vol').value;
   const msg=document.getElementById('del-msg');
-  if(!diaId||!tareaId||!franjaId||!nombre){msg.innerHTML='<div class="msg msg-err">Selecciona todos los campos</div>';return;}
-  if(!confirm(`¿Quitar a ${nombre} de este turno?`)) return;
-  const key=getTurnoKey(diaId,tareaId,franjaId);
-  state.turnos[key]=state.turnos[key].filter(n=>n!==nombre);
-  await saveState(); renderCalendar(); renderDelVols();
-  msg.innerHTML='<div class="msg msg-ok">&#10003; Voluntario quitado</div>';
-  setTimeout(()=>msg.innerHTML='',3000);
+  if(!turnoId){msg.innerHTML='<div class="msg msg-err">Selecciona todos los campos</div>';return;}
+  if(!confirm('¿Quitar a este voluntario del turno?')) return;
+  try{
+    await sb(`turnos?id=eq.${turnoId}`,{method:'DELETE',headers:{'Prefer':''}});
+    await loadTurnos(); renderCalendar();
+    document.getElementById('del-vol').innerHTML='<option value="">Selecciona voluntario...</option>';
+    msg.innerHTML='<div class="msg msg-ok">✓ Voluntario quitado</div>';
+    setTimeout(()=>msg.innerHTML='',3000);
+  }catch(e){msg.innerHTML=`<div class="msg msg-err">Error: ${e.message}</div>`;}
+}
+
+function exportarExcel(){
+  const msg=document.getElementById('export-msg');
+  try{
+    const rows=[['Día','Tarea','Franja','Plazas','Voluntario','Club','Vínculo']];
+    state.dias.forEach(dia=>{
+      const cfg=state.diaConfig[dia.id]||{tareas:{}};
+      Object.entries(cfg.tareas||{}).forEach(([tid,fids])=>{
+        const tarea=getTarea(tid);
+        (fids||[]).forEach(fid=>{
+          const franja=getFranja(fid);
+          const vols=getVolsEnTurno(dia.id,tid,fid);
+          if(vols.length){
+            vols.forEach(v=>{
+              const u=allUsers.find(x=>x.id===v.usuario_id);
+              rows.push([dia.label,tarea.nombre,franjaLabel(franja),franja.slots,v.nombre_usuario,u?.club||'',u?.vinculo||'']);
+            });
+          } else {
+            rows.push([dia.label,tarea.nombre,franjaLabel(franja),franja.slots,'(vacío)','','']);
+          }
+        });
+      });
+    });
+    const ws=XLSX.utils.aoa_to_sheet(rows);
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,'Turnos',ws);
+    XLSX.writeFile(wb,'TuTurnoZUtaIK.xlsx');
+    msg.innerHTML='<div class="msg msg-ok">✓ Excel descargado</div>';
+    setTimeout(()=>msg.innerHTML='',3000);
+  }catch(e){msg.innerHTML='<div class="msg msg-err">Error al exportar</div>';}
 }
 
 (async()=>{
-  // Recuperar datos guardados en este dispositivo
-  const sN = localStorage.getItem('zutaik_mi_nombre');
-  const sC = localStorage.getItem('zutaik_mi_club');
-  const sV = localStorage.getItem('zutaik_mi_vinculo');
-  const sT = localStorage.getItem('zutaik_mi_tel');
-  if(sN) document.getElementById('vol-nombre').value = sN;
-  if(sC) document.getElementById('vol-club').value = sC;
-  if(sV) document.getElementById('vol-vinculo').value = sV;
-  if(sT) document.getElementById('vol-tel').value = sT;
-  await loadState();
-  renderCalendar();
-  initApuntarse();
+  const ok = await tryAutoLogin();
+  if(ok) await initApp();
 })();
 </script>
 </body>
