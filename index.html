@@ -492,6 +492,10 @@ async function loadUsers() {
 
 function getTarea(id) { return state.tareas.find(t=>t.id===id)||{nombre:'?',icon:'?'}; }
 function getFranja(id) { return state.franjas.find(f=>f.id===id)||{label:'?',labelFin:'?',slots:0}; }
+function getSlotsForTurno(diaId,tareaId,franjaId){
+  const slotKey=`${tareaId}_${franjaId}`;
+  return state.diaConfig[diaId]?.slots?.[slotKey] || getFranja(franjaId).slots;
+}
 function franjaLabel(f) { return `${f.label} - ${f.labelFin}`; }
 function getVolsEnTurno(dId,tId,fId) { return allTurnos.filter(t=>t.dia_id===dId&&t.tarea_id===tId&&t.franja_id===fId); }
 function estaApuntado(dId,tId,fId) { return allTurnos.some(t=>t.dia_id===dId&&t.tarea_id===tId&&t.franja_id===fId&&t.usuario_id===currentUser.id); }
@@ -535,12 +539,13 @@ function renderCalendar() {
       html+=`<div class="task-row"><div class="task-name"><span>${t.icon}</span>${t.nombre}</div>`;
       (fids||[]).forEach(fid=>{
         const f=getFranja(fid); const v=getVolsEnTurno(dia.id,tid,fid);
-        total+=f.slots; filled+=Math.min(v.length,f.slots);
-        const pct=Math.min(100,Math.round((v.length/f.slots)*100));
-        const col=v.length>=f.slots?'#2e7d32':(v.length>0?'#e65100':'#c62828');
+        const slots=getSlotsForTurno(dia.id,tid,fid);
+        total+=slots; filled+=Math.min(v.length,slots);
+        const pct=Math.min(100,Math.round((v.length/slots)*100));
+        const col=v.length>=slots?'#2e7d32':(v.length>0?'#e65100':'#c62828');
         html+=`<div class="slot-row" onclick="showSlotDetail('${dia.id}','${tid}','${fid}')">
           <span class="slot-label">🕐 ${franjaLabel(f)}</span>
-          <span style="font-size:12px;color:${col};font-weight:600">${v.length}/${f.slots}</span>
+          <span style="font-size:12px;color:${col};font-weight:600">${v.length}/${slots}</span>
         </div>
         <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${col}"></div></div>`;
       });
@@ -556,10 +561,11 @@ function showSlotDetail(diaId,tareaId,franjaId) {
   const dia=state.dias.find(d=>d.id===diaId);
   const t=getTarea(tareaId); const f=getFranja(franjaId);
   const v=getVolsEnTurno(diaId,tareaId,franjaId);
+  const slots=getSlotsForTurno(diaId,tareaId,franjaId);
   const yaApuntado=estaApuntado(diaId,tareaId,franjaId);
   let html=`<div class="modal-title">${t.icon} ${t.nombre}</div>
   <p style="font-size:13px;color:var(--text2);margin-bottom:14px">${dia.label} · ${franjaLabel(f)}</p>`;
-  for(let i=0;i<f.slots;i++){
+  for(let i=0;i<slots;i++){
     if(v[i]){
       const u=allUsers.find(x=>x.id===v[i].usuario_id);
       const bc=u?.club==='BM Zuazo'?'badge-bm':u?.club==='Ikhoba KK'?'badge-fk':'badge-ext';
@@ -575,7 +581,7 @@ function showSlotDetail(diaId,tareaId,franjaId) {
   }
   if(yaApuntado){
     html+=`<button class="btn btn-danger" style="width:100%;margin-top:12px" onclick="desapuntarseModal('${diaId}','${tareaId}','${franjaId}')">Desapuntarme de este turno</button>`;
-  } else if(v.length<f.slots){
+  } else if(v.length<slots){
     html+=`<button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="apuntarseDesdeModal('${diaId}','${tareaId}','${franjaId}')">✋ Apuntarme a este turno</button>`;
   } else {
     html+=`<div class="msg msg-err" style="text-align:center;margin-top:12px">Turno completo</div>`;
@@ -618,12 +624,13 @@ function renderSignupTasks(){
     html+=`<div style="margin-top:12px"><div style="font-size:14px;font-weight:600;color:var(--pk-dark);margin-bottom:6px">${t.icon} ${t.nombre}</div>`;
     (fids||[]).forEach(fid=>{
       const f=getFranja(fid); const v=getVolsEnTurno(diaId,tid,fid);
+      const slots=getSlotsForTurno(diaId,tid,fid);
       const ya=estaApuntado(diaId,tid,fid);
-      const lleno=v.length>=f.slots&&!ya;
-      const pct=Math.min(100,Math.round((v.length/f.slots)*100));
-      const col=v.length>=f.slots?'#2e7d32':(v.length>0?'#e65100':'#c62828');
+      const lleno=v.length>=slots&&!ya;
+      const pct=Math.min(100,Math.round((v.length/slots)*100));
+      const col=v.length>=slots?'#2e7d32':(v.length>0?'#e65100':'#c62828');
       html+=`<div class="slot-signup${ya?' apuntado':''}">
-        <div class="slot-header">🕐 ${franjaLabel(f)} · ${v.length}/${f.slots} personas</div>
+        <div class="slot-header">🕐 ${franjaLabel(f)} · ${v.length}/${slots} personas</div>
         <div class="progress-bar" style="margin-bottom:8px"><div class="progress-fill" style="width:${pct}%;background:${col}"></div></div>
         ${ya?`<button class="btn btn-sm btn-danger" style="width:100%" onclick="desapuntarseSignup('${diaId}','${tid}','${fid}')">Desapuntarme</button>`
            :lleno?`<div style="font-size:12px;color:#c62828;text-align:center;font-weight:500">Turno completo</div>`
@@ -638,7 +645,8 @@ function renderSignupTasks(){
 
 async function apuntarse(diaId,tareaId,franjaId){
   const f=getFranja(franjaId); const v=getVolsEnTurno(diaId,tareaId,franjaId);
-  if(v.length>=f.slots){alert('Lo sentimos, este turno acaba de completarse.');await loadTurnos();renderSignupTasks();return;}
+  const slots=getSlotsForTurno(diaId,tareaId,franjaId);
+  if(v.length>=slots){alert('Lo sentimos, este turno acaba de completarse.');await loadTurnos();renderSignupTasks();return;}
   if(estaApuntado(diaId,tareaId,franjaId)){alert('Ya estás apuntado/a a este turno.');return;}
   const nombre=nombreCompleto(currentUser);
   try {
@@ -841,10 +849,22 @@ function renderAsigTareas(){
         </label>
       </div>`;
     if(isActive){
-      html+=`<div style="display:flex;flex-wrap:wrap;gap:4px">`;
+      html+=`<div style="display:flex;flex-direction:column;gap:6px;margin-top:4px">`;
       state.franjas.forEach(f=>{
+        const slotsCfg = state.diaConfig[diaId].slots || {};
+        const slotKey = `${t.id}_${f.id}`;
+        const slotVal = slotsCfg[slotKey] || f.slots;
         const sel=activeFranjas.includes(f.id);
-        html+=`<span class="chip ${sel?'selected':''}" onclick="toggleFranjaEnDia('${diaId}','${t.id}','${f.id}',this)">${franjaLabel(f)}</span>`;
+        html+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;background:${sel?'var(--pk-light)':'var(--bg)'};border:1px solid ${sel?'var(--pk)':'var(--border)'}">
+          <input type="checkbox" ${sel?'checked':''} onchange="toggleFranjaEnDia('${diaId}','${t.id}','${f.id}',this.checked)" style="width:auto;margin:0">
+          <span style="flex:1;font-size:13px;color:var(--text)">${franjaLabel(f)}</span>
+          ${sel?`<div style="display:flex;align-items:center;gap:4px">
+            <span style="font-size:11px;color:var(--text2)">Personas:</span>
+            <select onchange="updateSlots('${diaId}','${t.id}','${f.id}',this.value)" style="width:auto;padding:3px 6px;font-size:12px;margin:0">
+              ${[1,2,3,4,5,6,7,8,9,10,11,12].map(n=>`<option value="${n}" ${n==slotVal?'selected':''}>${n}</option>`).join('')}
+            </select>
+          </div>`:''}
+        </div>`;
       });
       html+='</div>';
     }
@@ -861,12 +881,20 @@ async function toggleTareaEnDia(diaId,tareaId,active){
   renderAsigTareas(); renderCalendar();
 }
 
-async function toggleFranjaEnDia(diaId,tareaId,franjaId,el){
+async function toggleFranjaEnDia(diaId,tareaId,franjaId,checked){
   if(!state.diaConfig[diaId]?.tareas[tareaId]) return;
   const arr=state.diaConfig[diaId].tareas[tareaId];
   const idx=arr.indexOf(franjaId);
-  if(idx>=0){arr.splice(idx,1);el.classList.remove('selected');}
-  else{arr.push(franjaId);el.classList.add('selected');}
+  if(checked && idx<0) arr.push(franjaId);
+  else if(!checked && idx>=0) arr.splice(idx,1);
+  await saveConfig('diaConfig',state.diaConfig);
+  renderAsigTareas(); renderCalendar();
+}
+
+async function updateSlots(diaId,tareaId,franjaId,val){
+  if(!state.diaConfig[diaId]) return;
+  if(!state.diaConfig[diaId].slots) state.diaConfig[diaId].slots={};
+  state.diaConfig[diaId].slots[`${tareaId}_${franjaId}`]=parseInt(val);
   await saveConfig('diaConfig',state.diaConfig);
   renderCalendar();
 }
@@ -905,8 +933,9 @@ async function asignarManual(){
   if(!diaId||!tareaId||!franjaId||!volVal){msg.innerHTML='<div class="msg msg-err">Selecciona todos los campos</div>';return;}
   const [uid,nombre]=volVal.split('|');
   const f=getFranja(franjaId); const v=getVolsEnTurno(diaId,tareaId,franjaId);
+  const slotsM=getSlotsForTurno(diaId,tareaId,franjaId);
   if(v.find(x=>x.usuario_id===uid)){msg.innerHTML='<div class="msg msg-err">Ya está en este turno</div>';return;}
-  if(v.length>=f.slots){msg.innerHTML='<div class="msg msg-err">Turno completo</div>';return;}
+  if(v.length>=slotsM){msg.innerHTML='<div class="msg msg-err">Turno completo</div>';return;}
   msg.innerHTML='<div class="msg msg-info">Guardando...</div>';
   try{
     await sb('turnos',{method:'POST',body:JSON.stringify({dia_id:diaId,tarea_id:tareaId,franja_id:franjaId,usuario_id:uid,nombre_usuario:nombre})});
