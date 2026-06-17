@@ -557,15 +557,7 @@ function clubBadge(club){
   return 'badge-ext';
 }
 
-// Ordenar franjas cronológicamente
-function sortedFranjas(franjaIds){
-  return [...franjaIds].sort((a,b)=>{
-    const fa=getFranja(a), fb=getFranja(b);
-    const ta=parseInt((fa.label||'00').replace(':',''));
-    const tb=parseInt((fb.label||'00').replace(':',''));
-    return ta-tb;
-  });
-}
+// Franjas en el orden configurado por admin (sin reordenar)
 
 // ── Nav ──────────────────────────────────────────────────────────────
 function showSection(id,btn){
@@ -607,7 +599,7 @@ function renderCalendar(){
       const fids=cfg.tareas[tid];
       const t=getTarea(tid);
       html+=`<div class="task-row"><div class="task-name"><span>${t.icon}</span>${t.nombre}</div>`;
-      sortedFranjas(fids||[]).forEach(fid=>{
+      (fids||[]).forEach(fid=>{
         const f=getFranja(fid); const v=getVolsEnTurno(dia.id,tid,fid);
         const slots=getSlotsForTurno(dia.id,tid,fid);
         total+=slots; filled+=Math.min(v.length,slots);
@@ -694,7 +686,7 @@ function renderSignupTasks(){
     const fids=cfg.tareas[tid];
     const t=getTarea(tid);
     html+=`<div style="margin-top:12px"><div style="font-size:14px;font-weight:600;color:var(--pk-dark);margin-bottom:6px">${t.icon} ${t.nombre}</div>`;
-    sortedFranjas(fids||[]).forEach(fid=>{
+    (fids||[]).forEach(fid=>{
       const f=getFranja(fid); const v=getVolsEnTurno(diaId,tid,fid);
       const slots=getSlotsForTurno(diaId,tid,fid);
       const ya=estaApuntado(diaId,tid,fid);
@@ -731,9 +723,22 @@ async function apuntarse(diaId,tareaId,franjaId){
 
 async function desapuntarse(diaId,tareaId,franjaId){
   try{
-    await sb(`turnos?dia_id=eq.${diaId}&tarea_id=eq.${tareaId}&franja_id=eq.${franjaId}&usuario_id=eq.${currentUser.id}`,{
-      method:'DELETE'
+    const path = `turnos?dia_id=eq.${diaId}&tarea_id=eq.${tareaId}&franja_id=eq.${franjaId}&usuario_id=eq.${currentUser.id}`;
+    const sep = path.includes('?') ? '&' : '?';
+    const url = `${SB_URL}/rest/v1/${path}${sep}apikey=${SB_KEY}`;
+    const r = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': `Bearer ${SB_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      }
     });
+    if(!r.ok){
+      const txt = await r.text();
+      throw new Error(`HTTP ${r.status}: ${txt}`);
+    }
     await loadTurnos();
   }catch(e){alert('Error al desapuntarse: '+e.message);}
 }
@@ -1000,7 +1005,7 @@ function renderManFranjas(){
   const sel=document.getElementById('man-franja');
   sel.innerHTML='<option value="">Selecciona franja...</option>';
   if(!diaId||!tareaId) return;
-  sortedFranjas(state.diaConfig[diaId]?.tareas[tareaId]||[]).forEach(fid=>{
+  (state.diaConfig[diaId]?.tareas[tareaId]||[]).forEach(fid=>{
     sel.innerHTML+=`<option value="${fid}">${franjaLabel(getFranja(fid))}</option>`;
   });
 }
@@ -1044,7 +1049,7 @@ function renderDelFranjas(){
   const sel=document.getElementById('del-franja');
   sel.innerHTML='<option value="">Selecciona franja...</option>';
   if(!diaId||!tareaId) return;
-  sortedFranjas(state.diaConfig[diaId]?.tareas[tareaId]||[]).forEach(fid=>{
+  (state.diaConfig[diaId]?.tareas[tareaId]||[]).forEach(fid=>{
     sel.innerHTML+=`<option value="${fid}">${franjaLabel(getFranja(fid))}</option>`;
   });
   document.getElementById('del-vol').innerHTML='<option value="">Selecciona voluntario...</option>';
@@ -1068,7 +1073,16 @@ async function quitarVoluntario(){
   if(!turnoId){msg.innerHTML='<div class="msg msg-err">Selecciona todos los campos</div>';return;}
   if(!confirm('¿Quitar a este voluntario del turno?')) return;
   try{
-    await sb(`turnos?id=eq.${turnoId}`,{method:'DELETE'});
+    const url2 = `${SB_URL}/rest/v1/turnos?id=eq.${turnoId}&apikey=${SB_KEY}`;
+    const r2 = await fetch(url2, {
+      method: 'DELETE',
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': `Bearer ${SB_KEY}`,
+        'Prefer': 'return=minimal'
+      }
+    });
+    if(!r2.ok){ const txt2=await r2.text(); throw new Error(`HTTP ${r2.status}: ${txt2}`); }
     await loadTurnos(); renderCalendar();
     document.getElementById('del-vol').innerHTML='<option value="">Selecciona voluntario...</option>';
     msg.innerHTML='<div class="msg msg-ok">✓ Voluntario quitado</div>';
@@ -1216,7 +1230,7 @@ function exportarExcel(){
       state.tareas.map(t=>t.id).filter(tid=>cfg.tareas&&cfg.tareas[tid]).forEach(tid=>{
     const fids=cfg.tareas[tid];
         const tarea=getTarea(tid);
-        sortedFranjas(fids||[]).forEach(fid=>{
+        (fids||[]).forEach(fid=>{
           const franja=getFranja(fid);
           const slots=getSlotsForTurno(dia.id,tid,fid);
           const vols=getVolsEnTurno(dia.id,tid,fid);
