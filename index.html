@@ -8,9 +8,9 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --pk:#c2185b;--pk-light:#fce4ec;--pk-dark:#880e4f;--pk-mid:#e91e63;
+  --pk:#c2185b;--pk-light:#fce4ec;--pk-dark:#880e4f;
   --bg:#fff8f9;--surface:#fff;--border:#f8bbd0;--border2:#f48fb1;
-  --text:#1a1a1a;--text2:#666;--text3:#999;
+  --text:#1a1a1a;--text2:#666;--text3:#aaa;
   --ok-bg:#e8f5e9;--ok-text:#2e7d32;
   --err-bg:#ffebee;--err-text:#c62828;
   --info-bg:#fce4ec;--info-text:#880e4f;
@@ -18,7 +18,7 @@
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:15px}
 .app{max-width:440px;margin:0 auto;min-height:100vh}
 .header{background:var(--pk);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:10px}
-.header-logo{width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;letter-spacing:-0.5px;color:#fff;flex-shrink:0}
+.header-logo{width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff;flex-shrink:0;letter-spacing:-0.5px}
 .header h1{font-size:18px;font-weight:600;line-height:1.2}
 .header p{font-size:12px;opacity:0.85;margin-top:1px}
 .nav{display:flex;gap:4px;padding:10px 12px;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;position:sticky;top:64px;z-index:99}
@@ -31,19 +31,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .card-title{font-size:15px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px;color:var(--pk-dark)}
 input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--border2);border-radius:10px;background:#fff;color:var(--text);font-size:14px;font-family:inherit;transition:border-color 0.15s}
 input:focus,select:focus{outline:none;border-color:var(--pk)}
-.btn{padding:10px 16px;border-radius:10px;border:1px solid var(--border2);background:transparent;color:var(--pk);font-size:14px;cursor:pointer;font-family:inherit;font-weight:500;transition:all 0.15s}
-.btn:active{opacity:0.8;transform:scale(0.98)}
+.btn{padding:10px 16px;border-radius:10px;border:1px solid var(--border2);background:transparent;color:var(--pk);font-size:14px;cursor:pointer;font-family:inherit;font-weight:500}
+.btn:active{opacity:0.8}
 .btn-primary{background:var(--pk);color:#fff;border-color:var(--pk)}
 .btn-danger{background:#c62828;color:#fff;border-color:#c62828}
 .btn-sm{padding:6px 12px;font-size:12px}
-.btn-ghost{border-color:transparent;color:var(--text2)}
+.btn-ghost{border-color:transparent;color:#fff}
 .label{font-size:12px;color:var(--text2);margin-bottom:5px;margin-top:10px;font-weight:500}
 .label:first-child{margin-top:0}
 .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500}
 .badge-bm{background:#e3f2fd;color:#1565c0}
 .badge-fk{background:#e8f5e9;color:#2e7d32}
 .badge-ext{background:#fff3e0;color:#e65100}
-.badge-admin{background:var(--pk-light);color:var(--pk-dark);font-size:11px;padding:2px 8px}
 .msg{padding:10px 12px;border-radius:10px;font-size:13px;margin-top:8px}
 .msg-ok{background:var(--ok-bg);color:var(--ok-text)}
 .msg-err{background:var(--err-bg);color:var(--err-text)}
@@ -54,7 +53,7 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
 .day-pill{padding:6px 12px;border-radius:16px;font-size:12px;border:1px solid var(--border2);background:transparent;cursor:pointer;white-space:nowrap;color:var(--pk);font-weight:500}
 .day-pill.active{background:var(--pk);color:#fff;border-color:var(--pk)}
 .day-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden}
-.day-header{padding:12px 16px;font-weight:600;font-size:14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.day-header{padding:12px 16px;font-weight:600;font-size:14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none}
 .day-header.wed{background:#ede7f6;color:#4527a0}
 .day-header.thu{background:#fff3e0;color:#bf360c}
 .day-header.fri{background:#e8f5e9;color:#1b5e20}
@@ -82,13 +81,15 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
 .modal-title{font-size:16px;font-weight:600;margin-bottom:12px;color:var(--pk-dark)}
 .tab-content{display:none}
 .tab-content.active{display:block}
-.chip{display:inline-flex;align-items:center;padding:4px 10px;border-radius:12px;font-size:12px;margin:2px;border:1px solid var(--border2);cursor:pointer;background:var(--surface);color:var(--pk)}
-.chip.selected{background:var(--pk);color:#fff;border-color:var(--pk)}
+.admin-tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.admin-tab-btn{padding:6px 12px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--pk);font-size:12px;cursor:pointer;font-weight:500}
+.admin-tab-btn.active{background:var(--pk);color:#fff;border-color:var(--pk)}
 .row-flex{display:flex;gap:8px}
 .row-flex>*{flex:1}
 .loading{text-align:center;padding:40px;color:var(--text2);font-size:14px}
 .spinner{display:inline-block;width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--pk);border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:10px}
 @keyframes spin{to{transform:rotate(360deg)}}
+/* Login */
 .login-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:var(--bg)}
 .login-logo{width:72px;height:72px;background:var(--pk);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#fff;letter-spacing:-1px;margin-bottom:16px}
 .login-title{font-size:22px;font-weight:700;color:var(--pk-dark);margin-bottom:4px}
@@ -97,13 +98,17 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
 .tabs-login{display:flex;background:var(--bg);border-radius:10px;padding:3px;margin-bottom:16px}
 .tab-login{flex:1;padding:8px;text-align:center;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;color:var(--text2);border:none;background:transparent}
 .tab-login.active{background:var(--pk);color:#fff}
-.vol-turnos{background:var(--bg);border-radius:10px;padding:10px;margin-top:6px}
-.vol-turno-item{font-size:12px;color:var(--text2);padding:3px 0;display:flex;align-items:center;gap:6px}
-.admin-tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
-.admin-tab-btn{padding:6px 12px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--pk);font-size:12px;cursor:pointer;font-weight:500}
-.admin-tab-btn.active{background:var(--pk);color:#fff;border-color:var(--pk)}
-.hora-select{flex:1}
-.export-btn{background:var(--pk-light);color:var(--pk-dark);border:1px solid var(--border2);border-radius:10px;padding:10px 16px;font-size:14px;cursor:pointer;font-weight:500;width:100%;margin-top:8px}
+/* Drag reorder */
+.drag-item{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border);cursor:default}
+.drag-item:last-child{border-bottom:none}
+.drag-handle{cursor:grab;color:var(--text3);font-size:18px;padding:0 4px;touch-action:none;user-select:none}
+.drag-handle:active{cursor:grabbing}
+.drag-item.dragging{opacity:0.4}
+.drag-item.drag-over{border-top:2px solid var(--pk)}
+/* Voluntarios turnos */
+.vol-turnos{background:var(--bg);border-radius:10px;padding:8px 10px;margin-top:6px}
+.vol-turno-item{font-size:12px;color:var(--text2);padding:3px 0;border-bottom:1px solid var(--border)}
+.vol-turno-item:last-child{border-bottom:none}
 </style>
 </head>
 <body>
@@ -114,8 +119,8 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
   <div class="login-sub">Txozna ZUtaIK · BM Zuazo &amp; Ikhoba KK</div>
   <div class="login-card">
     <div class="tabs-login">
-      <button class="tab-login active" id="tab-login-btn" onclick="switchLoginTab('login')">Iniciar sesión</button>
-      <button class="tab-login" id="tab-reg-btn" onclick="switchLoginTab('registro')">Registrarse</button>
+      <button class="tab-login active" onclick="switchLoginTab('login')">Iniciar sesión</button>
+      <button class="tab-login" onclick="switchLoginTab('registro')">Registrarse</button>
     </div>
     <div id="login-form">
       <div class="label">Correo electrónico</div>
@@ -131,28 +136,28 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
       <div class="label">Contraseña (mínimo 8 caracteres)</div>
       <input type="password" id="reg-pass" placeholder="Mínimo 8 caracteres">
       <div class="label">Nombre</div>
-      <input type="text" id="reg-nombre" placeholder="Nombre">
+      <input type="text" id="reg-nombre" placeholder="NOMBRE">
       <div class="label">Primer apellido</div>
-      <input type="text" id="reg-ap1" placeholder="Apellido 1">
+      <input type="text" id="reg-ap1" placeholder="APELLIDO 1">
       <div class="label">Segundo apellido</div>
-      <input type="text" id="reg-ap2" placeholder="Apellido 2 (opcional)">
+      <input type="text" id="reg-ap2" placeholder="APELLIDO 2 (opcional)">
       <div class="label">Club</div>
       <select id="reg-club">
         <option value="">Selecciona club...</option>
-        <option value="BM Zuazo">BM Zuazo</option>
-        <option value="Ikhoba KK">Ikhoba KK</option>
-        <option value="Externo/a">Externo/a</option>
+        <option value="BM ZUAZO">BM Zuazo</option>
+        <option value="IKHOBA KK">Ikhoba KK</option>
+        <option value="EXTERNO/A">Externo/a</option>
       </select>
       <div class="label">Vínculo con el club</div>
       <select id="reg-vinculo">
         <option value="">Selecciona vínculo...</option>
-        <option value="Jugador/a">Jugador/a</option>
-        <option value="Entrenador/a">Entrenador/a</option>
-        <option value="Directivo/a">Directivo/a</option>
-        <option value="Padre/Madre">Padre/Madre</option>
-        <option value="Familiar">Familiar</option>
-        <option value="Colaborador/a">Colaborador/a</option>
-        <option value="Otro">Otro</option>
+        <option value="JUGADOR/A">Jugador/a</option>
+        <option value="ENTRENADOR/A">Entrenador/a</option>
+        <option value="DIRECTIVO/A">Directivo/a</option>
+        <option value="PADRE/MADRE">Padre/Madre</option>
+        <option value="FAMILIAR">Familiar</option>
+        <option value="COLABORADOR/A">Colaborador/a</option>
+        <option value="OTRO">Otro</option>
       </select>
       <div class="label">Teléfono</div>
       <input type="tel" id="reg-tel" placeholder="600 000 000">
@@ -165,11 +170,11 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
 <div id="main-app" class="app" style="display:none">
   <div class="header">
     <div class="header-logo">ZtI</div>
-    <div>
+    <div style="flex:1">
       <h1>Tu Turno ZUtaIK</h1>
       <p id="header-user">Txozna ZUtaIK</p>
     </div>
-    <button class="btn btn-sm btn-ghost" style="margin-left:auto;color:#fff;border-color:rgba(255,255,255,0.4)" onclick="doLogout()">Salir</button>
+    <button class="btn btn-sm btn-ghost" onclick="doLogout()">Salir</button>
   </div>
   <div class="nav">
     <button class="nav-btn active" onclick="showSection('calendario',this)">📅 Calendario</button>
@@ -178,15 +183,17 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
     <button class="nav-btn" id="admin-nav-btn" onclick="showSection('admin',this)" style="display:none">⚙️ Admin</button>
   </div>
 
+  <!-- CALENDARIO -->
   <div id="sec-calendario" class="section active">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-      <span style="font-size:13px;color:var(--text2);font-weight:500">Vista general de turnos</span>
+      <span style="font-size:13px;color:var(--text2);font-weight:500">Vista general</span>
       <span style="font-size:12px;color:var(--text2)" id="cal-summary"></span>
     </div>
     <div class="pills-scroll" id="day-pills" style="margin-bottom:12px"></div>
     <div id="calendar-view"><div class="loading"><div class="spinner"></div><br>Cargando...</div></div>
   </div>
 
+  <!-- APUNTARSE -->
   <div id="sec-apuntarse" class="section">
     <div class="card" style="background:var(--pk-light);border-color:var(--border2)">
       <div style="display:flex;align-items:center;gap:10px">
@@ -207,6 +214,7 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
     </div>
   </div>
 
+  <!-- VOLUNTARIOS -->
   <div id="sec-voluntarios" class="section">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
       <span style="font-size:15px;font-weight:600;color:var(--pk-dark)">Voluntarios</span>
@@ -218,6 +226,7 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
     </div>
   </div>
 
+  <!-- ADMIN -->
   <div id="sec-admin" class="section">
     <div class="admin-tabs">
       <button class="admin-tab-btn active" onclick="showAdminTab('dias',this)">Días</button>
@@ -234,7 +243,7 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
         <div class="card-title">📅 Gestionar días</div>
         <div class="label">Etiqueta del día</div>
         <input type="text" id="new-dia-label" placeholder="Ej: Miércoles 8 de julio">
-        <div class="label">Color (día de la semana)</div>
+        <div class="label">Color</div>
         <select id="new-dia-tipo">
           <option value="wed">Miércoles</option><option value="thu">Jueves</option>
           <option value="fri">Viernes</option><option value="sat">Sábado</option>
@@ -243,6 +252,7 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
         </select>
         <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="addDia()">Añadir día</button>
         <div class="sep"></div>
+        <p style="font-size:11px;color:var(--text3);margin-bottom:8px">Arrastra ≡ para reordenar</p>
         <div id="dias-list"></div>
       </div>
     </div>
@@ -250,9 +260,8 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
     <div id="admin-tab-tareas" class="tab-content">
       <div class="card">
         <div class="card-title">✅ Gestionar tareas</div>
-        <div class="label">Nombre de tarea</div>
         <div class="row-flex">
-          <input type="text" id="new-tarea" placeholder="Ej: Barra">
+          <input type="text" id="new-tarea" placeholder="Nombre de tarea">
           <select id="new-tarea-icon" style="max-width:75px">
             <option value="🔧">🔧</option><option value="✨">✨</option>
             <option value="🛒">🛒</option><option value="🥣">🥣</option>
@@ -263,6 +272,7 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
         </div>
         <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="addTarea()">Añadir tarea</button>
         <div class="sep"></div>
+        <p style="font-size:11px;color:var(--text3);margin-bottom:8px">Arrastra ≡ para reordenar</p>
         <div id="tareas-list"></div>
       </div>
     </div>
@@ -271,15 +281,12 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
       <div class="card">
         <div class="card-title">🕐 Gestionar franjas horarias</div>
         <div class="label">Hora de inicio</div>
-        <select id="new-franja-ini">
-          <option value="">Selecciona hora...</option>
-        </select>
+        <select id="new-franja-ini"><option value="">Selecciona hora...</option></select>
         <div class="label">Hora de fin</div>
-        <select id="new-franja-fin">
-          <option value="">Selecciona hora...</option>
-        </select>
+        <select id="new-franja-fin"><option value="">Selecciona hora...</option></select>
         <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="addFranja()">Añadir franja</button>
         <div class="sep"></div>
+        <p style="font-size:11px;color:var(--text3);margin-bottom:8px">Arrastra ≡ para reordenar</p>
         <div id="franjas-list"></div>
       </div>
     </div>
@@ -304,7 +311,7 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
         <select id="man-franja"><option value="">Selecciona...</option></select>
         <div class="label">Voluntario</div>
         <select id="man-vol"><option value="">Selecciona voluntario...</option></select>
-        <button class="btn btn-primary" style="margin-top:12px;width:100%" onclick="asignarManual()">Apuntar voluntario</button>
+        <button class="btn btn-primary" style="margin-top:12px;width:100%" onclick="asignarManual()">Apuntar</button>
         <div id="man-msg"></div>
       </div>
       <div class="card">
@@ -317,15 +324,50 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
         <select id="del-franja" onchange="renderDelVols()"><option value="">Selecciona...</option></select>
         <div class="label">Voluntario a quitar</div>
         <select id="del-vol"><option value="">Selecciona...</option></select>
-        <button class="btn btn-danger" style="margin-top:12px;width:100%" onclick="quitarVoluntario()">Quitar voluntario</button>
+        <button class="btn btn-danger" style="margin-top:12px;width:100%" onclick="quitarVoluntario()">Quitar</button>
         <div id="del-msg"></div>
       </div>
     </div>
 
     <div id="admin-tab-usuarios" class="tab-content">
       <div class="card">
-        <div class="card-title">👤 Usuarios registrados</div>
-        <input type="text" id="admin-user-search" placeholder="Buscar usuario..." style="margin-bottom:10px" oninput="renderAdminUsers()">
+        <div class="card-title">👤 Añadir voluntario manualmente</div>
+        <div class="label">Correo electrónico</div>
+        <input type="email" id="add-user-email" placeholder="tu@email.com">
+        <div class="label">Contraseña</div>
+        <input type="text" id="add-user-pass" placeholder="Mínimo 8 caracteres">
+        <div class="label">Nombre</div>
+        <input type="text" id="add-user-nombre" placeholder="NOMBRE">
+        <div class="label">Primer apellido</div>
+        <input type="text" id="add-user-ap1" placeholder="APELLIDO 1">
+        <div class="label">Segundo apellido</div>
+        <input type="text" id="add-user-ap2" placeholder="APELLIDO 2 (opcional)">
+        <div class="label">Club</div>
+        <select id="add-user-club">
+          <option value="">Selecciona...</option>
+          <option value="BM ZUAZO">BM Zuazo</option>
+          <option value="IKHOBA KK">Ikhoba KK</option>
+          <option value="EXTERNO/A">Externo/a</option>
+        </select>
+        <div class="label">Vínculo</div>
+        <select id="add-user-vinculo">
+          <option value="">Selecciona...</option>
+          <option value="JUGADOR/A">Jugador/a</option>
+          <option value="ENTRENADOR/A">Entrenador/a</option>
+          <option value="DIRECTIVO/A">Directivo/a</option>
+          <option value="PADRE/MADRE">Padre/Madre</option>
+          <option value="FAMILIAR">Familiar</option>
+          <option value="COLABORADOR/A">Colaborador/a</option>
+          <option value="OTRO">Otro</option>
+        </select>
+        <div class="label">Teléfono</div>
+        <input type="tel" id="add-user-tel" placeholder="600 000 000">
+        <button class="btn btn-primary" style="margin-top:12px;width:100%" onclick="addUserManual()">Añadir voluntario</button>
+        <div id="add-user-msg"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">👥 Usuarios registrados</div>
+        <input type="text" id="admin-user-search" placeholder="Buscar..." style="margin-bottom:10px" oninput="renderAdminUsers()">
         <div id="admin-users-list"></div>
       </div>
     </div>
@@ -333,8 +375,8 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
     <div id="admin-tab-exportar" class="tab-content">
       <div class="card">
         <div class="card-title">📊 Exportar a Excel</div>
-        <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Descarga el calendario completo de turnos con todos los voluntarios asignados.</p>
-        <button class="export-btn" onclick="exportarExcel()">⬇️ Descargar Excel (.xlsx)</button>
+        <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Descarga el calendario completo con todos los voluntarios asignados.</p>
+        <button class="btn btn-primary" style="width:100%" onclick="exportarExcel()">⬇️ Descargar Excel (.xlsx)</button>
         <div id="export-msg"></div>
       </div>
     </div>
@@ -347,129 +389,135 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
 <script>
 const SB_URL = 'https://gyhmskhjqrfmrlkhnsmb.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5aG1za2hqcXJmbXJsa2huc21iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NjM1MzMsImV4cCI6MjA5NzEzOTUzM30.pb2-JujA3b7RLSnvl85kotFzmVNHKkjTfUWU0uJGGps';
-const ADMIN_EMAIL = 'admin@zutaik.com';
 
 let currentUser = null;
 let state = { dias:[], tareas:[], franjas:[], diaConfig:{} };
 let allTurnos = [];
 let allUsers = [];
 
+// ── Supabase ────────────────────────────────────────────────────────
 async function sb(path, opts={}) {
   const r = await fetch(`${SB_URL}/rest/v1/${path}`, {
-    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`,
-      'Content-Type': 'application/json', 'Prefer': 'return=representation', ...opts.headers },
-    ...opts
+    headers: {
+      'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`,
+      'Content-Type': 'application/json', 'Prefer': 'return=representation',
+      ...opts.headers
+    }, ...opts
   });
-  if (!r.ok) { const e = await r.json(); throw new Error(e.message||r.status); }
+  if (!r.ok) { const e = await r.json().catch(()=>{}); throw new Error((e&&e.message)||r.status); }
   const t = await r.text();
   return t ? JSON.parse(t) : null;
 }
 
+// ── Auth ─────────────────────────────────────────────────────────────
 function simpleHash(str) {
   let h = 0;
-  for (let i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h |= 0; }
-  return 'h' + Math.abs(h).toString(16);
+  for (let i = 0; i < str.length; i++) { h = ((h<<5)-h)+str.charCodeAt(i); h|=0; }
+  return 'h'+Math.abs(h).toString(16);
 }
+
+function toUpper(str){ return (str||'').toUpperCase().trim(); }
 
 function switchLoginTab(tab) {
   document.getElementById('login-form').style.display = tab==='login'?'block':'none';
   document.getElementById('reg-form').style.display = tab==='registro'?'block':'none';
-  document.getElementById('tab-login-btn').classList.toggle('active', tab==='login');
-  document.getElementById('tab-reg-btn').classList.toggle('active', tab==='registro');
+  document.querySelectorAll('.tab-login').forEach((b,i)=>b.classList.toggle('active',(i===0&&tab==='login')||(i===1&&tab==='registro')));
 }
 
 async function doLogin() {
   const email = document.getElementById('login-email').value.trim().toLowerCase();
   const pass = document.getElementById('login-pass').value;
   const msg = document.getElementById('login-msg');
-  if (!email||!pass) { msg.innerHTML='<div class="msg msg-err">Rellena todos los campos</div>'; return; }
+  if (!email||!pass){msg.innerHTML='<div class="msg msg-err">Rellena todos los campos</div>';return;}
   msg.innerHTML='<div class="msg msg-info">Comprobando...</div>';
   try {
-    const hash = simpleHash(pass);
     const rows = await sb(`usuarios?email=eq.${encodeURIComponent(email)}&select=*`);
-    if (!rows||!rows.length) { msg.innerHTML='<div class="msg msg-err">Usuario no encontrado</div>'; return; }
+    if (!rows||!rows.length){msg.innerHTML='<div class="msg msg-err">Usuario no encontrado</div>';return;}
     const u = rows[0];
-    if (u.password_hash !== hash) { msg.innerHTML='<div class="msg msg-err">Contraseña incorrecta</div>'; return; }
+    if (u.password_hash !== simpleHash(pass)){msg.innerHTML='<div class="msg msg-err">Contraseña incorrecta</div>';return;}
     currentUser = u;
-    localStorage.setItem('zutaik_user_id', u.id);
+    localStorage.setItem('zutaik_uid', u.id);
     await initApp();
-  } catch(e) { msg.innerHTML=`<div class="msg msg-err">Error: ${e.message}</div>`; }
+  } catch(e){msg.innerHTML=`<div class="msg msg-err">Error: ${e.message}</div>`;}
 }
 
 async function doRegister() {
   const email = document.getElementById('reg-email').value.trim().toLowerCase();
   const pass = document.getElementById('reg-pass').value;
-  const nombre = document.getElementById('reg-nombre').value.trim();
-  const ap1 = document.getElementById('reg-ap1').value.trim();
-  const ap2 = document.getElementById('reg-ap2').value.trim();
+  const nombre = toUpper(document.getElementById('reg-nombre').value);
+  const ap1 = toUpper(document.getElementById('reg-ap1').value);
+  const ap2 = toUpper(document.getElementById('reg-ap2').value);
   const club = document.getElementById('reg-club').value;
   const vinculo = document.getElementById('reg-vinculo').value;
   const tel = document.getElementById('reg-tel').value.trim();
   const msg = document.getElementById('reg-msg');
-  if (!email||!pass||!nombre||!ap1||!club||!vinculo) { msg.innerHTML='<div class="msg msg-err">Rellena todos los campos obligatorios</div>'; return; }
-  if (pass.length < 8) { msg.innerHTML='<div class="msg msg-err">La contraseña debe tener al menos 8 caracteres</div>'; return; }
+  if (!email||!pass||!nombre||!ap1||!club||!vinculo){msg.innerHTML='<div class="msg msg-err">Rellena todos los campos obligatorios</div>';return;}
+  if (pass.length<8){msg.innerHTML='<div class="msg msg-err">La contraseña debe tener al menos 8 caracteres</div>';return;}
   msg.innerHTML='<div class="msg msg-info">Registrando...</div>';
   try {
-    const existing = await sb(`usuarios?email=eq.${encodeURIComponent(email)}&select=id`);
-    if (existing&&existing.length) { msg.innerHTML='<div class="msg msg-err">Este email ya está registrado</div>'; return; }
-    const hash = simpleHash(pass);
-    const rows = await sb('usuarios', { method:'POST', body: JSON.stringify({
-      email, password_hash: hash, nombre, apellido1: ap1, apellido2: ap2,
-      club, vinculo, telefono: tel, es_admin: false
+    const ex = await sb(`usuarios?email=eq.${encodeURIComponent(email)}&select=id`);
+    if (ex&&ex.length){msg.innerHTML='<div class="msg msg-err">Este email ya está registrado</div>';return;}
+    const rows = await sb('usuarios',{method:'POST',body:JSON.stringify({
+      email, password_hash:simpleHash(pass), nombre, apellido1:ap1, apellido2:ap2,
+      club, vinculo, telefono:tel, es_admin:false
     })});
     currentUser = rows[0];
-    localStorage.setItem('zutaik_user_id', currentUser.id);
+    localStorage.setItem('zutaik_uid', currentUser.id);
     await initApp();
-  } catch(e) { msg.innerHTML=`<div class="msg msg-err">Error: ${e.message}</div>`; }
+  } catch(e){msg.innerHTML=`<div class="msg msg-err">Error: ${e.message}</div>`;}
 }
 
 async function tryAutoLogin() {
-  const uid = localStorage.getItem('zutaik_user_id');
+  const uid = localStorage.getItem('zutaik_uid');
   if (!uid) return false;
   try {
     const rows = await sb(`usuarios?id=eq.${uid}&select=*`);
-    if (rows&&rows.length) { currentUser = rows[0]; return true; }
-  } catch(e) {}
+    if (rows&&rows.length){currentUser=rows[0];return true;}
+  } catch(e){}
+  localStorage.removeItem('zutaik_uid');
   return false;
 }
 
 function doLogout() {
-  localStorage.removeItem('zutaik_user_id');
+  localStorage.removeItem('zutaik_uid');
   currentUser = null;
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('main-app').style.display='none';
 }
 
+// ── Init ─────────────────────────────────────────────────────────────
 async function initApp() {
   document.getElementById('login-screen').style.display='none';
   document.getElementById('main-app').style.display='block';
-  const fullName = `${currentUser.nombre} ${currentUser.apellido1}${currentUser.apellido2?' '+currentUser.apellido2:''}`;
+  const fullName = nombreCompleto(currentUser);
   document.getElementById('header-user').textContent = fullName;
   document.getElementById('user-display-name').textContent = fullName;
   document.getElementById('user-display-club').textContent = `${currentUser.club} · ${currentUser.vinculo}`;
-  document.getElementById('user-avatar').textContent = (currentUser.nombre[0]+(currentUser.apellido1[0]||'')).toUpperCase();
+  document.getElementById('user-avatar').textContent = ((currentUser.nombre[0]||'')+(currentUser.apellido1[0]||'')).toUpperCase();
   if (currentUser.es_admin) document.getElementById('admin-nav-btn').style.display='block';
-  await loadConfig();
-  await loadTurnos();
-  await loadUsers();
+  await loadAll();
   renderCalendar();
   initApuntarse();
   populateHoras();
 }
 
+async function loadAll() {
+  await Promise.all([loadConfig(), loadTurnos(), loadUsers()]);
+}
+
 async function loadConfig() {
   const rows = await sb('configuracion?select=clave,valor');
-  rows.forEach(r => {
-    if (r.clave==='dias') state.dias = r.valor;
-    else if (r.clave==='tareas') state.tareas = r.valor;
-    else if (r.clave==='franjas') state.franjas = r.valor;
-    else if (r.clave==='diaConfig') state.diaConfig = r.valor;
+  (rows||[]).forEach(r=>{
+    if (r.clave==='dias') state.dias=r.valor||[];
+    else if (r.clave==='tareas') state.tareas=r.valor||[];
+    else if (r.clave==='franjas') state.franjas=r.valor||[];
+    else if (r.clave==='diaConfig') state.diaConfig=r.valor||{};
   });
 }
 
 async function saveConfig(clave, valor) {
-  await sb(`configuracion?clave=eq.${clave}`, {
-    method:'PATCH', body: JSON.stringify({ valor, updated_at: new Date().toISOString() })
+  await sb(`configuracion?clave=eq.${clave}`,{
+    method:'PATCH', body:JSON.stringify({valor, updated_at:new Date().toISOString()})
   });
 }
 
@@ -478,21 +526,38 @@ async function loadTurnos() {
 }
 
 async function loadUsers() {
-  allUsers = await sb('usuarios?select=id,nombre,apellido1,apellido2,club,vinculo,telefono,es_admin,email,password_hash') || [];
+  allUsers = await sb('usuarios?select=*&order=apellido1.asc') || [];
 }
 
-function getTarea(id) { return state.tareas.find(t=>t.id===id)||{nombre:'?',icon:'?'}; }
-function getFranja(id) { return state.franjas.find(f=>f.id===id)||{label:'?',labelFin:'?',slots:0}; }
+// ── Helpers ──────────────────────────────────────────────────────────
+function getTarea(id){ return state.tareas.find(t=>t.id===id)||{nombre:'?',icon:'?'}; }
+function getFranja(id){ return state.franjas.find(f=>f.id===id)||{label:'?',labelFin:'?'}; }
+function franjaLabel(f){ return `${f.label} - ${f.labelFin}`; }
 function getSlotsForTurno(diaId,tareaId,franjaId){
-  const slotKey=`${tareaId}_${franjaId}`;
-  return state.diaConfig[diaId]?.slots?.[slotKey] || getFranja(franjaId).slots;
+  return state.diaConfig[diaId]?.slots?.[tareaId+'_'+franjaId] || 3;
 }
-function franjaLabel(f) { return `${f.label} - ${f.labelFin}`; }
-function getVolsEnTurno(dId,tId,fId) { return allTurnos.filter(t=>t.dia_id===dId&&t.tarea_id===tId&&t.franja_id===fId); }
-function estaApuntado(dId,tId,fId) { return allTurnos.some(t=>t.dia_id===dId&&t.tarea_id===tId&&t.franja_id===fId&&t.usuario_id===currentUser.id); }
-function nombreCompleto(u) { return `${u.nombre} ${u.apellido1}${u.apellido2?' '+u.apellido2:''}`; }
+function getVolsEnTurno(dId,tId,fId){ return allTurnos.filter(t=>t.dia_id===dId&&t.tarea_id===tId&&t.franja_id===fId); }
+function estaApuntado(dId,tId,fId){ return allTurnos.some(t=>t.dia_id===dId&&t.tarea_id===tId&&t.franja_id===fId&&t.usuario_id===currentUser.id); }
+function nombreCompleto(u){ return `${u.nombre} ${u.apellido1}${u.apellido2?' '+u.apellido2:''}`; }
+function clubBadge(club){
+  const c=(club||'').toUpperCase();
+  if(c.includes('ZUAZO')) return 'badge-bm';
+  if(c.includes('IKHOBA')) return 'badge-fk';
+  return 'badge-ext';
+}
 
-function showSection(id, btn) {
+// Ordenar franjas cronológicamente
+function sortedFranjas(franjaIds){
+  return [...franjaIds].sort((a,b)=>{
+    const fa=getFranja(a), fb=getFranja(b);
+    const ta=parseInt((fa.label||'00').replace(':',''));
+    const tb=parseInt((fb.label||'00').replace(':',''));
+    return ta-tb;
+  });
+}
+
+// ── Nav ──────────────────────────────────────────────────────────────
+function showSection(id,btn){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('sec-'+id).classList.add('active');
@@ -503,32 +568,33 @@ function showSection(id, btn) {
   if(id==='admin') renderAdminPanels();
 }
 
-function renderCalendar() {
-  const view = document.getElementById('calendar-view');
-  const pills = document.getElementById('day-pills');
+// ── Calendario ───────────────────────────────────────────────────────
+function renderCalendar(){
+  const view=document.getElementById('calendar-view');
+  const pills=document.getElementById('day-pills');
   pills.innerHTML=''; view.innerHTML='';
-  let total=0, filled=0;
+  let total=0,filled=0;
   state.dias.forEach((dia,di)=>{
-    const pill = document.createElement('button');
+    const pill=document.createElement('button');
     pill.className='day-pill'+(di===0?' active':'');
-    pill.textContent = dia.label.split(' ').slice(0,2).join(' ');
-    pill.onclick = ()=>{
+    pill.textContent=dia.label.split(' ').slice(0,2).join(' ');
+    pill.onclick=()=>{
       document.querySelectorAll('.day-pill').forEach(p=>p.classList.remove('active'));
       pill.classList.add('active');
       document.querySelectorAll('.day-card').forEach((c,i)=>c.style.display=(i===di?'block':'none'));
     };
     pills.appendChild(pill);
-    const cfg = state.diaConfig[dia.id]||{tareas:{}};
-    const dc = document.createElement('div');
+    const cfg=state.diaConfig[dia.id]||{tareas:{}};
+    const dc=document.createElement('div');
     dc.className='day-card'; dc.style.display=di===0?'block':'none';
     let html=`<div class="day-header ${dia.tipo}" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
       <span>${dia.label}</span><span style="font-size:12px">▾</span></div><div class="day-body">`;
-    const entries = Object.entries(cfg.tareas||{});
+    const entries=Object.entries(cfg.tareas||{});
     if(!entries.length) html+='<div style="padding:14px;color:var(--text3);font-size:13px;text-align:center">Sin tareas configuradas</div>';
     else entries.forEach(([tid,fids])=>{
       const t=getTarea(tid);
       html+=`<div class="task-row"><div class="task-name"><span>${t.icon}</span>${t.nombre}</div>`;
-      (fids||[]).forEach(fid=>{
+      sortedFranjas(fids||[]).forEach(fid=>{
         const f=getFranja(fid); const v=getVolsEnTurno(dia.id,tid,fid);
         const slots=getSlotsForTurno(dia.id,tid,fid);
         total+=slots; filled+=Math.min(v.length,slots);
@@ -548,7 +614,7 @@ function renderCalendar() {
   document.getElementById('cal-summary').textContent=`${filled}/${total} plazas`;
 }
 
-function showSlotDetail(diaId,tareaId,franjaId) {
+function showSlotDetail(diaId,tareaId,franjaId){
   const dia=state.dias.find(d=>d.id===diaId);
   const t=getTarea(tareaId); const f=getFranja(franjaId);
   const v=getVolsEnTurno(diaId,tareaId,franjaId);
@@ -559,7 +625,7 @@ function showSlotDetail(diaId,tareaId,franjaId) {
   for(let i=0;i<slots;i++){
     if(v[i]){
       const u=allUsers.find(x=>x.id===v[i].usuario_id);
-      const bc=u?.club==='BM Zuazo'?'badge-bm':u?.club==='Ikhoba KK'?'badge-fk':'badge-ext';
+      const bc=clubBadge(u?.club);
       html+=`<div class="person-slot" style="margin-bottom:5px">
         <span style="font-weight:600">${i+1}. ${v[i].nombre_usuario}</span>
         ${u?`<span class="badge ${bc}" style="font-size:11px">${u.club}</span>`:''}
@@ -573,7 +639,7 @@ function showSlotDetail(diaId,tareaId,franjaId) {
   if(yaApuntado){
     html+=`<button class="btn btn-danger" style="width:100%;margin-top:12px" onclick="desapuntarseModal('${diaId}','${tareaId}','${franjaId}')">Desapuntarme de este turno</button>`;
   } else if(v.length<slots){
-    html+=`<button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="apuntarseDesdeModal('${diaId}','${tareaId}','${franjaId}')">✋ Apuntarme a este turno</button>`;
+    html+=`<button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="apuntarseDesdeModal('${diaId}','${tareaId}','${franjaId}')">✋ Apuntarme</button>`;
   } else {
     html+=`<div class="msg msg-err" style="text-align:center;margin-top:12px">Turno completo</div>`;
   }
@@ -598,6 +664,7 @@ function openModal(html){
 }
 function closeModal(){ document.getElementById('modal-container').innerHTML=''; }
 
+// ── Apuntarse ────────────────────────────────────────────────────────
 function initApuntarse(){
   const sel=document.getElementById('signup-dia');
   sel.innerHTML='<option value="">Selecciona día...</option>';
@@ -613,7 +680,7 @@ function renderSignupTasks(){
   Object.entries(cfg.tareas||{}).forEach(([tid,fids])=>{
     const t=getTarea(tid);
     html+=`<div style="margin-top:12px"><div style="font-size:14px;font-weight:600;color:var(--pk-dark);margin-bottom:6px">${t.icon} ${t.nombre}</div>`;
-    (fids||[]).forEach(fid=>{
+    sortedFranjas(fids||[]).forEach(fid=>{
       const f=getFranja(fid); const v=getVolsEnTurno(diaId,tid,fid);
       const slots=getSlotsForTurno(diaId,tid,fid);
       const ya=estaApuntado(diaId,tid,fid);
@@ -635,35 +702,40 @@ function renderSignupTasks(){
 }
 
 async function apuntarse(diaId,tareaId,franjaId){
-  const f=getFranja(franjaId); const v=getVolsEnTurno(diaId,tareaId,franjaId);
+  const v=getVolsEnTurno(diaId,tareaId,franjaId);
   const slots=getSlotsForTurno(diaId,tareaId,franjaId);
   if(v.length>=slots){alert('Lo sentimos, este turno acaba de completarse.');await loadTurnos();renderSignupTasks();return;}
   if(estaApuntado(diaId,tareaId,franjaId)){alert('Ya estás apuntado/a a este turno.');return;}
-  const nombre=nombreCompleto(currentUser);
-  try {
-    await sb('turnos',{method:'POST',body:JSON.stringify({dia_id:diaId,tarea_id:tareaId,franja_id:franjaId,usuario_id:currentUser.id,nombre_usuario:nombre})});
+  try{
+    await sb('turnos',{method:'POST',body:JSON.stringify({
+      dia_id:diaId,tarea_id:tareaId,franja_id:franjaId,
+      usuario_id:currentUser.id,nombre_usuario:nombreCompleto(currentUser)
+    })});
     await loadTurnos();
-  } catch(e){ alert('Error al apuntarse. Inténtalo de nuevo.'); }
+  }catch(e){alert('Error al apuntarse: '+e.message);}
 }
 
 async function desapuntarse(diaId,tareaId,franjaId){
   try{
-    await sb(`turnos?dia_id=eq.${diaId}&tarea_id=eq.${tareaId}&franja_id=eq.${franjaId}&usuario_id=eq.${currentUser.id}`,{method:'DELETE',headers:{'Prefer':''}});
+    await sb(`turnos?dia_id=eq.${diaId}&tarea_id=eq.${tareaId}&franja_id=eq.${franjaId}&usuario_id=eq.${currentUser.id}`,{
+      method:'DELETE', headers:{'Prefer':''}
+    });
     await loadTurnos();
-  }catch(e){alert('Error al desapuntarse.');}
+  }catch(e){alert('Error al desapuntarse: '+e.message);}
 }
 
 async function apuntarseSignup(d,t,f){await apuntarse(d,t,f);renderSignupTasks();}
 async function desapuntarseSignup(d,t,f){await desapuntarse(d,t,f);renderSignupTasks();}
 
+// ── Voluntarios ──────────────────────────────────────────────────────
 function renderVolList(){
-  const search=document.getElementById('vol-search')?.value.toLowerCase()||'';
+  const search=(document.getElementById('vol-search')?.value||'').toLowerCase();
   const list=document.getElementById('vol-list');
   const filtered=allUsers.filter(v=>nombreCompleto(v).toLowerCase().includes(search));
   document.getElementById('vol-count').textContent=`${allUsers.length} personas`;
   if(!filtered.length){list.innerHTML='<div style="color:var(--text3);font-size:13px;text-align:center;padding:14px">Sin voluntarios</div>';return;}
   list.innerHTML=filtered.map(v=>{
-    const bc=v.club==='BM Zuazo'?'badge-bm':v.club==='Ikhoba KK'?'badge-fk':'badge-ext';
+    const bc=clubBadge(v.club);
     const turnosVol=allTurnos.filter(t=>t.usuario_id===v.id);
     let turnosHtml='';
     if(turnosVol.length){
@@ -672,20 +744,20 @@ function renderVolList(){
         const dia=state.dias.find(d=>d.id===t.dia_id);
         const tarea=getTarea(t.tarea_id);
         const franja=getFranja(t.franja_id);
-        turnosHtml+=`<div class="vol-turno-item">📅 ${dia?.label||t.dia_id} · ${tarea.icon}${tarea.nombre} · 🕐${franjaLabel(franja)}</div>`;
+        turnosHtml+=`<div class="vol-turno-item">📅 ${dia?.label||t.dia_id} · ${tarea.icon} ${tarea.nombre} · 🕐 ${franjaLabel(franja)}</div>`;
       });
       turnosHtml+='</div>';
     }
     return `<div class="vol-item" style="flex-direction:column;align-items:flex-start;gap:6px">
       <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
-        <div><div class="vol-name">${nombreCompleto(v)}</div><div class="vol-meta">${v.vinculo} ${v.telefono?'· '+v.telefono:''}</div></div>
+        <div><div class="vol-name">${nombreCompleto(v)}</div><div class="vol-meta">${v.vinculo}${v.telefono?' · '+v.telefono:''}</div></div>
         <span class="badge ${bc}">${v.club}</span>
-      </div>
-      ${turnosHtml}
+      </div>${turnosHtml}
     </div>`;
   }).join('');
 }
 
+// ── Admin ────────────────────────────────────────────────────────────
 function showAdminTab(tab,btn){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.admin-tab-btn').forEach(b=>b.classList.remove('active'));
@@ -698,12 +770,70 @@ function renderAdminPanels(){
   renderAdminUsers(); populateAdminSelects();
 }
 
+// ── Drag reorder ─────────────────────────────────────────────────────
+function makeDraggable(containerId, arr, onReorder){
+  const container=document.getElementById(containerId);
+  if(!container) return;
+  let dragged=null;
+  container.querySelectorAll('.drag-item').forEach((item,i)=>{
+    item.dataset.idx=i;
+    const handle=item.querySelector('.drag-handle');
+    handle.addEventListener('mousedown', e=>{
+      dragged=item; item.classList.add('dragging');
+      e.preventDefault();
+    });
+    handle.addEventListener('touchstart', e=>{
+      dragged=item; item.classList.add('dragging');
+    },{passive:true});
+    item.addEventListener('dragover', e=>{e.preventDefault(); item.classList.add('drag-over');});
+    item.addEventListener('dragleave', ()=>item.classList.remove('drag-over'));
+    item.addEventListener('drop', e=>{
+      e.preventDefault(); item.classList.remove('drag-over');
+      if(!dragged||dragged===item) return;
+      const from=parseInt(dragged.dataset.idx);
+      const to=parseInt(item.dataset.idx);
+      const moved=arr.splice(from,1)[0];
+      arr.splice(to,0,moved);
+      onReorder();
+    });
+    item.setAttribute('draggable','true');
+    item.addEventListener('dragend',()=>{dragged=null; item.classList.remove('dragging');});
+  });
+  // Touch reorder
+  let touchTarget=null;
+  document.addEventListener('touchmove', e=>{
+    if(!dragged) return;
+    const touch=e.touches[0];
+    const el=document.elementFromPoint(touch.clientX,touch.clientY);
+    const target=el?.closest('.drag-item');
+    if(target&&target!==dragged){
+      if(touchTarget) touchTarget.classList.remove('drag-over');
+      touchTarget=target; target.classList.add('drag-over');
+    }
+  },{passive:true});
+  document.addEventListener('touchend', ()=>{
+    if(dragged&&touchTarget&&touchTarget!==dragged){
+      const from=parseInt(dragged.dataset.idx);
+      const to=parseInt(touchTarget.dataset.idx);
+      const moved=arr.splice(from,1)[0];
+      arr.splice(to,0,moved);
+      onReorder();
+    }
+    if(dragged) dragged.classList.remove('dragging');
+    if(touchTarget) touchTarget.classList.remove('drag-over');
+    dragged=null; touchTarget=null;
+  });
+}
+
+// ── Días ─────────────────────────────────────────────────────────────
 function renderDiasList(){
-  document.getElementById('dias-list').innerHTML=state.dias.map(d=>`
-    <div class="vol-item">
-      <div><div style="font-size:14px;font-weight:600">${d.label}</div><div style="font-size:12px;color:var(--text2)">${d.tipo}</div></div>
+  document.getElementById('dias-list').innerHTML=state.dias.map((d,i)=>`
+    <div class="drag-item" data-idx="${i}">
+      <span class="drag-handle">≡</span>
+      <div style="flex:1"><div style="font-size:14px;font-weight:600">${d.label}</div><div style="font-size:11px;color:var(--text2)">${d.tipo}</div></div>
       <button class="btn btn-sm btn-danger" onclick="removeDia('${d.id}')">🗑</button>
     </div>`).join('');
+  makeDraggable('dias-list', state.dias, async()=>{await saveConfig('dias',state.dias);renderDiasList();renderCalendar();});
 }
 
 async function addDia(){
@@ -728,12 +858,15 @@ async function removeDia(id){
   renderDiasList(); populateAdminSelects(); renderCalendar();
 }
 
+// ── Tareas ────────────────────────────────────────────────────────────
 function renderTareasList(){
-  document.getElementById('tareas-list').innerHTML=state.tareas.map(t=>`
-    <div class="vol-item">
-      <div style="font-size:14px;font-weight:600">${t.icon} ${t.nombre}</div>
+  document.getElementById('tareas-list').innerHTML=state.tareas.map((t,i)=>`
+    <div class="drag-item" data-idx="${i}">
+      <span class="drag-handle">≡</span>
+      <div style="flex:1;font-size:14px;font-weight:600">${t.icon} ${t.nombre}</div>
       <button class="btn btn-sm btn-danger" onclick="removeTarea('${t.id}')">🗑</button>
     </div>`).join('');
+  makeDraggable('tareas-list', state.tareas, async()=>{await saveConfig('tareas',state.tareas);renderTareasList();});
 }
 
 async function addTarea(){
@@ -753,6 +886,7 @@ async function removeTarea(id){
   renderTareasList();
 }
 
+// ── Franjas ───────────────────────────────────────────────────────────
 function populateHoras(){
   const horas=[];
   for(let h=0;h<24;h++) horas.push((h<10?'0':'')+h+':00');
@@ -765,11 +899,13 @@ function populateHoras(){
 }
 
 function renderFranjasList(){
-  document.getElementById('franjas-list').innerHTML=state.franjas.map(f=>`
-    <div class="vol-item">
-      <div><div style="font-size:14px;font-weight:600">${franjaLabel(f)}</div><div style="font-size:12px;color:var(--text2)">${f.slots} personas</div></div>
+  document.getElementById('franjas-list').innerHTML=state.franjas.map((f,i)=>`
+    <div class="drag-item" data-idx="${i}">
+      <span class="drag-handle">≡</span>
+      <div style="flex:1;font-size:14px;font-weight:600">${franjaLabel(f)}</div>
       <button class="btn btn-sm btn-danger" onclick="removeFranja('${f.id}')">🗑</button>
     </div>`).join('');
+  makeDraggable('franjas-list', state.franjas, async()=>{await saveConfig('franjas',state.franjas);renderFranjasList();});
 }
 
 async function addFranja(){
@@ -788,25 +924,77 @@ async function removeFranja(id){
   renderFranjasList();
 }
 
-function renderAdminUsers(){
-  const search=document.getElementById('admin-user-search')?.value.toLowerCase()||'';
-  const list=document.getElementById('admin-users-list');
-  const filtered=allUsers.filter(v=>nombreCompleto(v).toLowerCase().includes(search)||v.email.toLowerCase().includes(search));
-  if(!filtered.length){list.innerHTML='<div style="color:var(--text3);font-size:13px;text-align:center;padding:14px">Sin usuarios</div>';return;}
-  list.innerHTML=filtered.map(v=>{
-    const bc=v.club==='BM Zuazo'?'badge-bm':v.club==='Ikhoba KK'?'badge-fk':'badge-ext';
-    return `<div class="vol-item" style="flex-direction:column;align-items:flex-start;gap:4px">
-      <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
-        <div><div class="vol-name">${nombreCompleto(v)}</div><div class="vol-meta">${v.email}</div></div>
-        <span class="badge ${bc}">${v.club}</span>
-      </div>
-      <div style="font-size:11px;color:var(--text3);background:var(--bg);padding:4px 8px;border-radius:6px;width:100%;word-break:break-all">
-        🔑 Hash: ${v.password_hash}
-      </div>
-    </div>`;
-  }).join('');
+// ── Configurar turnos por día ─────────────────────────────────────────
+function renderAsigTareas(){
+  const diaId=document.getElementById('asig-dia').value;
+  const panel=document.getElementById('asig-tareas-panel');
+  if(!diaId){panel.innerHTML='';return;}
+  if(!state.diaConfig[diaId]) state.diaConfig[diaId]={tareas:{},slots:{}};
+  if(!state.diaConfig[diaId].slots) state.diaConfig[diaId].slots={};
+  const cfg=state.diaConfig[diaId];
+  let html='<div class="sep"></div>';
+  state.tareas.forEach(t=>{
+    const isActive=!!cfg.tareas[t.id];
+    const activeFranjas=cfg.tareas[t.id]||[];
+    html+=`<div style="padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font-size:14px;font-weight:600;color:var(--pk-dark)">${t.icon} ${t.nombre}</span>
+        <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--text2)">
+          <input type="checkbox" ${isActive?'checked':''} onchange="toggleTareaEnDia('${diaId}','${t.id}',this.checked)" style="width:auto;margin:0"> Activa
+        </label>
+      </div>`;
+    if(isActive){
+      html+=`<div style="display:flex;flex-direction:column;gap:6px">`;
+      state.franjas.forEach(f=>{
+        const sel=activeFranjas.includes(f.id);
+        const slotKey=t.id+'_'+f.id;
+        const slotVal=cfg.slots[slotKey]||3;
+        html+=`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;border:1px solid ${sel?'var(--pk)':'var(--border)'};background:${sel?'var(--pk-light)':'var(--bg)'}">
+          <input type="checkbox" ${sel?'checked':''} onchange="toggleFranjaEnDia('${diaId}','${t.id}','${f.id}',this.checked)" style="width:auto;margin:0;flex-shrink:0">
+          <span style="flex:1;font-size:13px">${franjaLabel(f)}</span>
+          ${sel?`<div style="display:flex;align-items:center;gap:5px;flex-shrink:0">
+            <span style="font-size:11px;color:var(--pk-dark);font-weight:500">Personas:</span>
+            <select onchange="updateSlots('${diaId}','${t.id}','${f.id}',this.value)" style="width:55px;padding:3px 4px;font-size:13px;border:1px solid var(--pk);border-radius:6px;margin:0">
+              ${[1,2,3,4,5,6,7,8,9,10,11,12].map(n=>`<option value="${n}"${n==slotVal?' selected':''}>${n}</option>`).join('')}
+            </select>
+          </div>`:''}
+        </div>`;
+      });
+      html+=`</div>`;
+    }
+    html+=`</div>`;
+  });
+  panel.innerHTML=html;
 }
 
+async function toggleTareaEnDia(diaId,tareaId,active){
+  if(!state.diaConfig[diaId]) state.diaConfig[diaId]={tareas:{},slots:{}};
+  if(active) state.diaConfig[diaId].tareas[tareaId]=[];
+  else delete state.diaConfig[diaId].tareas[tareaId];
+  await saveConfig('diaConfig',state.diaConfig);
+  renderAsigTareas(); renderCalendar();
+}
+
+async function toggleFranjaEnDia(diaId,tareaId,franjaId,checked){
+  if(!state.diaConfig[diaId]?.tareas[tareaId]) return;
+  if(!state.diaConfig[diaId].slots) state.diaConfig[diaId].slots={};
+  const arr=state.diaConfig[diaId].tareas[tareaId];
+  const idx=arr.indexOf(franjaId);
+  if(checked&&idx<0) arr.push(franjaId);
+  else if(!checked&&idx>=0) arr.splice(idx,1);
+  await saveConfig('diaConfig',state.diaConfig);
+  renderAsigTareas(); renderCalendar();
+}
+
+async function updateSlots(diaId,tareaId,franjaId,val){
+  if(!state.diaConfig[diaId]) return;
+  if(!state.diaConfig[diaId].slots) state.diaConfig[diaId].slots={};
+  state.diaConfig[diaId].slots[tareaId+'_'+franjaId]=parseInt(val);
+  await saveConfig('diaConfig',state.diaConfig);
+  renderCalendar();
+}
+
+// ── Gestionar turnos (admin) ──────────────────────────────────────────
 function populateAdminSelects(){
   ['asig-dia','man-dia','del-dia'].forEach(id=>{
     const el=document.getElementById(id);
@@ -821,81 +1009,12 @@ function populateAdminSelects(){
   }
 }
 
-function renderAsigTareas(){
-  const diaId=document.getElementById('asig-dia').value;
-  const panel=document.getElementById('asig-tareas-panel');
-  if(!diaId){panel.innerHTML='';return;}
-  if(!state.diaConfig[diaId]) state.diaConfig[diaId]={tareas:{}};
-  const cfg=state.diaConfig[diaId];
-  let html='<div class="sep"></div>';
-  state.tareas.forEach(t=>{
-    const isActive=!!cfg.tareas[t.id];
-    const activeFranjas=cfg.tareas[t.id]||[];
-    html+=`<div style="padding:10px 0;border-bottom:1px solid var(--border)">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <span style="font-size:14px;font-weight:600;color:var(--pk-dark)">${t.icon} ${t.nombre}</span>
-        <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--text2)">
-          <input type="checkbox" ${isActive?'checked':''} onchange="toggleTareaEnDia('${diaId}','${t.id}',this.checked)"> Activa
-        </label>
-      </div>`;
-    if(isActive){
-      html+=`<div style="display:flex;flex-direction:column;gap:6px;margin-top:4px">`;
-      state.franjas.forEach(f=>{
-        const slotsCfg = state.diaConfig[diaId].slots || {};
-        const slotKey = `${t.id}_${f.id}`;
-        const slotVal = slotsCfg[slotKey] || f.slots;
-        const sel=activeFranjas.includes(f.id);
-        html+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;background:${sel?'var(--pk-light)':'var(--bg)'};border:1px solid ${sel?'var(--pk)':'var(--border)'}">
-          <input type="checkbox" ${sel?'checked':''} onchange="toggleFranjaEnDia('${diaId}','${t.id}','${f.id}',this.checked)" style="width:auto;margin:0">
-          <span style="flex:1;font-size:13px;color:var(--text)">${franjaLabel(f)}</span>
-          ${sel?`<div style="display:flex;align-items:center;gap:4px">
-            <span style="font-size:11px;color:var(--text2)">Personas:</span>
-            <select onchange="updateSlots('${diaId}','${t.id}','${f.id}',this.value)" style="width:auto;padding:3px 6px;font-size:12px;margin:0">
-              ${[1,2,3,4,5,6,7,8,9,10,11,12].map(n=>`<option value="${n}" ${n==slotVal?'selected':''}>${n}</option>`).join('')}
-            </select>
-          </div>`:''}
-        </div>`;
-      });
-      html+='</div>';
-    }
-    html+='</div>';
-  });
-  panel.innerHTML=html;
-}
-
-async function toggleTareaEnDia(diaId,tareaId,active){
-  if(!state.diaConfig[diaId]) state.diaConfig[diaId]={tareas:{}};
-  if(active) state.diaConfig[diaId].tareas[tareaId]=[];
-  else delete state.diaConfig[diaId].tareas[tareaId];
-  await saveConfig('diaConfig',state.diaConfig);
-  renderAsigTareas(); renderCalendar();
-}
-
-async function toggleFranjaEnDia(diaId,tareaId,franjaId,checked){
-  if(!state.diaConfig[diaId]?.tareas[tareaId]) return;
-  const arr=state.diaConfig[diaId].tareas[tareaId];
-  const idx=arr.indexOf(franjaId);
-  if(checked && idx<0) arr.push(franjaId);
-  else if(!checked && idx>=0) arr.splice(idx,1);
-  await saveConfig('diaConfig',state.diaConfig);
-  renderAsigTareas(); renderCalendar();
-}
-
-async function updateSlots(diaId,tareaId,franjaId,val){
-  if(!state.diaConfig[diaId]) return;
-  if(!state.diaConfig[diaId].slots) state.diaConfig[diaId].slots={};
-  state.diaConfig[diaId].slots[`${tareaId}_${franjaId}`]=parseInt(val);
-  await saveConfig('diaConfig',state.diaConfig);
-  renderCalendar();
-}
-
 function renderManTareas(){
   const diaId=document.getElementById('man-dia').value;
   const sel=document.getElementById('man-tarea');
   sel.innerHTML='<option value="">Selecciona tarea...</option>';
   if(!diaId) return;
-  const cfg=state.diaConfig[diaId]||{tareas:{}};
-  Object.keys(cfg.tareas||{}).forEach(tid=>{
+  Object.keys(state.diaConfig[diaId]?.tareas||{}).forEach(tid=>{
     const t=getTarea(tid);
     sel.innerHTML+=`<option value="${tid}">${t.icon} ${t.nombre}</option>`;
   });
@@ -908,9 +1027,8 @@ function renderManFranjas(){
   const sel=document.getElementById('man-franja');
   sel.innerHTML='<option value="">Selecciona franja...</option>';
   if(!diaId||!tareaId) return;
-  (state.diaConfig[diaId]?.tareas[tareaId]||[]).forEach(fid=>{
-    const f=getFranja(fid);
-    sel.innerHTML+=`<option value="${fid}">${franjaLabel(f)}</option>`;
+  sortedFranjas(state.diaConfig[diaId]?.tareas[tareaId]||[]).forEach(fid=>{
+    sel.innerHTML+=`<option value="${fid}">${franjaLabel(getFranja(fid))}</option>`;
   });
 }
 
@@ -922,15 +1040,15 @@ async function asignarManual(){
   const msg=document.getElementById('man-msg');
   if(!diaId||!tareaId||!franjaId||!volVal){msg.innerHTML='<div class="msg msg-err">Selecciona todos los campos</div>';return;}
   const [uid,nombre]=volVal.split('|');
-  const f=getFranja(franjaId); const v=getVolsEnTurno(diaId,tareaId,franjaId);
-  const slotsM=getSlotsForTurno(diaId,tareaId,franjaId);
+  const v=getVolsEnTurno(diaId,tareaId,franjaId);
+  const slots=getSlotsForTurno(diaId,tareaId,franjaId);
   if(v.find(x=>x.usuario_id===uid)){msg.innerHTML='<div class="msg msg-err">Ya está en este turno</div>';return;}
-  if(v.length>=slotsM){msg.innerHTML='<div class="msg msg-err">Turno completo</div>';return;}
+  if(v.length>=slots){msg.innerHTML='<div class="msg msg-err">Turno completo</div>';return;}
   msg.innerHTML='<div class="msg msg-info">Guardando...</div>';
   try{
     await sb('turnos',{method:'POST',body:JSON.stringify({dia_id:diaId,tarea_id:tareaId,franja_id:franjaId,usuario_id:uid,nombre_usuario:nombre})});
     await loadTurnos(); renderCalendar();
-    msg.innerHTML='<div class="msg msg-ok">✓ Asignado correctamente</div>';
+    msg.innerHTML='<div class="msg msg-ok">✓ Asignado</div>';
     setTimeout(()=>msg.innerHTML='',3000);
   }catch(e){msg.innerHTML=`<div class="msg msg-err">Error: ${e.message}</div>`;}
 }
@@ -941,8 +1059,7 @@ function renderDelTareas(){
   sel.innerHTML='<option value="">Selecciona tarea...</option>';
   if(!diaId) return;
   Object.keys(state.diaConfig[diaId]?.tareas||{}).forEach(tid=>{
-    const t=getTarea(tid);
-    sel.innerHTML+=`<option value="${tid}">${t.icon} ${t.nombre}</option>`;
+    const t=getTarea(tid); sel.innerHTML+=`<option value="${tid}">${t.icon} ${t.nombre}</option>`;
   });
   document.getElementById('del-franja').innerHTML='<option value="">Selecciona franja...</option>';
   document.getElementById('del-vol').innerHTML='<option value="">Selecciona voluntario...</option>';
@@ -954,7 +1071,7 @@ function renderDelFranjas(){
   const sel=document.getElementById('del-franja');
   sel.innerHTML='<option value="">Selecciona franja...</option>';
   if(!diaId||!tareaId) return;
-  (state.diaConfig[diaId]?.tareas[tareaId]||[]).forEach(fid=>{
+  sortedFranjas(state.diaConfig[diaId]?.tareas[tareaId]||[]).forEach(fid=>{
     sel.innerHTML+=`<option value="${fid}">${franjaLabel(getFranja(fid))}</option>`;
   });
   document.getElementById('del-vol').innerHTML='<option value="">Selecciona voluntario...</option>';
@@ -986,24 +1103,101 @@ async function quitarVoluntario(){
   }catch(e){msg.innerHTML=`<div class="msg msg-err">Error: ${e.message}</div>`;}
 }
 
+// ── Usuarios admin ────────────────────────────────────────────────────
+async function addUserManual(){
+  const email=document.getElementById('add-user-email').value.trim().toLowerCase();
+  const pass=document.getElementById('add-user-pass').value;
+  const nombre=toUpper(document.getElementById('add-user-nombre').value);
+  const ap1=toUpper(document.getElementById('add-user-ap1').value);
+  const ap2=toUpper(document.getElementById('add-user-ap2').value);
+  const club=document.getElementById('add-user-club').value;
+  const vinculo=document.getElementById('add-user-vinculo').value;
+  const tel=document.getElementById('add-user-tel').value.trim();
+  const msg=document.getElementById('add-user-msg');
+  if(!email||!pass||!nombre||!ap1||!club||!vinculo){msg.innerHTML='<div class="msg msg-err">Rellena los campos obligatorios</div>';return;}
+  if(pass.length<8){msg.innerHTML='<div class="msg msg-err">Contraseña mínimo 8 caracteres</div>';return;}
+  msg.innerHTML='<div class="msg msg-info">Guardando...</div>';
+  try{
+    const ex=await sb(`usuarios?email=eq.${encodeURIComponent(email)}&select=id`);
+    if(ex&&ex.length){msg.innerHTML='<div class="msg msg-err">Este email ya existe</div>';return;}
+    await sb('usuarios',{method:'POST',body:JSON.stringify({
+      email, password_hash:simpleHash(pass), nombre, apellido1:ap1, apellido2:ap2,
+      club, vinculo, telefono:tel, es_admin:false
+    })});
+    await loadUsers(); renderAdminUsers(); populateAdminSelects();
+    ['add-user-email','add-user-pass','add-user-nombre','add-user-ap1','add-user-ap2','add-user-tel'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('add-user-club').value='';
+    document.getElementById('add-user-vinculo').value='';
+    msg.innerHTML='<div class="msg msg-ok">✓ Voluntario añadido</div>';
+    setTimeout(()=>msg.innerHTML='',3000);
+  }catch(e){msg.innerHTML=`<div class="msg msg-err">Error: ${e.message}</div>`;}
+}
+
+function renderAdminUsers(){
+  const search=(document.getElementById('admin-user-search')?.value||'').toLowerCase();
+  const list=document.getElementById('admin-users-list');
+  const filtered=allUsers.filter(v=>nombreCompleto(v).toLowerCase().includes(search)||v.email.toLowerCase().includes(search));
+  if(!filtered.length){list.innerHTML='<div style="color:var(--text3);font-size:13px;text-align:center;padding:14px">Sin usuarios</div>';return;}
+  list.innerHTML=filtered.map(v=>{
+    const bc=clubBadge(v.club);
+    return `<div class="vol-item" style="flex-direction:column;align-items:flex-start;gap:6px">
+      <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+        <div>
+          <div class="vol-name">${nombreCompleto(v)}</div>
+          <div class="vol-meta">${v.email}</div>
+          <div class="vol-meta">${v.vinculo}${v.telefono?' · '+v.telefono:''}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+          <span class="badge ${bc}">${v.club}</span>
+          <button class="btn btn-sm btn-danger" onclick="deleteUser('${v.id}')">🗑</button>
+        </div>
+      </div>
+      <div style="font-size:11px;background:var(--bg);padding:5px 8px;border-radius:6px;width:100%;color:var(--text2)">
+        🔑 Contraseña (hash): <span style="font-family:monospace;word-break:break-all">${v.password_hash}</span>
+      </div>
+      <button class="btn btn-sm" style="width:100%;font-size:12px" onclick="editUserPass('${v.id}','${nombreCompleto(v)}')">✏️ Cambiar contraseña</button>
+    </div>`;
+  }).join('');
+}
+
+async function deleteUser(uid){
+  if(!confirm('¿Eliminar este usuario y todos sus turnos?')) return;
+  try{
+    await sb(`turnos?usuario_id=eq.${uid}`,{method:'DELETE',headers:{'Prefer':''}});
+    await sb(`usuarios?id=eq.${uid}`,{method:'DELETE',headers:{'Prefer':''}});
+    await loadUsers(); await loadTurnos(); renderAdminUsers(); populateAdminSelects();
+  }catch(e){alert('Error: '+e.message);}
+}
+
+function editUserPass(uid,nombre){
+  const newPass=prompt(`Nueva contraseña para ${nombre} (mínimo 8 caracteres):`);
+  if(!newPass) return;
+  if(newPass.length<8){alert('Mínimo 8 caracteres');return;}
+  sb(`usuarios?id=eq.${uid}`,{method:'PATCH',body:JSON.stringify({password_hash:simpleHash(newPass)})})
+    .then(()=>alert('✓ Contraseña actualizada'))
+    .catch(e=>alert('Error: '+e.message));
+}
+
+// ── Exportar Excel ────────────────────────────────────────────────────
 function exportarExcel(){
   const msg=document.getElementById('export-msg');
   try{
-    const rows=[['Día','Tarea','Franja','Plazas','Voluntario','Club','Vínculo']];
+    const rows=[['Día','Tarea','Franja','Plazas','Voluntario','Club','Vínculo','Teléfono']];
     state.dias.forEach(dia=>{
       const cfg=state.diaConfig[dia.id]||{tareas:{}};
       Object.entries(cfg.tareas||{}).forEach(([tid,fids])=>{
         const tarea=getTarea(tid);
-        (fids||[]).forEach(fid=>{
+        sortedFranjas(fids||[]).forEach(fid=>{
           const franja=getFranja(fid);
+          const slots=getSlotsForTurno(dia.id,tid,fid);
           const vols=getVolsEnTurno(dia.id,tid,fid);
           if(vols.length){
             vols.forEach(v=>{
               const u=allUsers.find(x=>x.id===v.usuario_id);
-              rows.push([dia.label,tarea.nombre,franjaLabel(franja),franja.slots,v.nombre_usuario,u?.club||'',u?.vinculo||'']);
+              rows.push([dia.label,tarea.nombre,franjaLabel(franja),slots,v.nombre_usuario,u?.club||'',u?.vinculo||'',u?.telefono||'']);
             });
           } else {
-            rows.push([dia.label,tarea.nombre,franjaLabel(franja),franja.slots,'(vacío)','','']);
+            rows.push([dia.label,tarea.nombre,franjaLabel(franja),slots,'(vacío)','','','']);
           }
         });
       });
@@ -1017,8 +1211,9 @@ function exportarExcel(){
   }catch(e){msg.innerHTML='<div class="msg msg-err">Error al exportar</div>';}
 }
 
+// ── Arranque ──────────────────────────────────────────────────────────
 (async()=>{
-  const ok = await tryAutoLogin();
+  const ok=await tryAutoLogin();
   if(ok) await initApp();
 })();
 </script>
