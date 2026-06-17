@@ -396,10 +396,15 @@ let allUsers = [];
 
 // ── Supabase ────────────────────────────────────────────────────────
 async function sb(path, opts={}) {
-  const r = await fetch(`${SB_URL}/rest/v1/${path}`, {
+  // Always append apikey as query param to ensure it reaches Supabase
+  const sep = path.includes('?') ? '&' : '?';
+  const url = `${SB_URL}/rest/v1/${path}${sep}apikey=${SB_KEY}`;
+  const r = await fetch(url, {
     headers: {
-      'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`,
-      'Content-Type': 'application/json', 'Prefer': 'return=representation',
+      'apikey': SB_KEY,
+      'Authorization': `Bearer ${SB_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': opts.method === 'DELETE' ? 'return=minimal' : 'return=representation',
       ...opts.headers
     }, ...opts
   });
@@ -595,9 +600,11 @@ function renderCalendar(){
     dc.className='day-card'; dc.style.display=di===0?'block':'none';
     let html=`<div class="day-header ${dia.tipo}" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
       <span>${dia.label}</span><span style="font-size:12px">▾</span></div><div class="day-body">`;
-    const entries=Object.entries(cfg.tareas||{});
-    if(!entries.length) html+='<div style="padding:14px;color:var(--text3);font-size:13px;text-align:center">Sin tareas configuradas</div>';
-    else entries.forEach(([tid,fids])=>{
+    // Order tasks as configured in admin
+    const tareaIds = state.tareas.map(t=>t.id).filter(tid=>cfg.tareas&&cfg.tareas[tid]);
+    if(!tareaIds.length) html+='<div style="padding:14px;color:var(--text3);font-size:13px;text-align:center">Sin tareas configuradas</div>';
+    else tareaIds.forEach(tid=>{
+      const fids=cfg.tareas[tid];
       const t=getTarea(tid);
       html+=`<div class="task-row"><div class="task-name"><span>${t.icon}</span>${t.nombre}</div>`;
       sortedFranjas(fids||[]).forEach(fid=>{
@@ -683,7 +690,8 @@ function renderSignupTasks(){
   if(!diaId){cont.innerHTML='';return;}
   const cfg=state.diaConfig[diaId]||{tareas:{}};
   let html='';
-  Object.entries(cfg.tareas||{}).forEach(([tid,fids])=>{
+  state.tareas.map(t=>t.id).filter(tid=>cfg.tareas&&cfg.tareas[tid]).forEach(tid=>{
+    const fids=cfg.tareas[tid];
     const t=getTarea(tid);
     html+=`<div style="margin-top:12px"><div style="font-size:14px;font-weight:600;color:var(--pk-dark);margin-bottom:6px">${t.icon} ${t.nombre}</div>`;
     sortedFranjas(fids||[]).forEach(fid=>{
@@ -724,7 +732,7 @@ async function apuntarse(diaId,tareaId,franjaId){
 async function desapuntarse(diaId,tareaId,franjaId){
   try{
     await sb(`turnos?dia_id=eq.${diaId}&tarea_id=eq.${tareaId}&franja_id=eq.${franjaId}&usuario_id=eq.${currentUser.id}`,{
-      method:'DELETE', headers:{'Prefer':''}
+      method:'DELETE'
     });
     await loadTurnos();
   }catch(e){alert('Error al desapuntarse: '+e.message);}
@@ -1060,7 +1068,7 @@ async function quitarVoluntario(){
   if(!turnoId){msg.innerHTML='<div class="msg msg-err">Selecciona todos los campos</div>';return;}
   if(!confirm('¿Quitar a este voluntario del turno?')) return;
   try{
-    await sb(`turnos?id=eq.${turnoId}`,{method:'DELETE',headers:{'Prefer':''}});
+    await sb(`turnos?id=eq.${turnoId}`,{method:'DELETE'});
     await loadTurnos(); renderCalendar();
     document.getElementById('del-vol').innerHTML='<option value="">Selecciona voluntario...</option>';
     msg.innerHTML='<div class="msg msg-ok">✓ Voluntario quitado</div>';
@@ -1122,7 +1130,7 @@ function renderAdminUsers(){
       </div>
       <div style="display:flex;gap:6px">
         <button class="btn btn-sm" style="flex:1;font-size:12px" onclick="editUserPass('${v.id}','${nombreCompleto(v)}')">🔑 Cambiar contraseña</button>
-        <button class="btn btn-sm" style="flex:1;font-size:12px" onclick="editUserData('${v.id}')">✏️ Editar datos</button>
+        <button class="btn btn-sm" style="flex:1;font-size:12px" onclick="editUserData('${v.id}')">✏️ Editar</button>
       </div>
     </div>`;
   }).join('');
@@ -1183,8 +1191,8 @@ async function saveUserData(uid){
 async function deleteUser(uid){
   if(!confirm('¿Eliminar este usuario y todos sus turnos?')) return;
   try{
-    await sb(`turnos?usuario_id=eq.${uid}`,{method:'DELETE',headers:{'Prefer':''}});
-    await sb(`usuarios?id=eq.${uid}`,{method:'DELETE',headers:{'Prefer':''}});
+    await sb(`turnos?usuario_id=eq.${uid}`,{method:'DELETE'});
+    await sb(`usuarios?id=eq.${uid}`,{method:'DELETE'});
     await loadUsers(); await loadTurnos(); renderAdminUsers(); populateAdminSelects();
   }catch(e){alert('Error: '+e.message);}
 }
@@ -1205,7 +1213,8 @@ function exportarExcel(){
     const rows=[['Día','Tarea','Franja','Plazas','Voluntario','Club','Vínculo','Teléfono']];
     state.dias.forEach(dia=>{
       const cfg=state.diaConfig[dia.id]||{tareas:{}};
-      Object.entries(cfg.tareas||{}).forEach(([tid,fids])=>{
+      state.tareas.map(t=>t.id).filter(tid=>cfg.tareas&&cfg.tareas[tid]).forEach(tid=>{
+    const fids=cfg.tareas[tid];
         const tarea=getTarea(tid);
         sortedFranjas(fids||[]).forEach(fid=>{
           const franja=getFranja(fid);
