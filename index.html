@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Tu Turno ZUtaIK</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23c2185b'/><text y='72' x='50' text-anchor='middle' font-size='48' font-family='Arial Black,sans-serif' font-weight='900' fill='white'>ZtI</text></svg>">
 <style>
@@ -98,13 +101,9 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
 .tabs-login{display:flex;background:var(--bg);border-radius:10px;padding:3px;margin-bottom:16px}
 .tab-login{flex:1;padding:8px;text-align:center;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;color:var(--text2);border:none;background:transparent}
 .tab-login.active{background:var(--pk);color:#fff}
-/* Drag reorder */
-.drag-item{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border);cursor:default}
+/* Reorder items */
+.drag-item{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border)}
 .drag-item:last-child{border-bottom:none}
-.drag-handle{cursor:grab;color:var(--text3);font-size:18px;padding:0 4px;touch-action:none;user-select:none}
-.drag-handle:active{cursor:grabbing}
-.drag-item.dragging{opacity:0.4}
-.drag-item.drag-over{border-top:2px solid var(--pk)}
 /* Voluntarios turnos */
 .vol-turnos{background:var(--bg);border-radius:10px;padding:8px 10px;margin-top:6px}
 .vol-turno-item{font-size:12px;color:var(--text2);padding:3px 0;border-bottom:1px solid var(--border)}
@@ -252,7 +251,7 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
         </select>
         <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="addDia()">Añadir día</button>
         <div class="sep"></div>
-        <p style="font-size:11px;color:var(--text3);margin-bottom:8px">Arrastra ≡ para reordenar</p>
+        <p style="font-size:11px;color:var(--text3);margin-bottom:8px">Usa ▲▼ para reordenar</p>
         <div id="dias-list"></div>
       </div>
     </div>
@@ -272,7 +271,7 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
         </div>
         <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="addTarea()">Añadir tarea</button>
         <div class="sep"></div>
-        <p style="font-size:11px;color:var(--text3);margin-bottom:8px">Arrastra ≡ para reordenar</p>
+        <p style="font-size:11px;color:var(--text3);margin-bottom:8px">Usa ▲▼ para reordenar</p>
         <div id="tareas-list"></div>
       </div>
     </div>
@@ -286,7 +285,7 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
         <select id="new-franja-fin"><option value="">Selecciona hora...</option></select>
         <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="addFranja()">Añadir franja</button>
         <div class="sep"></div>
-        <p style="font-size:11px;color:var(--text3);margin-bottom:8px">Arrastra ≡ para reordenar</p>
+        <p style="font-size:11px;color:var(--text3);margin-bottom:8px">Usa ▲▼ para reordenar</p>
         <div id="franjas-list"></div>
       </div>
     </div>
@@ -414,6 +413,13 @@ function simpleHash(str) {
   let h = 0;
   for (let i = 0; i < str.length; i++) { h = ((h<<5)-h)+str.charCodeAt(i); h|=0; }
   return 'h'+Math.abs(h).toString(16);
+}
+
+function formatPhone(tel){
+  if(!tel) return '';
+  const digits = tel.replace(/\D/g,'');
+  if(digits.length===9) return digits.slice(0,3)+' '+digits.slice(3,6)+' '+digits.slice(6);
+  return tel;
 }
 
 function toUpper(str){ return (str||'').toUpperCase().trim(); }
@@ -750,7 +756,7 @@ function renderVolList(){
     }
     return `<div class="vol-item" style="flex-direction:column;align-items:flex-start;gap:6px">
       <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
-        <div><div class="vol-name">${nombreCompleto(v)}</div><div class="vol-meta">${v.vinculo}${v.telefono?' · '+v.telefono:''}</div></div>
+        <div><div class="vol-name">${nombreCompleto(v)}</div><div class="vol-meta">${v.vinculo}${v.telefono?' · '+formatPhone(v.telefono):''}</div></div>
         <span class="badge ${bc}">${v.club}</span>
       </div>${turnosHtml}
     </div>`;
@@ -770,70 +776,25 @@ function renderAdminPanels(){
   renderAdminUsers(); populateAdminSelects();
 }
 
-// ── Drag reorder ─────────────────────────────────────────────────────
-function makeDraggable(containerId, arr, onReorder){
-  const container=document.getElementById(containerId);
-  if(!container) return;
-  let dragged=null;
-  container.querySelectorAll('.drag-item').forEach((item,i)=>{
-    item.dataset.idx=i;
-    const handle=item.querySelector('.drag-handle');
-    handle.addEventListener('mousedown', e=>{
-      dragged=item; item.classList.add('dragging');
-      e.preventDefault();
-    });
-    handle.addEventListener('touchstart', e=>{
-      dragged=item; item.classList.add('dragging');
-    },{passive:true});
-    item.addEventListener('dragover', e=>{e.preventDefault(); item.classList.add('drag-over');});
-    item.addEventListener('dragleave', ()=>item.classList.remove('drag-over'));
-    item.addEventListener('drop', e=>{
-      e.preventDefault(); item.classList.remove('drag-over');
-      if(!dragged||dragged===item) return;
-      const from=parseInt(dragged.dataset.idx);
-      const to=parseInt(item.dataset.idx);
-      const moved=arr.splice(from,1)[0];
-      arr.splice(to,0,moved);
-      onReorder();
-    });
-    item.setAttribute('draggable','true');
-    item.addEventListener('dragend',()=>{dragged=null; item.classList.remove('dragging');});
-  });
-  // Touch reorder
-  let touchTarget=null;
-  document.addEventListener('touchmove', e=>{
-    if(!dragged) return;
-    const touch=e.touches[0];
-    const el=document.elementFromPoint(touch.clientX,touch.clientY);
-    const target=el?.closest('.drag-item');
-    if(target&&target!==dragged){
-      if(touchTarget) touchTarget.classList.remove('drag-over');
-      touchTarget=target; target.classList.add('drag-over');
-    }
-  },{passive:true});
-  document.addEventListener('touchend', ()=>{
-    if(dragged&&touchTarget&&touchTarget!==dragged){
-      const from=parseInt(dragged.dataset.idx);
-      const to=parseInt(touchTarget.dataset.idx);
-      const moved=arr.splice(from,1)[0];
-      arr.splice(to,0,moved);
-      onReorder();
-    }
-    if(dragged) dragged.classList.remove('dragging');
-    if(touchTarget) touchTarget.classList.remove('drag-over');
-    dragged=null; touchTarget=null;
-  });
+// ── Reordenar con botones ▲▼ ─────────────────────────────────────────
+function moveItem(arr, idx, dir, callback){
+  const newIdx = idx + dir;
+  if(newIdx < 0 || newIdx >= arr.length) return;
+  const tmp = arr[idx]; arr[idx] = arr[newIdx]; arr[newIdx] = tmp;
+  callback();
 }
 
 // ── Días ─────────────────────────────────────────────────────────────
 function renderDiasList(){
   document.getElementById('dias-list').innerHTML=state.dias.map((d,i)=>`
-    <div class="drag-item" data-idx="${i}">
-      <span class="drag-handle">≡</span>
+    <div class="drag-item">
       <div style="flex:1"><div style="font-size:14px;font-weight:600">${d.label}</div><div style="font-size:11px;color:var(--text2)">${d.tipo}</div></div>
-      <button class="btn btn-sm btn-danger" onclick="removeDia('${d.id}')">🗑</button>
+      <div style="display:flex;gap:4px;align-items:center">
+        ${i>0?`<button class="btn btn-sm" onclick="moveItem(state.dias,${i},-1,()=>{saveConfig('dias',state.dias);renderDiasList();renderCalendar();})" style="padding:4px 8px">▲</button>`:'<span style="width:32px"></span>'}
+        ${i<state.dias.length-1?`<button class="btn btn-sm" onclick="moveItem(state.dias,${i},1,()=>{saveConfig('dias',state.dias);renderDiasList();renderCalendar();})" style="padding:4px 8px">▼</button>`:'<span style="width:32px"></span>'}
+        <button class="btn btn-sm btn-danger" onclick="removeDia('${d.id}')">🗑</button>
+      </div>
     </div>`).join('');
-  makeDraggable('dias-list', state.dias, async()=>{await saveConfig('dias',state.dias);renderDiasList();renderCalendar();});
 }
 
 async function addDia(){
@@ -861,12 +822,14 @@ async function removeDia(id){
 // ── Tareas ────────────────────────────────────────────────────────────
 function renderTareasList(){
   document.getElementById('tareas-list').innerHTML=state.tareas.map((t,i)=>`
-    <div class="drag-item" data-idx="${i}">
-      <span class="drag-handle">≡</span>
+    <div class="drag-item">
       <div style="flex:1;font-size:14px;font-weight:600">${t.icon} ${t.nombre}</div>
-      <button class="btn btn-sm btn-danger" onclick="removeTarea('${t.id}')">🗑</button>
+      <div style="display:flex;gap:4px;align-items:center">
+        ${i>0?`<button class="btn btn-sm" onclick="moveItem(state.tareas,${i},-1,()=>{saveConfig('tareas',state.tareas);renderTareasList();})" style="padding:4px 8px">▲</button>`:'<span style="width:32px"></span>'}
+        ${i<state.tareas.length-1?`<button class="btn btn-sm" onclick="moveItem(state.tareas,${i},1,()=>{saveConfig('tareas',state.tareas);renderTareasList();})" style="padding:4px 8px">▼</button>`:'<span style="width:32px"></span>'}
+        <button class="btn btn-sm btn-danger" onclick="removeTarea('${t.id}')">🗑</button>
+      </div>
     </div>`).join('');
-  makeDraggable('tareas-list', state.tareas, async()=>{await saveConfig('tareas',state.tareas);renderTareasList();});
 }
 
 async function addTarea(){
@@ -900,12 +863,14 @@ function populateHoras(){
 
 function renderFranjasList(){
   document.getElementById('franjas-list').innerHTML=state.franjas.map((f,i)=>`
-    <div class="drag-item" data-idx="${i}">
-      <span class="drag-handle">≡</span>
+    <div class="drag-item">
       <div style="flex:1;font-size:14px;font-weight:600">${franjaLabel(f)}</div>
-      <button class="btn btn-sm btn-danger" onclick="removeFranja('${f.id}')">🗑</button>
+      <div style="display:flex;gap:4px;align-items:center">
+        ${i>0?`<button class="btn btn-sm" onclick="moveItem(state.franjas,${i},-1,()=>{saveConfig('franjas',state.franjas);renderFranjasList();})" style="padding:4px 8px">▲</button>`:'<span style="width:32px"></span>'}
+        ${i<state.franjas.length-1?`<button class="btn btn-sm" onclick="moveItem(state.franjas,${i},1,()=>{saveConfig('franjas',state.franjas);renderFranjasList();})" style="padding:4px 8px">▼</button>`:'<span style="width:32px"></span>'}
+        <button class="btn btn-sm btn-danger" onclick="removeFranja('${f.id}')">🗑</button>
+      </div>
     </div>`).join('');
-  makeDraggable('franjas-list', state.franjas, async()=>{await saveConfig('franjas',state.franjas);renderFranjasList();});
 }
 
 async function addFranja(){
@@ -1145,7 +1110,7 @@ function renderAdminUsers(){
         <div>
           <div class="vol-name">${nombreCompleto(v)}</div>
           <div class="vol-meta">${v.email}</div>
-          <div class="vol-meta">${v.vinculo}${v.telefono?' · '+v.telefono:''}</div>
+          <div class="vol-meta">${v.vinculo}${v.telefono?' · '+formatPhone(v.telefono):''}</div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
           <span class="badge ${bc}">${v.club}</span>
@@ -1155,9 +1120,64 @@ function renderAdminUsers(){
       <div style="font-size:11px;background:var(--bg);padding:5px 8px;border-radius:6px;width:100%;color:var(--text2)">
         🔑 Contraseña (hash): <span style="font-family:monospace;word-break:break-all">${v.password_hash}</span>
       </div>
-      <button class="btn btn-sm" style="width:100%;font-size:12px" onclick="editUserPass('${v.id}','${nombreCompleto(v)}')">✏️ Cambiar contraseña</button>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-sm" style="flex:1;font-size:12px" onclick="editUserPass('${v.id}','${nombreCompleto(v)}')">🔑 Cambiar contraseña</button>
+        <button class="btn btn-sm" style="flex:1;font-size:12px" onclick="editUserData('${v.id}')">✏️ Editar datos</button>
+      </div>
     </div>`;
   }).join('');
+}
+
+function editUserData(uid){
+  const u = allUsers.find(x=>x.id===uid);
+  if(!u) return;
+  openModal(`<div class="modal-title">✏️ Editar datos de ${nombreCompleto(u)}</div>
+    <div class="label">Nombre</div>
+    <input type="text" id="edit-nombre" value="${u.nombre}" style="text-transform:uppercase">
+    <div class="label">Primer apellido</div>
+    <input type="text" id="edit-ap1" value="${u.apellido1}" style="text-transform:uppercase">
+    <div class="label">Segundo apellido</div>
+    <input type="text" id="edit-ap2" value="${u.apellido2||''}" style="text-transform:uppercase">
+    <div class="label">Club</div>
+    <select id="edit-club">
+      <option value="BM ZUAZO" ${u.club==='BM ZUAZO'?'selected':''}>BM Zuazo</option>
+      <option value="IKHOBA KK" ${u.club==='IKHOBA KK'?'selected':''}>Ikhoba KK</option>
+      <option value="EXTERNO/A" ${u.club==='EXTERNO/A'?'selected':''}>Externo/a</option>
+    </select>
+    <div class="label">Vínculo</div>
+    <select id="edit-vinculo">
+      <option value="JUGADOR/A" ${u.vinculo==='JUGADOR/A'?'selected':''}>Jugador/a</option>
+      <option value="ENTRENADOR/A" ${u.vinculo==='ENTRENADOR/A'?'selected':''}>Entrenador/a</option>
+      <option value="DIRECTIVO/A" ${u.vinculo==='DIRECTIVO/A'?'selected':''}>Directivo/a</option>
+      <option value="PADRE/MADRE" ${u.vinculo==='PADRE/MADRE'?'selected':''}>Padre/Madre</option>
+      <option value="FAMILIAR" ${u.vinculo==='FAMILIAR'?'selected':''}>Familiar</option>
+      <option value="COLABORADOR/A" ${u.vinculo==='COLABORADOR/A'?'selected':''}>Colaborador/a</option>
+      <option value="OTRO" ${u.vinculo==='OTRO'?'selected':''}>Otro</option>
+    </select>
+    <div class="label">Teléfono</div>
+    <input type="tel" id="edit-tel" value="${u.telefono||''}">
+    <div id="edit-user-msg"></div>
+    <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="saveUserData('${uid}')">Guardar cambios</button>`);
+}
+
+async function saveUserData(uid){
+  const nombre = toUpper(document.getElementById('edit-nombre').value);
+  const ap1 = toUpper(document.getElementById('edit-ap1').value);
+  const ap2 = toUpper(document.getElementById('edit-ap2').value);
+  const club = document.getElementById('edit-club').value;
+  const vinculo = document.getElementById('edit-vinculo').value;
+  const tel = document.getElementById('edit-tel').value.trim();
+  const msg = document.getElementById('edit-user-msg');
+  if(!nombre||!ap1){msg.innerHTML='<div class="msg msg-err">Nombre y apellido son obligatorios</div>';return;}
+  msg.innerHTML='<div class="msg msg-info">Guardando...</div>';
+  try{
+    await sb(`usuarios?id=eq.${uid}`,{method:'PATCH',body:JSON.stringify({nombre,apellido1:ap1,apellido2:ap2,club,vinculo,telefono:tel})});
+    // Update nombre_usuario in turnos
+    const fullName = nombre+' '+ap1+(ap2?' '+ap2:'');
+    await sb(`turnos?usuario_id=eq.${uid}`,{method:'PATCH',body:JSON.stringify({nombre_usuario:fullName})});
+    await loadUsers(); await loadTurnos();
+    closeModal(); renderAdminUsers(); renderVolList(); renderCalendar();
+  }catch(e){msg.innerHTML=`<div class="msg msg-err">Error: ${e.message}</div>`;}
 }
 
 async function deleteUser(uid){
