@@ -216,6 +216,7 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
       <select id="signup-dia" onchange="renderSignupTasks()">
         <option value="">Selecciona día...</option>
       </select>
+      <div id="signup-dia-sticky" style="display:none;position:sticky;top:120px;z-index:50;background:var(--pk);color:#fff;padding:8px 12px;border-radius:10px;margin-top:8px;font-size:13px;font-weight:600;text-align:center"></div>
       <div id="signup-tasks"></div>
     </div>
   </div>
@@ -711,7 +712,10 @@ function initApuntarse(){
 function renderSignupTasks(){
   const diaId=document.getElementById('signup-dia').value;
   const cont=document.getElementById('signup-tasks');
-  if(!diaId){cont.innerHTML='';return;}
+  const sticky=document.getElementById('signup-dia-sticky');
+  if(!diaId){cont.innerHTML='';if(sticky)sticky.style.display='none';return;}
+  const diaLabel=state.dias.find(d=>d.id===diaId)?.label||'';
+  if(sticky){sticky.textContent='📅 '+diaLabel;sticky.style.display='block';}
   const cfg=state.diaConfig[diaId]||{tareas:{}};
   let html='';
   state.tareas.map(t=>t.id).filter(tid=>cfg.tareas&&cfg.tareas[tid]).forEach(tid=>{
