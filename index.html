@@ -8,6 +8,13 @@
 <meta http-equiv="Expires" content="0">
 <title>Tu Turno ZUtaIK</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23c2185b'/><text y='72' x='50' text-anchor='middle' font-size='48' font-family='Arial Black,sans-serif' font-weight='900' fill='white'>ZtI</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23c2185b'/><text y='72' x='50' text-anchor='middle' font-size='48' font-family='Arial Black,sans-serif' font-weight='900' fill='white'>ZtI</text></svg>">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ZUtaIK">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#c2185b">
+<link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;Tu Turno ZUtaIK&quot;,&quot;short_name&quot;:&quot;ZUtaIK&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;%23c2185b&quot;,&quot;theme_color&quot;:&quot;%23c2185b&quot;,&quot;icons&quot;:[{&quot;src&quot;:&quot;data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23c2185b'/><text y='72' x='50' text-anchor='middle' font-size='48' font-family='Arial Black,sans-serif' font-weight='900' fill='white'>ZtI</text></svg>&quot;,&quot;sizes&quot;:&quot;192x192&quot;}]}">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -235,6 +242,7 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
       <button class="admin-tab-btn" onclick="showAdminTab('gestionar',this)">Gestionar</button>
       <button class="admin-tab-btn" onclick="showAdminTab('usuarios',this)">Usuarios</button>
       <button class="admin-tab-btn" onclick="showAdminTab('exportar',this)">Exportar</button>
+      <button class="admin-tab-btn" onclick="showAdminTab('vistazo',this)">📊 Vistazo</button>
     </div>
 
     <div id="admin-tab-dias" class="tab-content active">
@@ -295,6 +303,7 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
         <div class="card-title">⚙️ Configurar turnos por día</div>
         <div class="label">Día</div>
         <select id="asig-dia" onchange="renderAsigTareas()"><option value="">Selecciona día...</option></select>
+        <div id="asig-dia-sticky" style="display:none;position:sticky;top:120px;z-index:50;background:var(--pk);color:#fff;padding:8px 12px;border-radius:10px;margin-top:8px;font-size:13px;font-weight:600;text-align:center"></div>
         <div id="asig-tareas-panel"></div>
       </div>
     </div>
@@ -375,16 +384,20 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
       <div class="card">
         <div class="card-title">📊 Exportar a Excel</div>
         <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Descarga el calendario completo con todos los voluntarios asignados.</p>
-        <button class="btn btn-primary" style="width:100%" onclick="exportarExcel()">⬇️ Descargar Excel (.xlsx)</button>
+        <button class="btn btn-primary" style="width:100%" onclick="exportarExcel()">⬇️ Descargar CSV (Excel)</button>
         <div id="export-msg"></div>
       </div>
+    </div>
+
+    <div id="admin-tab-vistazo" class="tab-content">
+      <div id="vistazo-content"><div class="loading"><div class="spinner"></div><br>Calculando...</div></div>
     </div>
   </div>
 </div>
 
 <div id="modal-container"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<!-- xlsx loaded dynamically -->
 <script>
 const SB_URL = 'https://gyhmskhjqrfmrlkhnsmb.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5aG1za2hqcXJmbXJsa2huc21iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NjM1MzMsImV4cCI6MjA5NzEzOTUzM30.pb2-JujA3b7RLSnvl85kotFzmVNHKkjTfUWU0uJGGps';
@@ -641,8 +654,27 @@ function showSlotDetail(diaId,tareaId,franjaId){
       </div>`;
     }
   }
+  // Show comments for all volunteers in this slot
+  const volsConComentario = v.filter(x=>x.comentario&&x.comentario.trim());
+  if(volsConComentario.length){
+    html+=`<div style="margin-top:10px;padding:8px 10px;background:var(--pk-light);border-radius:8px;border:1px solid var(--border2)">
+      <div style="font-size:12px;font-weight:600;color:var(--pk-dark);margin-bottom:4px">💬 Comentarios:</div>`;
+    volsConComentario.forEach(x=>{
+      html+=`<div style="font-size:12px;color:var(--text);padding:3px 0;border-bottom:1px solid var(--border)">
+        <span style="font-weight:600">${x.nombre_usuario}:</span> ${x.comentario}
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+
   if(yaApuntado){
-    html+=`<button class="btn btn-danger" style="width:100%;margin-top:12px" onclick="desapuntarseModal('${diaId}','${tareaId}','${franjaId}')">Desapuntarme de este turno</button>`;
+    const miTurno=v.find(x=>x.usuario_id===currentUser.id);
+    html+=`<div style="margin-top:12px">
+      <div class="label" style="margin-top:0">💬 Tu comentario (visible para todos)</div>
+      <textarea id="mi-comentario" rows="2" style="width:100%;padding:8px;border:1px solid var(--border2);border-radius:8px;font-size:13px;resize:none" placeholder="Ej: Llegaré un poco tarde...">${miTurno?.comentario||''}</textarea>
+      <button class="btn btn-primary btn-sm" style="width:100%;margin-top:6px" onclick="guardarComentario('${miTurno?.id}')">Guardar comentario</button>
+    </div>
+    <button class="btn btn-danger" style="width:100%;margin-top:8px" onclick="desapuntarseModal('${diaId}','${tareaId}','${franjaId}')">Desapuntarme de este turno</button>`;
   } else if(v.length<slots){
     html+=`<button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="apuntarseDesdeModal('${diaId}','${tareaId}','${franjaId}')">✋ Apuntarme</button>`;
   } else {
@@ -743,6 +775,16 @@ async function desapuntarse(diaId,tareaId,franjaId){
   }catch(e){alert('Error al desapuntarse: '+e.message);}
 }
 
+async function guardarComentario(turnoId){
+  const comentario=document.getElementById('mi-comentario')?.value||'';
+  try{
+    await sb(`turnos?id=eq.${turnoId}`,{method:'PATCH',body:JSON.stringify({comentario})});
+    await loadTurnos();
+    closeModal();
+    alert('✓ Comentario guardado');
+  }catch(e){alert('Error al guardar comentario: '+e.message);}
+}
+
 async function apuntarseSignup(d,t,f){await apuntarse(d,t,f);renderSignupTasks();}
 async function desapuntarseSignup(d,t,f){await desapuntarse(d,t,f);renderSignupTasks();}
 
@@ -782,6 +824,7 @@ function showAdminTab(tab,btn){
   document.querySelectorAll('.admin-tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('admin-tab-'+tab).classList.add('active');
   if(btn) btn.classList.add('active');
+  if(tab==='vistazo') renderVistazo();
 }
 
 function renderAdminPanels(){
@@ -906,7 +949,11 @@ async function removeFranja(id){
 function renderAsigTareas(){
   const diaId=document.getElementById('asig-dia').value;
   const panel=document.getElementById('asig-tareas-panel');
-  if(!diaId){panel.innerHTML='';return;}
+  const sticky=document.getElementById('asig-dia-sticky');
+  if(!diaId){panel.innerHTML='';sticky.style.display='none';return;}
+  const diaLabel=state.dias.find(d=>d.id===diaId)?.label||'';
+  sticky.textContent='📅 '+diaLabel;
+  sticky.style.display='block';
   if(!state.diaConfig[diaId]) state.diaConfig[diaId]={tareas:{},slots:{}};
   if(!state.diaConfig[diaId].slots) state.diaConfig[diaId].slots={};
   const cfg=state.diaConfig[diaId];
@@ -1221,37 +1268,167 @@ function editUserPass(uid,nombre){
 }
 
 // ── Exportar Excel ────────────────────────────────────────────────────
+function renderVistazo(){
+  const cont=document.getElementById('vistazo-content');
+  if(!cont) return;
+
+  let totalSlots=0, totalFilled=0;
+  const porDia={}, porTarea={}, porClub={}, porUser={};
+
+  state.dias.forEach(dia=>{
+    const cfg=state.diaConfig[dia.id]||{tareas:{}};
+    const tareaIds=state.tareas.map(t=>t.id).filter(tid=>cfg.tareas&&cfg.tareas[tid]);
+    let diaSlots=0, diaFilled=0;
+    tareaIds.forEach(tid=>{
+      const tarea=getTarea(tid);
+      const fids=cfg.tareas[tid]||[];
+      if(!porTarea[tid]) porTarea[tid]={nombre:tarea.nombre,icon:tarea.icon,slots:0,filled:0};
+      fids.forEach(fid=>{
+        const slots=getSlotsForTurno(dia.id,tid,fid);
+        const vols=getVolsEnTurno(dia.id,tid,fid);
+        totalSlots+=slots; diaSlots+=slots;
+        porTarea[tid].slots+=slots;
+        const n=Math.min(vols.length,slots);
+        totalFilled+=n; diaFilled+=n; porTarea[tid].filled+=n;
+        vols.forEach(v=>{
+          const u=allUsers.find(x=>x.id===v.usuario_id);
+          const club=(u?.club||'Desconocido').toUpperCase();
+          if(!porClub[club]) porClub[club]={turnos:0};
+          porClub[club].turnos++;
+          const uid=v.usuario_id;
+          if(!porUser[uid]) porUser[uid]={nombre:v.nombre_usuario,club:u?.club||'',turnos:0};
+          porUser[uid].turnos++;
+        });
+      });
+    });
+    porDia[dia.id]={label:dia.label,tipo:dia.tipo,slots:diaSlots,filled:diaFilled};
+  });
+
+  const pct=(f,t)=>t>0?Math.round((f/t)*100):0;
+  const bar=(f,t,col)=>`<div style="height:6px;border-radius:3px;background:var(--border);margin-top:4px;overflow:hidden"><div style="height:100%;border-radius:3px;background:${col};width:${pct(f,t)}%"></div></div>`;
+  const col=(p)=>p>=80?'#2e7d32':p>=50?'#e65100':'#c62828';
+
+  let html=`<div class="card"><div class="card-title">📊 Resumen general</div>
+    <div style="display:flex;gap:12px;text-align:center">
+      <div style="flex:1;background:var(--pk-light);border-radius:10px;padding:12px">
+        <div style="font-size:24px;font-weight:700;color:var(--pk)">${pct(totalFilled,totalSlots)}%</div>
+        <div style="font-size:11px;color:var(--text2)">Cobertura total</div>
+      </div>
+      <div style="flex:1;background:#e8f5e9;border-radius:10px;padding:12px">
+        <div style="font-size:24px;font-weight:700;color:#2e7d32">${totalFilled}</div>
+        <div style="font-size:11px;color:var(--text2)">Turnos cubiertos</div>
+      </div>
+      <div style="flex:1;background:#fff3e0;border-radius:10px;padding:12px">
+        <div style="font-size:24px;font-weight:700;color:#e65100">${totalSlots-totalFilled}</div>
+        <div style="font-size:11px;color:var(--text2)">Turnos libres</div>
+      </div>
+    </div>
+  </div>`;
+
+  // Por club
+  html+=`<div class="card"><div class="card-title">🏅 Participación por club</div>`;
+  const totalTurnos=Object.values(porClub).reduce((a,b)=>a+b.turnos,0);
+  Object.entries(porClub).sort((a,b)=>b[1].turnos-a[1].turnos).forEach(([club,d])=>{
+    const p=pct(d.turnos,totalTurnos||1);
+    const bcls=club.includes('ZUAZO')?'#1565c0':club.includes('IKHOBA')?'#2e7d32':'#e65100';
+    html+=`<div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600">
+        <span style="color:${bcls}">${club}</span>
+        <span>${d.turnos} turnos (${p}%)</span>
+      </div>${bar(d.turnos,totalTurnos,'#c2185b')}</div>`;
+  });
+  html+=`</div>`;
+
+  // Por día
+  html+=`<div class="card"><div class="card-title">📅 Cobertura por día</div>`;
+  Object.values(porDia).forEach(d=>{
+    const p=pct(d.filled,d.slots);
+    html+=`<div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;font-size:13px">
+        <span style="font-weight:600">${d.label}</span>
+        <span style="color:${col(p)};font-weight:600">${d.filled}/${d.slots} (${p}%)</span>
+      </div>${bar(d.filled,d.slots,col(p))}</div>`;
+  });
+  html+=`</div>`;
+
+  // Por tarea
+  html+=`<div class="card"><div class="card-title">✅ Cobertura por tarea</div>`;
+  Object.values(porTarea).sort((a,b)=>b.slots-a.slots).forEach(t=>{
+    const p=pct(t.filled,t.slots);
+    html+=`<div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;font-size:13px">
+        <span style="font-weight:600">${t.icon} ${t.nombre}</span>
+        <span style="color:${col(p)};font-weight:600">${t.filled}/${t.slots} (${p}%)</span>
+      </div>${bar(t.filled,t.slots,col(p))}</div>`;
+  });
+  html+=`</div>`;
+
+  // Top voluntarios
+  const topUsers=Object.values(porUser).sort((a,b)=>b.turnos-a.turnos).slice(0,15);
+  html+=`<div class="card"><div class="card-title">🏆 Voluntarios más activos</div>`;
+  topUsers.forEach((u,i)=>{
+    const bcls=u.club.toUpperCase().includes('ZUAZO')?'badge-bm':u.club.toUpperCase().includes('IKHOBA')?'badge-fk':'badge-ext';
+    html+=`<div class="vol-item">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:16px;font-weight:700;color:var(--pk-dark);min-width:24px">${i+1}</span>
+        <div><div class="vol-name" style="font-size:13px">${u.nombre}</div><span class="badge ${bcls}" style="font-size:10px">${u.club}</span></div>
+      </div>
+      <div style="text-align:right"><div style="font-size:18px;font-weight:700;color:var(--pk)">${u.turnos}</div><div style="font-size:10px;color:var(--text2)">turnos</div></div>
+    </div>`;
+  });
+  html+=`</div>`;
+
+  // Usuarios registrados por club
+  html+=`<div class="card"><div class="card-title">👥 Usuarios registrados</div>
+    <div style="display:flex;gap:8px;text-align:center">`;
+  const clubCounts={};
+  allUsers.forEach(u=>{const c=(u.club||'').toUpperCase(); clubCounts[c]=(clubCounts[c]||0)+1;});
+  Object.entries(clubCounts).forEach(([club,n])=>{
+    const bcls=club.includes('ZUAZO')?'#1565c0':club.includes('IKHOBA')?'#2e7d32':'#e65100';
+    html+=`<div style="flex:1;background:var(--bg);border-radius:10px;padding:10px;border:1px solid var(--border)">
+      <div style="font-size:22px;font-weight:700;color:${bcls}">${n}</div>
+      <div style="font-size:10px;color:var(--text2)">${club}</div>
+    </div>`;
+  });
+  html+=`</div></div>`;
+
+  cont.innerHTML=html;
+}
+
 function exportarExcel(){
   const msg=document.getElementById('export-msg');
   try{
-    const rows=[['Día','Tarea','Franja','Plazas','Voluntario','Club','Vínculo','Teléfono']];
-    state.dias.forEach(dia=>{
+    const rows=[['Dia','Tarea','Franja Inicio','Franja Fin','Plazas','Voluntario','Club','Vinculo','Telefono','Comentario']];
+    state.dias.forEach(function(dia){
       const cfg=state.diaConfig[dia.id]||{tareas:{}};
-      state.tareas.map(t=>t.id).filter(tid=>cfg.tareas&&cfg.tareas[tid]).forEach(tid=>{
-    const fids=cfg.tareas[tid];
+      const tareaIds=state.tareas.map(function(t){return t.id;}).filter(function(tid){return cfg.tareas&&cfg.tareas[tid];});
+      tareaIds.forEach(function(tid){
         const tarea=getTarea(tid);
-        (fids||[]).forEach(fid=>{
+        const fids=cfg.tareas[tid]||[];
+        fids.forEach(function(fid){
           const franja=getFranja(fid);
           const slots=getSlotsForTurno(dia.id,tid,fid);
           const vols=getVolsEnTurno(dia.id,tid,fid);
           if(vols.length){
-            vols.forEach(v=>{
-              const u=allUsers.find(x=>x.id===v.usuario_id);
-              rows.push([dia.label,tarea.nombre,franjaLabel(franja),slots,v.nombre_usuario,u?.club||'',u?.vinculo||'',u?.telefono||'']);
+            vols.forEach(function(v){
+              const u=allUsers.find(function(x){return x.id===v.usuario_id;});
+              rows.push([dia.label,tarea.nombre,franja.label||'',franja.labelFin||'',slots,v.nombre_usuario,u?u.club:'',u?u.vinculo:'',u?u.telefono:'',v.comentario||'']);
             });
           } else {
-            rows.push([dia.label,tarea.nombre,franjaLabel(franja),slots,'(vacío)','','','']);
+            for(var i=0;i<slots;i++) rows.push([dia.label,tarea.nombre,franja.label||'',franja.labelFin||'',slots,'(vacio)','','','','']);
           }
         });
       });
     });
-    const ws=XLSX.utils.aoa_to_sheet(rows);
-    const wb=XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb,'Turnos',ws);
-    XLSX.writeFile(wb,'TuTurnoZUtaIK.xlsx');
-    msg.innerHTML='<div class="msg msg-ok">✓ Excel descargado</div>';
-    setTimeout(()=>msg.innerHTML='',3000);
-  }catch(e){msg.innerHTML='<div class="msg msg-err">Error al exportar</div>';}
+    var csv=rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');
+    a.href=url; a.download='TuTurnoZUtaIK.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    msg.innerHTML='<div class="msg msg-ok">Descargado. Abrelo con Excel.</div>';
+    setTimeout(function(){msg.innerHTML='';},4000);
+  }catch(e){msg.innerHTML='<div class="msg msg-err">Error: '+e.message+'</div>';}
 }
 
 // ── Arranque ──────────────────────────────────────────────────────────
