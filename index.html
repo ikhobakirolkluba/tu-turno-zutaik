@@ -7,14 +7,14 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Tu Turno ZUtaIK</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23c2185b'/><text y='72' x='50' text-anchor='middle' font-size='48' font-family='Arial Black,sans-serif' font-weight='900' fill='white'>ZtI</text></svg>">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23c2185b'/><text y='72' x='50' text-anchor='middle' font-size='48' font-family='Arial Black,sans-serif' font-weight='900' fill='white'>ZtI</text></svg>">
+<link rel="icon" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="ZUtaIK">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#c2185b">
-<link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;Tu Turno ZUtaIK&quot;,&quot;short_name&quot;:&quot;ZUtaIK&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;%23c2185b&quot;,&quot;theme_color&quot;:&quot;%23c2185b&quot;,&quot;icons&quot;:[{&quot;src&quot;:&quot;data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23c2185b'/><text y='72' x='50' text-anchor='middle' font-size='48' font-family='Arial Black,sans-serif' font-weight='900' fill='white'>ZtI</text></svg>&quot;,&quot;sizes&quot;:&quot;192x192&quot;}]}">
+<link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;Tu Turno ZUtaIK&quot;,&quot;short_name&quot;:&quot;ZUtaIK&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;%23fce4ec&quot;,&quot;theme_color&quot;:&quot;%23c2185b&quot;,&quot;icons&quot;:[{&quot;src&quot;:&quot;logo.png&quot;,&quot;sizes&quot;:&quot;512x512&quot;,&quot;type&quot;:&quot;image/png&quot;},{&quot;src&quot;:&quot;logo.png&quot;,&quot;sizes&quot;:&quot;192x192&quot;,&quot;type&quot;:&quot;image/png&quot;}]}">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -28,7 +28,8 @@
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:15px}
 .app{max-width:440px;margin:0 auto;min-height:100vh}
 .header{background:var(--pk);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:10px}
-.header-logo{width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff;flex-shrink:0;letter-spacing:-0.5px}
+.header-logo{width:36px;height:36px;border-radius:8px;overflow:hidden;flex-shrink:0}
+.header-logo img{width:100%;height:100%;object-fit:cover;display:block}
 .header h1{font-size:18px;font-weight:600;line-height:1.2}
 .header p{font-size:12px;opacity:0.85;margin-top:1px}
 .nav{display:flex;gap:4px;padding:10px 12px;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;position:sticky;top:64px;z-index:99}
@@ -63,7 +64,7 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
 .day-pill{padding:6px 12px;border-radius:16px;font-size:12px;border:1px solid var(--border2);background:transparent;cursor:pointer;white-space:nowrap;color:var(--pk);font-weight:500}
 .day-pill.active{background:var(--pk);color:#fff;border-color:var(--pk)}
 .day-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden}
-.day-header{padding:12px 16px;font-weight:600;font-size:14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none}
+.day-header{padding:12px 16px;font-weight:600;font-size:14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;position:sticky;top:114px;z-index:40}
 .day-header.wed{background:#ede7f6;color:#4527a0}
 .day-header.thu{background:#fff3e0;color:#bf360c}
 .day-header.fri{background:#e8f5e9;color:#1b5e20}
@@ -101,7 +102,8 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
 @keyframes spin{to{transform:rotate(360deg)}}
 /* Login */
 .login-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:var(--bg)}
-.login-logo{width:72px;height:72px;background:var(--pk);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#fff;letter-spacing:-1px;margin-bottom:16px}
+.login-logo{width:72px;height:72px;border-radius:18px;overflow:hidden;margin-bottom:16px}
+.login-logo img{width:100%;height:100%;object-fit:cover;display:block}
 .login-title{font-size:22px;font-weight:700;color:var(--pk-dark);margin-bottom:4px}
 .login-sub{font-size:13px;color:var(--text2);margin-bottom:28px;text-align:center}
 .login-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px;width:100%;max-width:360px}
@@ -120,7 +122,7 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
 <body>
 
 <div id="login-screen" class="login-screen">
-  <div class="login-logo">ZtI</div>
+  <div class="login-logo"><img src="logo.png" alt="ZUtaIK"></div>
   <div class="login-title">Tu Turno ZUtaIK</div>
   <div class="login-sub">Txozna ZUtaIK · BM Zuazo &amp; Ikhoba KK</div>
   <div class="login-card">
@@ -175,7 +177,7 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
 
 <div id="main-app" class="app" style="display:none">
   <div class="header">
-    <div class="header-logo">ZtI</div>
+    <div class="header-logo"><img src="logo.png" alt="ZUtaIK"></div>
     <div style="flex:1">
       <h1>Tu Turno ZUtaIK</h1>
       <p id="header-user">Txozna ZUtaIK</p>
@@ -229,6 +231,10 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
     </div>
     <div class="card">
       <input type="text" id="vol-search" placeholder="Buscar por nombre..." style="margin-bottom:10px" oninput="renderVolList()">
+      <select id="vol-sort" onchange="renderVolList()" style="margin-bottom:10px">
+        <option value="nombre">Ordenar por nombre (A-Z)</option>
+        <option value="club">Ordenar por club</option>
+      </select>
       <div id="vol-list"></div>
     </div>
   </div>
@@ -244,6 +250,22 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
       <button class="admin-tab-btn" onclick="showAdminTab('usuarios',this)">Usuarios</button>
       <button class="admin-tab-btn" onclick="showAdminTab('exportar',this)">Exportar</button>
       <button class="admin-tab-btn" onclick="showAdminTab('vistazo',this)">📊 Vistazo</button>
+      <button class="admin-tab-btn" onclick="showAdminTab('resumen',this)">📲 Resumen</button>
+    </div>
+
+    <div id="admin-tab-resumen" class="tab-content">
+      <div class="card">
+        <div class="card-title">📲 Resumen del día para WhatsApp</div>
+        <div class="label">Día</div>
+        <select id="resumen-dia"><option value="">Selecciona día...</option></select>
+        <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="generarResumenDia()">Generar resumen</button>
+        <div class="label" style="margin-top:12px">Texto generado</div>
+        <textarea id="resumen-output" rows="12" style="width:100%;padding:8px;border:1px solid var(--border2);border-radius:8px;font-size:13px;font-family:inherit" placeholder="Pulsa 'Generar resumen' para ver el listado del día..."></textarea>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn btn-sm" style="flex:1" onclick="copiarResumen()">📋 Copiar</button>
+          <button class="btn btn-sm btn-primary" style="flex:1" onclick="compartirResumenWhatsApp()">💬 Enviar por WhatsApp</button>
+        </div>
+      </div>
     </div>
 
     <div id="admin-tab-dias" class="tab-content active">
@@ -377,6 +399,10 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
       <div class="card">
         <div class="card-title">👥 Usuarios registrados</div>
         <input type="text" id="admin-user-search" placeholder="Buscar..." style="margin-bottom:10px" oninput="renderAdminUsers()">
+        <select id="admin-user-sort" onchange="renderAdminUsers()" style="margin-bottom:10px">
+          <option value="nombre">Ordenar por nombre (A-Z)</option>
+          <option value="club">Ordenar por club</option>
+        </select>
         <div id="admin-users-list"></div>
       </div>
     </div>
@@ -563,6 +589,7 @@ function getSlotsForTurno(diaId,tareaId,franjaId){
 }
 function getVolsEnTurno(dId,tId,fId){ return allTurnos.filter(t=>t.dia_id===dId&&t.tarea_id===tId&&t.franja_id===fId); }
 function estaApuntado(dId,tId,fId){ return allTurnos.some(t=>t.dia_id===dId&&t.tarea_id===tId&&t.franja_id===fId&&t.usuario_id===currentUser.id); }
+function tieneConflictoHorario(dId,fId,tIdActual){ return allTurnos.some(t=>t.dia_id===dId&&t.franja_id===fId&&t.tarea_id!==tIdActual&&t.usuario_id===currentUser.id); }
 function nombreCompleto(u){ return `${u.nombre} ${u.apellido1}${u.apellido2?' '+u.apellido2:''}`; }
 function clubBadge(club){
   const c=(club||'').toUpperCase();
@@ -602,10 +629,11 @@ function renderCalendar(){
     };
     pills.appendChild(pill);
     const cfg=state.diaConfig[dia.id]||{tareas:{}};
+    const diaApuntado=allTurnos.some(t=>t.dia_id===dia.id&&t.usuario_id===currentUser.id);
     const dc=document.createElement('div');
     dc.className='day-card'; dc.style.display=di===0?'block':'none';
     let html=`<div class="day-header ${dia.tipo}" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
-      <span>${dia.label}</span><span style="font-size:12px">▾</span></div><div class="day-body">`;
+      <span>${diaApuntado?'<span style="color:#2e7d32;margin-right:5px">▶</span>':''}${dia.label}</span><span style="font-size:12px">▾</span></div><div class="day-body">`;
     // Order tasks as configured in admin
     const tareaIds = state.tareas.map(t=>t.id).filter(tid=>cfg.tareas&&cfg.tareas[tid]);
     if(!tareaIds.length) html+='<div style="padding:14px;color:var(--text3);font-size:13px;text-align:center">Sin tareas configuradas</div>';
@@ -616,11 +644,12 @@ function renderCalendar(){
       (fids||[]).forEach(fid=>{
         const f=getFranja(fid); const v=getVolsEnTurno(dia.id,tid,fid);
         const slots=getSlotsForTurno(dia.id,tid,fid);
+        const yaEnSlot=estaApuntado(dia.id,tid,fid);
         total+=slots; filled+=Math.min(v.length,slots);
         const pct=Math.min(100,Math.round((v.length/slots)*100));
         const col=v.length>=slots?'#2e7d32':(v.length>0?'#e65100':'#c62828');
         html+=`<div class="slot-row" onclick="showSlotDetail('${dia.id}','${tid}','${fid}')">
-          <span class="slot-label">🕐 ${franjaLabel(f)}</span>
+          <span class="slot-label">${yaEnSlot?'<span style="color:#2e7d32;margin-right:4px">▶</span>':''}🕐 ${franjaLabel(f)}</span>
           <span style="font-size:12px;color:${col};font-weight:600">${v.length}/${slots}</span>
         </div>
         <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${col}"></div></div>`;
@@ -676,6 +705,8 @@ function showSlotDetail(diaId,tareaId,franjaId){
       <button class="btn btn-primary btn-sm" style="width:100%;margin-top:6px" onclick="guardarComentario('${miTurno?.id}')">Guardar comentario</button>
     </div>
     <button class="btn btn-danger" style="width:100%;margin-top:8px" onclick="desapuntarseModal('${diaId}','${tareaId}','${franjaId}')">Desapuntarme de este turno</button>`;
+  } else if(tieneConflictoHorario(diaId,franjaId,tareaId)){
+    html+=`<div class="msg msg-err" style="text-align:center;margin-top:12px">⛔ Ya tienes otro turno asignado en esta franja horaria</div>`;
   } else if(v.length<slots){
     html+=`<button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="apuntarseDesdeModal('${diaId}','${tareaId}','${franjaId}')">✋ Apuntarme</button>`;
   } else {
@@ -727,13 +758,15 @@ function renderSignupTasks(){
       const slots=getSlotsForTurno(diaId,tid,fid);
       const ya=estaApuntado(diaId,tid,fid);
       const lleno=v.length>=slots&&!ya;
+      const conflicto=!ya&&tieneConflictoHorario(diaId,fid,tid);
       const pct=Math.min(100,Math.round((v.length/slots)*100));
       const col=v.length>=slots?'#2e7d32':(v.length>0?'#e65100':'#c62828');
       html+=`<div class="slot-signup${ya?' apuntado':''}">
-        <div class="slot-header">🕐 ${franjaLabel(f)} · ${v.length}/${slots} personas</div>
+        <div class="slot-header">${ya?'<span style="color:#2e7d32;margin-right:4px">▶</span>':''}🕐 ${franjaLabel(f)} · ${v.length}/${slots} personas</div>
         <div class="progress-bar" style="margin-bottom:8px"><div class="progress-fill" style="width:${pct}%;background:${col}"></div></div>
         ${ya?`<button class="btn btn-sm btn-danger" style="width:100%" onclick="desapuntarseSignup('${diaId}','${tid}','${fid}')">Desapuntarme</button>`
            :lleno?`<div style="font-size:12px;color:#c62828;text-align:center;font-weight:500">Turno completo</div>`
+           :conflicto?`<div style="font-size:12px;color:#c62828;text-align:center;font-weight:500">⛔ Ya tienes turno en esta franja</div>`
            :`<button class="btn btn-primary btn-sm" style="width:100%" onclick="apuntarseSignup('${diaId}','${tid}','${fid}')">✋ Apuntarme</button>`}
       </div>`;
     });
@@ -748,6 +781,7 @@ async function apuntarse(diaId,tareaId,franjaId){
   const slots=getSlotsForTurno(diaId,tareaId,franjaId);
   if(v.length>=slots){alert('Lo sentimos, este turno acaba de completarse.');await loadTurnos();renderSignupTasks();return;}
   if(estaApuntado(diaId,tareaId,franjaId)){alert('Ya estás apuntado/a a este turno.');return;}
+  if(tieneConflictoHorario(diaId,franjaId,tareaId)){alert('Ya tienes otro turno asignado ese día en esa misma franja horaria. Desapúntate primero si quieres cambiarlo.');return;}
   try{
     await sb('turnos',{method:'POST',body:JSON.stringify({
       dia_id:diaId,tarea_id:tareaId,franja_id:franjaId,
@@ -795,13 +829,25 @@ async function desapuntarseSignup(d,t,f){await desapuntarse(d,t,f);renderSignupT
 // ── Voluntarios ──────────────────────────────────────────────────────
 function renderVolList(){
   const search=(document.getElementById('vol-search')?.value||'').toLowerCase();
+  const sortBy=document.getElementById('vol-sort')?.value||'nombre';
   const list=document.getElementById('vol-list');
   const filtered=allUsers.filter(v=>nombreCompleto(v).toLowerCase().includes(search));
+  filtered.sort((a,b)=>{
+    if(sortBy==='club'){
+      const c=(a.club||'').localeCompare(b.club||'');
+      if(c!==0) return c;
+    }
+    return nombreCompleto(a).localeCompare(nombreCompleto(b));
+  });
   document.getElementById('vol-count').textContent=`${allUsers.length} personas`;
   if(!filtered.length){list.innerHTML='<div style="color:var(--text3);font-size:13px;text-align:center;padding:14px">Sin voluntarios</div>';return;}
   list.innerHTML=filtered.map(v=>{
     const bc=clubBadge(v.club);
-    const turnosVol=allTurnos.filter(t=>t.usuario_id===v.id);
+    const turnosVol=allTurnos.filter(t=>t.usuario_id===v.id).sort((a,b)=>{
+      const da=state.dias.findIndex(d=>d.id===a.dia_id), db=state.dias.findIndex(d=>d.id===b.dia_id);
+      if(da!==db) return da-db;
+      return state.franjas.findIndex(f=>f.id===a.franja_id)-state.franjas.findIndex(f=>f.id===b.franja_id);
+    });
     let turnosHtml='';
     if(turnosVol.length){
       turnosHtml='<div class="vol-turnos">';
@@ -1025,7 +1071,7 @@ async function updateSlots(diaId,tareaId,franjaId,val){
 
 // ── Gestionar turnos (admin) ──────────────────────────────────────────
 function populateAdminSelects(){
-  ['asig-dia','man-dia','del-dia'].forEach(id=>{
+  ['asig-dia','man-dia','del-dia','resumen-dia'].forEach(id=>{
     const el=document.getElementById(id);
     if(!el) return;
     el.innerHTML='<option value="">Selecciona día...</option>';
@@ -1036,6 +1082,45 @@ function populateAdminSelects(){
     mv.innerHTML='<option value="">Selecciona voluntario...</option>';
     allUsers.forEach(v=>mv.innerHTML+=`<option value="${v.id}|${nombreCompleto(v)}">${nombreCompleto(v)} (${v.club})</option>`);
   }
+}
+
+// ── Resumen del día (WhatsApp) ──────────────────────────────────────
+function generarResumenDia(){
+  const diaId=document.getElementById('resumen-dia').value;
+  if(!diaId){alert('Selecciona un día');return;}
+  const dia=state.dias.find(d=>d.id===diaId);
+  const cfg=state.diaConfig[diaId]||{tareas:{}};
+  const tareaIds=state.tareas.map(t=>t.id).filter(tid=>cfg.tareas&&cfg.tareas[tid]);
+  let texto=`📋 *TURNOS · ${dia.label.toUpperCase()}*\n\n`;
+  if(!tareaIds.length){
+    texto+='Sin tareas configuradas para este día.';
+  } else {
+    tareaIds.forEach(tid=>{
+      const t=getTarea(tid);
+      const fids=cfg.tareas[tid]||[];
+      texto+=`${t.icon} *${t.nombre}*\n`;
+      fids.forEach(fid=>{
+        const f=getFranja(fid);
+        const v=getVolsEnTurno(diaId,tid,fid);
+        const nombres=v.length?v.map(x=>x.nombre_usuario).join(', '):'— sin apuntar —';
+        texto+=`  🕐 ${franjaLabel(f)}: ${nombres}\n`;
+      });
+      texto+='\n';
+    });
+  }
+  document.getElementById('resumen-output').value=texto.trim();
+}
+
+function copiarResumen(){
+  const txt=document.getElementById('resumen-output').value;
+  if(!txt){alert('Genera primero el resumen');return;}
+  navigator.clipboard.writeText(txt).then(()=>alert('✓ Copiado al portapapeles')).catch(()=>alert('No se pudo copiar, selecciona y copia el texto manualmente'));
+}
+
+function compartirResumenWhatsApp(){
+  const txt=document.getElementById('resumen-output').value;
+  if(!txt){alert('Genera primero el resumen');return;}
+  window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank');
 }
 
 function renderManTareas(){
@@ -1173,8 +1258,16 @@ async function addUserManual(){
 
 function renderAdminUsers(){
   const search=(document.getElementById('admin-user-search')?.value||'').toLowerCase();
+  const sortBy=document.getElementById('admin-user-sort')?.value||'nombre';
   const list=document.getElementById('admin-users-list');
   const filtered=allUsers.filter(v=>nombreCompleto(v).toLowerCase().includes(search)||v.email.toLowerCase().includes(search));
+  filtered.sort((a,b)=>{
+    if(sortBy==='club'){
+      const c=(a.club||'').localeCompare(b.club||'');
+      if(c!==0) return c;
+    }
+    return nombreCompleto(a).localeCompare(nombreCompleto(b));
+  });
   if(!filtered.length){list.innerHTML='<div style="color:var(--text3);font-size:13px;text-align:center;padding:14px">Sin usuarios</div>';return;}
   list.innerHTML=filtered.map(v=>{
     const bc=clubBadge(v.club);
