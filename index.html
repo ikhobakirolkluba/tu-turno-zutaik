@@ -63,8 +63,8 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
 .pills-scroll::-webkit-scrollbar{display:none}
 .day-pill{padding:6px 12px;border-radius:16px;font-size:12px;border:1px solid var(--border2);background:transparent;cursor:pointer;white-space:nowrap;color:var(--pk);font-weight:500}
 .day-pill.active{background:var(--pk);color:#fff;border-color:var(--pk)}
-.day-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden}
-.day-header{padding:12px 16px;font-weight:600;font-size:14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;position:sticky;top:114px;z-index:40}
+.day-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden;transform:translateZ(0);isolation:isolate}
+.day-header{padding:12px 16px;font-weight:600;font-size:14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none}
 .day-header.wed{background:#ede7f6;color:#4527a0}
 .day-header.thu{background:#fff3e0;color:#bf360c}
 .day-header.fri{background:#e8f5e9;color:#1b5e20}
@@ -198,6 +198,7 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
       <span style="font-size:12px;color:var(--text2)" id="cal-summary"></span>
     </div>
     <div class="pills-scroll" id="day-pills" style="margin-bottom:12px"></div>
+    <div id="cal-dia-sticky" style="display:none;position:sticky;top:120px;z-index:50;background:var(--pk);color:#fff;padding:8px 12px;border-radius:10px;margin-bottom:8px;font-size:13px;font-weight:600;text-align:center"></div>
     <div id="calendar-view"><div class="loading"><div class="spinner"></div><br>Cargando...</div></div>
   </div>
 
@@ -626,6 +627,8 @@ function renderCalendar(){
       document.querySelectorAll('.day-pill').forEach(p=>p.classList.remove('active'));
       pill.classList.add('active');
       document.querySelectorAll('.day-card').forEach((c,i)=>c.style.display=(i===di?'block':'none'));
+      const stk=document.getElementById('cal-dia-sticky');
+      if(stk) stk.textContent='📅 '+dia.label;
     };
     pills.appendChild(pill);
     const cfg=state.diaConfig[dia.id]||{tareas:{}};
@@ -660,6 +663,11 @@ function renderCalendar(){
     dc.innerHTML=html; view.appendChild(dc);
   });
   document.getElementById('cal-summary').textContent=`${filled}/${total} plazas`;
+  const stk=document.getElementById('cal-dia-sticky');
+  if(stk){
+    if(state.dias.length){ stk.textContent='📅 '+state.dias[0].label; stk.style.display='block'; }
+    else stk.style.display='none';
+  }
 }
 
 function showSlotDetail(diaId,tareaId,franjaId){
