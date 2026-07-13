@@ -693,6 +693,19 @@ function clubBadge(club){
   if(c.includes('IKHOBA')) return 'badge-fk';
   return 'badge-ext';
 }
+function clubIconSrc(club){
+  const c=(club||'').toUpperCase();
+  if(c.includes('ZUAZO')) return 'escudo-zuazo.png';
+  if(c.includes('IKHOBA')) return 'escudo-ikhoba.png';
+  return '';
+}
+function clubBadgeHtml(club,extraClass,extraStyle){
+  if(!club) return '';
+  const bc=clubBadge(club);
+  const icon=clubIconSrc(club);
+  const iconHtml=icon?`<img src="${icon}" alt="" style="width:14px;height:14px;object-fit:contain;border-radius:3px;margin-right:4px;vertical-align:-2px" onerror="this.style.display='none'">`:'';
+  return `<span class="badge ${bc}${extraClass?' '+extraClass:''}"${extraStyle?` style="${extraStyle}"`:''}>${iconHtml}${club}</span>`;
+}
 
 // Franjas en el orden configurado por admin (sin reordenar)
 
@@ -792,7 +805,7 @@ function buildPickerHtml(){
     html+=`<div class="picker-empty">Sin opciones disponibles</div>`;
   } else {
     items.forEach(it=>{
-      const tag=it.club?`<span class="badge ${clubBadge(it.club)} picker-club-tag">${it.club}</span>`:'';
+      const tag=it.club?clubBadgeHtml(it.club,'picker-club-tag'):'';
       const label=it.club?it.nombre:it.label;
       html+=`<div class="picker-option${it.value===curVal?' selected':''}" data-value="${escapeAttr(it.value)}">
         <span class="picker-option-name">${label}</span>${tag}
@@ -918,10 +931,9 @@ function showSlotDetail(diaId,tareaId,franjaId){
   for(let i=0;i<slots;i++){
     if(v[i]){
       const u=allUsers.find(x=>x.id===v[i].usuario_id);
-      const bc=clubBadge(u?.club);
       html+=`<div class="person-slot" style="margin-bottom:5px">
         <span style="font-weight:600">${i+1}. ${v[i].nombre_usuario}</span>
-        ${u?`<span class="badge ${bc}" style="font-size:11px">${u.club}</span>`:''}
+        ${u?clubBadgeHtml(u.club,'','font-size:11px'):''}
       </div>`;
     } else {
       html+=`<div class="person-slot empty-slot" style="margin-bottom:5px">
@@ -1097,7 +1109,6 @@ function renderVolList(){
   document.getElementById('vol-count').textContent=`${allUsers.length} personas`;
   if(!filtered.length){list.innerHTML='<div style="color:var(--text3);font-size:13px;text-align:center;padding:14px">Sin voluntarios</div>';return;}
   list.innerHTML=filtered.map(v=>{
-    const bc=clubBadge(v.club);
     const turnosVol=allTurnos.filter(t=>t.usuario_id===v.id).sort((a,b)=>{
       const da=state.dias.findIndex(d=>d.id===a.dia_id), db=state.dias.findIndex(d=>d.id===b.dia_id);
       if(da!==db) return da-db;
@@ -1117,7 +1128,7 @@ function renderVolList(){
     return `<div class="vol-item" style="flex-direction:column;align-items:flex-start;gap:6px">
       <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
         <div><div class="vol-name">${nombreCompleto(v)}</div><div class="vol-meta">${v.vinculo}${v.telefono?' · '+formatPhone(v.telefono):''}</div></div>
-        <span class="badge ${bc}">${v.club}</span>
+        ${clubBadgeHtml(v.club)}
       </div>${turnosHtml}
     </div>`;
   }).join('');
@@ -1650,7 +1661,6 @@ function renderAdminUsers(){
   });
   if(!filtered.length){list.innerHTML='<div style="color:var(--text3);font-size:13px;text-align:center;padding:14px">Sin usuarios</div>';return;}
   list.innerHTML=filtered.map(v=>{
-    const bc=clubBadge(v.club);
     return `<div class="vol-item" style="flex-direction:column;align-items:flex-start;gap:6px">
       <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
         <div>
@@ -1659,7 +1669,7 @@ function renderAdminUsers(){
           <div class="vol-meta">${v.vinculo}${v.telefono?' · '+formatPhone(v.telefono):''}</div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-          <span class="badge ${bc}">${v.club}</span>
+          ${clubBadgeHtml(v.club)}
           <button class="btn btn-sm btn-danger" onclick="deleteUser('${v.id}')">🗑</button>
         </div>
       </div>
