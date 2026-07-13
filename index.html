@@ -42,6 +42,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .card-title{font-size:15px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px;color:var(--pk-dark)}
 input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--border2);border-radius:10px;background:#fff;color:var(--text);font-size:14px;font-family:inherit;transition:border-color 0.15s}
 input:focus,select:focus{outline:none;border-color:var(--pk)}
+select{-webkit-appearance:none;appearance:none;padding-right:34px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%23c2185b' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>");background-repeat:no-repeat;background-position:right 12px center;background-size:11px 7px}
+/* Fake-select: sustituye visualmente a los <select> de día/tarea/franja/voluntario por un selector propio, más compacto y controlable en móvil */
+.fake-select{width:100%;padding:10px 12px;border:1px solid var(--border2);border-radius:10px;background:#fff;font-size:14px;font-family:inherit;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;color:var(--text)}
+.fake-select .fs-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fake-select .fs-label.placeholder{color:var(--text3)}
+.fake-select .fs-arrow{font-size:11px;color:var(--pk);flex-shrink:0}
+.real-select-hidden{display:none !important}
+.picker-list{max-height:62vh;overflow-y:auto}
+.picker-option{padding:10px 10px;border-radius:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+.picker-option:last-child{border-bottom:none}
+.picker-option:active{background:var(--pk-light)}
+.picker-option.selected{background:var(--pk-light);font-weight:600}
+.picker-option-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.picker-club-tag{font-size:10px !important;padding:2px 8px;flex-shrink:0;white-space:nowrap}
+.picker-sort-bar{display:flex;gap:6px;margin-bottom:10px}
+.picker-sort-btn{flex:1;padding:6px 10px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--pk);font-size:12px;cursor:pointer;font-weight:500}
+.picker-sort-btn.active{background:var(--pk);color:#fff;border-color:var(--pk)}
+.picker-empty{text-align:center;color:var(--text3);padding:20px;font-size:13px}
+/* Configurar: plegar/desplegar franjas por tarea */
+.asig-task-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;cursor:pointer}
+.asig-task-chevron{font-size:11px;color:var(--text2);transition:transform 0.15s;margin-left:8px;flex-shrink:0}
+.asig-task-chevron.open{transform:rotate(180deg)}
+.asig-task-body{display:none}
+.asig-task-body.open{display:flex}
 .btn{padding:10px 16px;border-radius:10px;border:1px solid var(--border2);background:transparent;color:var(--pk);font-size:14px;cursor:pointer;font-family:inherit;font-weight:500}
 .btn:active{opacity:0.8}
 .btn-primary{background:var(--pk);color:#fff;border-color:var(--pk)}
@@ -51,8 +75,8 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
 .label{font-size:12px;color:var(--text2);margin-bottom:5px;margin-top:10px;font-weight:500}
 .label:first-child{margin-top:0}
 .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500}
-.badge-bm{background:#e3f2fd;color:#1565c0}
-.badge-fk{background:#e8f5e9;color:#2e7d32}
+.badge-bm{background:#c62828;color:#fff}
+.badge-fk{background:#e1f5fe;color:#01579b}
 .badge-ext{background:#fff3e0;color:#e65100}
 .msg{padding:10px 12px;border-radius:10px;font-size:13px;margin-top:8px}
 .msg-ok{background:var(--ok-bg);color:var(--ok-text)}
@@ -185,10 +209,10 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
     <button class="btn btn-sm btn-ghost" onclick="doLogout()">Salir</button>
   </div>
   <div class="nav">
-    <button class="nav-btn active" onclick="showSection('calendario',this)">📅 Calendario</button>
-    <button class="nav-btn" onclick="showSection('apuntarse',this)">✋ Apuntarse</button>
-    <button class="nav-btn" onclick="showSection('voluntarios',this)">👥 Voluntarios</button>
-    <button class="nav-btn" id="admin-nav-btn" onclick="showSection('admin',this)" style="display:none">⚙️ Admin</button>
+    <button class="nav-btn active" data-section="calendario" onclick="showSection('calendario',this)">📅 Calendario</button>
+    <button class="nav-btn" data-section="apuntarse" onclick="showSection('apuntarse',this)">✋ Apuntarse</button>
+    <button class="nav-btn" data-section="voluntarios" onclick="showSection('voluntarios',this)">👥 Voluntarios</button>
+    <button class="nav-btn" id="admin-nav-btn" data-section="admin" onclick="showSection('admin',this)" style="display:none">⚙️ Admin</button>
   </div>
 
   <!-- CALENDARIO -->
@@ -216,7 +240,10 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
     <div class="card">
       <div class="card-title">📅 Elegir turno</div>
       <div class="label">Día</div>
-      <select id="signup-dia" onchange="renderSignupTasks()">
+      <div class="fake-select" onclick="openPicker('signup-dia',{title:'📅 Selecciona día'})">
+        <span class="fs-label placeholder" id="signup-dia-fs-label">Selecciona día...</span><span class="fs-arrow">▾</span>
+      </div>
+      <select id="signup-dia" class="real-select-hidden" onchange="renderSignupTasks()">
         <option value="">Selecciona día...</option>
       </select>
       <div id="signup-dia-sticky" style="display:none;position:sticky;top:120px;z-index:50;background:var(--pk);color:#fff;padding:8px 12px;border-radius:10px;margin-top:8px;font-size:13px;font-weight:600;text-align:center"></div>
@@ -243,22 +270,25 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
   <!-- ADMIN -->
   <div id="sec-admin" class="section">
     <div class="admin-tabs">
-      <button class="admin-tab-btn active" onclick="showAdminTab('dias',this)">Días</button>
-      <button class="admin-tab-btn" onclick="showAdminTab('tareas',this)">Tareas</button>
-      <button class="admin-tab-btn" onclick="showAdminTab('franjas',this)">Franjas</button>
-      <button class="admin-tab-btn" onclick="showAdminTab('configurar',this)">Configurar</button>
-      <button class="admin-tab-btn" onclick="showAdminTab('gestionar',this)">Gestionar</button>
-      <button class="admin-tab-btn" onclick="showAdminTab('usuarios',this)">Usuarios</button>
-      <button class="admin-tab-btn" onclick="showAdminTab('exportar',this)">Exportar</button>
-      <button class="admin-tab-btn" onclick="showAdminTab('vistazo',this)">📊 Vistazo</button>
-      <button class="admin-tab-btn" onclick="showAdminTab('resumen',this)">📲 Resumen</button>
+      <button class="admin-tab-btn active" data-admintab="dias" onclick="showAdminTab('dias',this)">Días</button>
+      <button class="admin-tab-btn" data-admintab="tareas" onclick="showAdminTab('tareas',this)">Tareas</button>
+      <button class="admin-tab-btn" data-admintab="franjas" onclick="showAdminTab('franjas',this)">Franjas</button>
+      <button class="admin-tab-btn" data-admintab="configurar" onclick="showAdminTab('configurar',this)">Configurar</button>
+      <button class="admin-tab-btn" data-admintab="gestionar" onclick="showAdminTab('gestionar',this)">Gestionar</button>
+      <button class="admin-tab-btn" data-admintab="usuarios" onclick="showAdminTab('usuarios',this)">Usuarios</button>
+      <button class="admin-tab-btn" data-admintab="exportar" onclick="showAdminTab('exportar',this)">Exportar</button>
+      <button class="admin-tab-btn" data-admintab="vistazo" onclick="showAdminTab('vistazo',this)">📊 Vistazo</button>
+      <button class="admin-tab-btn" data-admintab="resumen" onclick="showAdminTab('resumen',this)">📲 Resumen</button>
     </div>
 
     <div id="admin-tab-resumen" class="tab-content">
       <div class="card">
         <div class="card-title">📲 Resumen del día para WhatsApp</div>
         <div class="label">Día</div>
-        <select id="resumen-dia"><option value="">Selecciona día...</option></select>
+        <div class="fake-select" onclick="openPicker('resumen-dia',{title:'📅 Selecciona día'})">
+          <span class="fs-label placeholder" id="resumen-dia-fs-label">Selecciona día...</span><span class="fs-arrow">▾</span>
+        </div>
+        <select id="resumen-dia" class="real-select-hidden"><option value="">Selecciona día...</option></select>
         <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="generarResumenDia()">Generar resumen</button>
         <div class="label" style="margin-top:12px">Texto generado</div>
         <textarea id="resumen-output" rows="12" style="width:100%;padding:8px;border:1px solid var(--border2);border-radius:8px;font-size:13px;font-family:inherit" placeholder="Pulsa 'Generar resumen' para ver el listado del día..."></textarea>
@@ -326,7 +356,10 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
       <div class="card">
         <div class="card-title">⚙️ Configurar turnos por día</div>
         <div class="label">Día</div>
-        <select id="asig-dia" onchange="renderAsigTareas()"><option value="">Selecciona día...</option></select>
+        <div class="fake-select" onclick="openPicker('asig-dia',{title:'📅 Selecciona día'})">
+          <span class="fs-label placeholder" id="asig-dia-fs-label">Selecciona día...</span><span class="fs-arrow">▾</span>
+        </div>
+        <select id="asig-dia" class="real-select-hidden" onchange="renderAsigTareas()"><option value="">Selecciona día...</option></select>
         <div id="asig-dia-sticky" style="display:none;position:sticky;top:120px;z-index:50;background:var(--pk);color:#fff;padding:8px 12px;border-radius:10px;margin-top:8px;font-size:13px;font-weight:600;text-align:center"></div>
         <div id="asig-tareas-panel"></div>
       </div>
@@ -336,26 +369,85 @@ input:focus,select:focus{outline:none;border-color:var(--pk)}
       <div class="card">
         <div class="card-title">➕ Apuntar voluntario a turno</div>
         <div class="label">Día</div>
-        <select id="man-dia" onchange="renderManTareas()"><option value="">Selecciona...</option></select>
+        <div class="fake-select" onclick="openPicker('man-dia',{title:'📅 Selecciona día'})">
+          <span class="fs-label placeholder" id="man-dia-fs-label">Selecciona...</span><span class="fs-arrow">▾</span>
+        </div>
+        <select id="man-dia" class="real-select-hidden" onchange="renderManTareas()"><option value="">Selecciona...</option></select>
         <div class="label">Tarea</div>
-        <select id="man-tarea" onchange="renderManFranjas()"><option value="">Selecciona...</option></select>
+        <div class="fake-select" onclick="openPicker('man-tarea',{title:'Selecciona tarea'})">
+          <span class="fs-label placeholder" id="man-tarea-fs-label">Selecciona...</span><span class="fs-arrow">▾</span>
+        </div>
+        <select id="man-tarea" class="real-select-hidden" onchange="renderManFranjas()"><option value="">Selecciona...</option></select>
         <div class="label">Franja</div>
-        <select id="man-franja"><option value="">Selecciona...</option></select>
+        <div class="fake-select" onclick="openPicker('man-franja',{title:'🕐 Selecciona franja'})">
+          <span class="fs-label placeholder" id="man-franja-fs-label">Selecciona...</span><span class="fs-arrow">▾</span>
+        </div>
+        <select id="man-franja" class="real-select-hidden"><option value="">Selecciona...</option></select>
         <div class="label">Voluntario</div>
-        <select id="man-vol"><option value="">Selecciona voluntario...</option></select>
+        <div class="fake-select" onclick="openPicker('man-vol',{title:'👤 Selecciona voluntario',sortable:true})">
+          <span class="fs-label placeholder" id="man-vol-fs-label">Selecciona voluntario...</span><span class="fs-arrow">▾</span>
+        </div>
+        <select id="man-vol" class="real-select-hidden" onchange="renderVolAsignaciones('man-vol','man-vol-asignaciones')"><option value="">Selecciona voluntario...</option></select>
+        <div id="man-vol-asignaciones"></div>
         <button class="btn btn-primary" style="margin-top:12px;width:100%" onclick="asignarManual()">Apuntar</button>
         <div id="man-msg"></div>
       </div>
       <div class="card">
+        <div class="card-title">🔄 Cambiar voluntario a otro turno</div>
+        <div class="label">Voluntario</div>
+        <div class="fake-select" onclick="openPicker('cam-vol',{title:'👤 Selecciona voluntario',sortable:true})">
+          <span class="fs-label placeholder" id="cam-vol-fs-label">Selecciona voluntario...</span><span class="fs-arrow">▾</span>
+        </div>
+        <select id="cam-vol" class="real-select-hidden" onchange="renderCambioVolSeleccionado()"><option value="">Selecciona voluntario...</option></select>
+        <div id="cam-vol-asignaciones"></div>
+        <div id="cam-turno-actual-wrap" style="display:none">
+          <div class="label">Turno actual a cambiar</div>
+          <div class="fake-select" onclick="openPicker('cam-turno-actual',{title:'Turno actual'})">
+            <span class="fs-label placeholder" id="cam-turno-actual-fs-label">Selecciona turno...</span><span class="fs-arrow">▾</span>
+          </div>
+          <select id="cam-turno-actual" class="real-select-hidden"><option value="">Selecciona turno...</option></select>
+          <div class="sep"></div>
+          <div class="label">Nuevo día</div>
+          <div class="fake-select" onclick="openPicker('cam-dia',{title:'📅 Selecciona día'})">
+            <span class="fs-label placeholder" id="cam-dia-fs-label">Selecciona...</span><span class="fs-arrow">▾</span>
+          </div>
+          <select id="cam-dia" class="real-select-hidden" onchange="renderCambioTareas()"><option value="">Selecciona...</option></select>
+          <div class="label">Nueva tarea</div>
+          <div class="fake-select" onclick="openPicker('cam-tarea',{title:'Selecciona tarea'})">
+            <span class="fs-label placeholder" id="cam-tarea-fs-label">Selecciona...</span><span class="fs-arrow">▾</span>
+          </div>
+          <select id="cam-tarea" class="real-select-hidden" onchange="renderCambioFranjas()"><option value="">Selecciona...</option></select>
+          <div class="label">Nueva franja</div>
+          <div class="fake-select" onclick="openPicker('cam-franja',{title:'🕐 Selecciona franja'})">
+            <span class="fs-label placeholder" id="cam-franja-fs-label">Selecciona...</span><span class="fs-arrow">▾</span>
+          </div>
+          <select id="cam-franja" class="real-select-hidden"><option value="">Selecciona...</option></select>
+          <button class="btn btn-primary" style="margin-top:12px;width:100%" onclick="cambiarVoluntarioTurno()">🔄 Cambiar turno</button>
+        </div>
+        <div id="cam-msg"></div>
+      </div>
+      <div class="card">
         <div class="card-title">➖ Quitar voluntario de turno</div>
         <div class="label">Día</div>
-        <select id="del-dia" onchange="renderDelTareas()"><option value="">Selecciona...</option></select>
+        <div class="fake-select" onclick="openPicker('del-dia',{title:'📅 Selecciona día'})">
+          <span class="fs-label placeholder" id="del-dia-fs-label">Selecciona...</span><span class="fs-arrow">▾</span>
+        </div>
+        <select id="del-dia" class="real-select-hidden" onchange="renderDelTareas()"><option value="">Selecciona...</option></select>
         <div class="label">Tarea</div>
-        <select id="del-tarea" onchange="renderDelFranjas()"><option value="">Selecciona...</option></select>
+        <div class="fake-select" onclick="openPicker('del-tarea',{title:'Selecciona tarea'})">
+          <span class="fs-label placeholder" id="del-tarea-fs-label">Selecciona...</span><span class="fs-arrow">▾</span>
+        </div>
+        <select id="del-tarea" class="real-select-hidden" onchange="renderDelFranjas()"><option value="">Selecciona...</option></select>
         <div class="label">Franja</div>
-        <select id="del-franja" onchange="renderDelVols()"><option value="">Selecciona...</option></select>
+        <div class="fake-select" onclick="openPicker('del-franja',{title:'🕐 Selecciona franja'})">
+          <span class="fs-label placeholder" id="del-franja-fs-label">Selecciona...</span><span class="fs-arrow">▾</span>
+        </div>
+        <select id="del-franja" class="real-select-hidden" onchange="renderDelVols()"><option value="">Selecciona...</option></select>
         <div class="label">Voluntario a quitar</div>
-        <select id="del-vol"><option value="">Selecciona...</option></select>
+        <div class="fake-select" onclick="openPicker('del-vol',{title:'👤 Selecciona voluntario'})">
+          <span class="fs-label placeholder" id="del-vol-fs-label">Selecciona...</span><span class="fs-arrow">▾</span>
+        </div>
+        <select id="del-vol" class="real-select-hidden"><option value="">Selecciona...</option></select>
         <button class="btn btn-danger" style="margin-top:12px;width:100%" onclick="quitarVoluntario()">Quitar</button>
         <div id="del-msg"></div>
       </div>
@@ -434,6 +526,7 @@ let currentUser = null;
 let state = { dias:[], tareas:[], franjas:[], diaConfig:{} };
 let allTurnos = [];
 let allUsers = [];
+let asigCollapsedTasks = new Set();
 
 // ── Supabase ────────────────────────────────────────────────────────
 async function sb(path, opts={}) {
@@ -551,6 +644,8 @@ async function initApp() {
   renderCalendar();
   initApuntarse();
   populateHoras();
+  initFakeSelects();
+  history.replaceState({view:{type:'section',id:'calendario'}},'',location.pathname+location.search);
 }
 
 async function loadAll() {
@@ -601,16 +696,154 @@ function clubBadge(club){
 
 // Franjas en el orden configurado por admin (sin reordenar)
 
+// ── Día actual (vista de arranque) ──────────────────────────────────
+const MESES_ES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+function parseDiaLabel(label){
+  const m=(label||'').toLowerCase().match(/(\d{1,2})\s+de\s+([a-záéíóúñ]+)/i);
+  if(!m) return null;
+  const dayNum=parseInt(m[1],10);
+  const monthIdx=MESES_ES.findIndex(mm=>mm===m[2].trim());
+  if(monthIdx<0||isNaN(dayNum)) return null;
+  return {day:dayNum,month:monthIdx};
+}
+function getDefaultDiaIndex(){
+  if(!state.dias.length) return 0;
+  const hoy=new Date();
+  const hoyDay=hoy.getDate(), hoyMonth=hoy.getMonth();
+  const parsed=state.dias.map(d=>parseDiaLabel(d.label));
+  // 1) Coincidencia exacta con hoy
+  let idx=parsed.findIndex(p=>p&&p.day===hoyDay&&p.month===hoyMonth);
+  if(idx>=0) return idx;
+  // 2) Próximo día futuro más cercano (mismo año en curso)
+  let best=-1,bestDiff=Infinity;
+  parsed.forEach((p,i)=>{
+    if(!p) return;
+    const diff=(p.month-hoyMonth)*31+(p.day-hoyDay);
+    if(diff>=0&&diff<bestDiff){bestDiff=diff;best=i;}
+  });
+  if(best>=0) return best;
+  // 3) Si todos quedaron atrás, el último día
+  return state.dias.length-1;
+}
+
+// ── Fake-select / Picker (selector propio para día, tarea, franja y voluntario) ──
+let currentPicker=null;
+function escapeAttr(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+function pickerFontSize(n){
+  if(n<=14) return 14;
+  if(n<=20) return Math.max(12,Math.round(14-(n-14)*0.33));
+  return 12;
+}
+function syncFakeSelect(selectId){
+  const sel=document.getElementById(selectId);
+  const lbl=document.getElementById(selectId+'-fs-label');
+  if(!sel||!lbl) return;
+  const opt=sel.options[sel.selectedIndex];
+  const isPlaceholder=!sel.value;
+  lbl.textContent=(opt&&opt.textContent)||'Selecciona...';
+  lbl.classList.toggle('placeholder',isPlaceholder);
+}
+function watchFakeSelect(selectId){
+  const sel=document.getElementById(selectId);
+  if(!sel) return;
+  syncFakeSelect(selectId);
+  new MutationObserver(()=>syncFakeSelect(selectId)).observe(sel,{childList:true});
+}
+function initFakeSelects(){
+  ['signup-dia','asig-dia','man-dia','man-tarea','man-franja','man-vol',
+   'cam-vol','cam-turno-actual','cam-dia','cam-tarea','cam-franja',
+   'del-dia','del-tarea','del-franja','del-vol','resumen-dia'].forEach(watchFakeSelect);
+}
+function openPicker(selectId,opts){
+  const sel=document.getElementById(selectId);
+  if(!sel) return;
+  currentPicker={selectId,sortable:!!(opts&&opts.sortable),sortMode:(opts&&opts.defaultSort)||'nombre',title:(opts&&opts.title)||'Selecciona'};
+  openModal(buildPickerHtml());
+}
+function setPickerSort(mode){
+  if(!currentPicker) return;
+  currentPicker.sortMode=mode;
+  updateModalContent(buildPickerHtml());
+}
+function buildPickerHtml(){
+  const {selectId,sortable,sortMode,title}=currentPicker;
+  const sel=document.getElementById(selectId);
+  if(!sel) return '';
+  let items=Array.from(sel.options).filter(o=>o.value!=='').map(o=>({
+    value:o.value,label:o.textContent,club:o.dataset.club||'',nombre:o.dataset.nombre||o.textContent
+  }));
+  if(sortable){
+    items.sort((a,b)=>{
+      if(sortMode==='club'){ const c=a.club.localeCompare(b.club); if(c!==0) return c; }
+      return a.nombre.localeCompare(b.nombre);
+    });
+  }
+  const fs=pickerFontSize(items.length);
+  const curVal=sel.value;
+  let html=`<div class="modal-title">${title}</div>`;
+  if(sortable){
+    html+=`<div class="picker-sort-bar">
+      <button class="picker-sort-btn ${sortMode==='nombre'?'active':''}" onclick="setPickerSort('nombre')">🔤 A-Z</button>
+      <button class="picker-sort-btn ${sortMode==='club'?'active':''}" onclick="setPickerSort('club')">🏅 Por club</button>
+    </div>`;
+  }
+  html+=`<div class="picker-list" style="font-size:${fs}px">`;
+  if(!items.length){
+    html+=`<div class="picker-empty">Sin opciones disponibles</div>`;
+  } else {
+    items.forEach(it=>{
+      const tag=it.club?`<span class="badge ${clubBadge(it.club)} picker-club-tag">${it.club}</span>`:'';
+      const label=it.club?it.nombre:it.label;
+      html+=`<div class="picker-option${it.value===curVal?' selected':''}" data-value="${escapeAttr(it.value)}">
+        <span class="picker-option-name">${label}</span>${tag}
+      </div>`;
+    });
+  }
+  html+='</div>';
+  return html;
+}
+function choosePickerOption(value){
+  if(!currentPicker) return;
+  const sel=document.getElementById(currentPicker.selectId);
+  if(!sel) return;
+  sel.value=value;
+  sel.dispatchEvent(new Event('change'));
+  syncFakeSelect(currentPicker.selectId);
+  closeModal();
+}
+document.addEventListener('click',function(e){
+  const opt=e.target.closest('.picker-option');
+  if(opt) choosePickerOption(opt.dataset.value);
+});
+
+// ── Historial / botón "atrás" del móvil ─────────────────────────────
+function pushNavState(view){
+  history.pushState({view},'',location.pathname+location.search);
+}
+window.addEventListener('popstate',function(e){
+  closeModalUI();
+  const view=e.state&&e.state.view;
+  if(!view) return;
+  if(view.type==='section'){
+    showSection(view.id,null,true);
+  } else if(view.type==='admintab'){
+    showSection('admin',null,true);
+    showAdminTab(view.id,null,true);
+  }
+});
+
 // ── Nav ──────────────────────────────────────────────────────────────
-function showSection(id,btn){
+function showSection(id,btn,fromPop){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('sec-'+id).classList.add('active');
-  if(btn) btn.classList.add('active');
+  const activeBtn=btn||document.querySelector('.nav-btn[data-section="'+id+'"]');
+  if(activeBtn) activeBtn.classList.add('active');
   if(id==='calendario') renderCalendar();
   if(id==='voluntarios') renderVolList();
   if(id==='apuntarse') initApuntarse();
   if(id==='admin') renderAdminPanels();
+  if(!fromPop) pushNavState({type:'section',id});
 }
 
 // ── Calendario ───────────────────────────────────────────────────────
@@ -619,9 +852,11 @@ function renderCalendar(){
   const pills=document.getElementById('day-pills');
   pills.innerHTML=''; view.innerHTML='';
   let total=0,filled=0;
+  const defaultIdx=getDefaultDiaIndex();
+  let activePill=null;
   state.dias.forEach((dia,di)=>{
     const pill=document.createElement('button');
-    pill.className='day-pill'+(di===0?' active':'');
+    pill.className='day-pill'+(di===defaultIdx?' active':'');
     pill.textContent=dia.label.split(' ').slice(0,2).join(' ');
     pill.onclick=()=>{
       document.querySelectorAll('.day-pill').forEach(p=>p.classList.remove('active'));
@@ -630,11 +865,12 @@ function renderCalendar(){
       const stk=document.getElementById('cal-dia-sticky');
       if(stk) stk.textContent='📅 '+dia.label;
     };
+    if(di===defaultIdx) activePill=pill;
     pills.appendChild(pill);
     const cfg=state.diaConfig[dia.id]||{tareas:{}};
     const diaApuntado=allTurnos.some(t=>t.dia_id===dia.id&&t.usuario_id===currentUser.id);
     const dc=document.createElement('div');
-    dc.className='day-card'; dc.style.display=di===0?'block':'none';
+    dc.className='day-card'; dc.style.display=di===defaultIdx?'block':'none';
     let html=`<div class="day-header ${dia.tipo}" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
       <span>${diaApuntado?'<span style="color:#2e7d32;margin-right:5px">▶</span>':''}${dia.label}</span><span style="font-size:12px">▾</span></div><div class="day-body">`;
     // Order tasks as configured in admin
@@ -665,9 +901,10 @@ function renderCalendar(){
   document.getElementById('cal-summary').textContent=`${filled}/${total} plazas`;
   const stk=document.getElementById('cal-dia-sticky');
   if(stk){
-    if(state.dias.length){ stk.textContent='📅 '+state.dias[0].label; stk.style.display='block'; }
+    if(state.dias.length){ stk.textContent='📅 '+state.dias[defaultIdx].label; stk.style.display='block'; }
     else stk.style.display='none';
   }
+  if(activePill) activePill.scrollIntoView({inline:'center',block:'nearest'});
 }
 
 function showSlotDetail(diaId,tareaId,franjaId){
@@ -738,8 +975,18 @@ async function desapuntarseModal(diaId,tareaId,franjaId){
 function openModal(html){
   document.getElementById('modal-container').innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
     <div class="modal">${html}<button class="btn" style="width:100%;margin-top:12px" onclick="closeModal()">Cerrar</button></div></div>`;
+  pushNavState({type:'modal'});
 }
-function closeModal(){ document.getElementById('modal-container').innerHTML=''; }
+function updateModalContent(html){
+  const modalEl=document.querySelector('#modal-container .modal');
+  if(modalEl) modalEl.innerHTML=html+`<button class="btn" style="width:100%;margin-top:12px" onclick="closeModal()">Cerrar</button>`;
+  else openModal(html);
+}
+function closeModalUI(){ document.getElementById('modal-container').innerHTML=''; currentPicker=null; }
+function closeModal(){
+  if(history.state&&history.state.view&&history.state.view.type==='modal') history.back();
+  else closeModalUI();
+}
 
 // ── Apuntarse ────────────────────────────────────────────────────────
 function initApuntarse(){
@@ -877,12 +1124,14 @@ function renderVolList(){
 }
 
 // ── Admin ────────────────────────────────────────────────────────────
-function showAdminTab(tab,btn){
+function showAdminTab(tab,btn,fromPop){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.admin-tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('admin-tab-'+tab).classList.add('active');
-  if(btn) btn.classList.add('active');
+  const activeBtn=btn||document.querySelector('.admin-tab-btn[data-admintab="'+tab+'"]');
+  if(activeBtn) activeBtn.classList.add('active');
   if(tab==='vistazo') renderVistazo();
+  if(!fromPop) pushNavState({type:'admintab',id:tab});
 }
 
 function renderAdminPanels(){
@@ -1019,15 +1268,19 @@ function renderAsigTareas(){
   state.tareas.forEach(t=>{
     const isActive=!!cfg.tareas[t.id];
     const activeFranjas=cfg.tareas[t.id]||[];
+    const collapsed=asigCollapsedTasks.has(t.id);
     html+=`<div style="padding:10px 0;border-bottom:1px solid var(--border)">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div class="asig-task-head" ${isActive?`onclick="toggleAsigCollapse('${t.id}')"`:''}>
         <span style="font-size:14px;font-weight:600;color:var(--pk-dark)">${t.icon} ${t.nombre}</span>
-        <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--text2)">
-          <input type="checkbox" ${isActive?'checked':''} onchange="toggleTareaEnDia('${diaId}','${t.id}',this.checked)" style="width:auto;margin:0"> Activa
-        </label>
+        <div style="display:flex;align-items:center;gap:10px">
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--text2)" onclick="event.stopPropagation()">
+            <input type="checkbox" ${isActive?'checked':''} onchange="toggleTareaEnDia('${diaId}','${t.id}',this.checked)" style="width:auto;margin:0"> Activa
+          </label>
+          ${isActive?`<span class="asig-task-chevron${collapsed?'':' open'}">▾</span>`:''}
+        </div>
       </div>`;
     if(isActive){
-      html+=`<div style="display:flex;flex-direction:column;gap:6px">`;
+      html+=`<div class="asig-task-body${collapsed?'':' open'}" style="flex-direction:column;gap:6px">`;
       state.franjas.forEach(f=>{
         const sel=activeFranjas.includes(f.id);
         const slotKey=t.id+'_'+f.id;
@@ -1048,6 +1301,12 @@ function renderAsigTareas(){
     html+=`</div>`;
   });
   panel.innerHTML=html;
+}
+
+function toggleAsigCollapse(tareaId){
+  if(asigCollapsedTasks.has(tareaId)) asigCollapsedTasks.delete(tareaId);
+  else asigCollapsedTasks.add(tareaId);
+  renderAsigTareas();
 }
 
 async function toggleTareaEnDia(diaId,tareaId,active){
@@ -1079,17 +1338,45 @@ async function updateSlots(diaId,tareaId,franjaId,val){
 
 // ── Gestionar turnos (admin) ──────────────────────────────────────────
 function populateAdminSelects(){
-  ['asig-dia','man-dia','del-dia','resumen-dia'].forEach(id=>{
+  ['asig-dia','man-dia','del-dia','resumen-dia','cam-dia'].forEach(id=>{
     const el=document.getElementById(id);
     if(!el) return;
     el.innerHTML='<option value="">Selecciona día...</option>';
     state.dias.forEach(d=>el.innerHTML+=`<option value="${d.id}">${d.label}</option>`);
   });
-  const mv=document.getElementById('man-vol');
-  if(mv){
+  ['man-vol','cam-vol'].forEach(id=>{
+    const mv=document.getElementById(id);
+    if(!mv) return;
     mv.innerHTML='<option value="">Selecciona voluntario...</option>';
-    allUsers.forEach(v=>mv.innerHTML+=`<option value="${v.id}|${nombreCompleto(v)}">${nombreCompleto(v)} (${v.club})</option>`);
-  }
+    allUsers.forEach(v=>mv.innerHTML+=`<option value="${v.id}|${nombreCompleto(v)}" data-club="${escapeAttr(v.club)}" data-nombre="${escapeAttr(nombreCompleto(v))}">${nombreCompleto(v)} (${v.club})</option>`);
+  });
+}
+
+// ── Asignaciones actuales de un voluntario (usado en Apuntar y Cambiar) ──
+function buildAsignacionesHtml(usuarioId){
+  const turnosVol=allTurnos.filter(t=>t.usuario_id===usuarioId).sort((a,b)=>{
+    const da=state.dias.findIndex(d=>d.id===a.dia_id), db=state.dias.findIndex(d=>d.id===b.dia_id);
+    if(da!==db) return da-db;
+    return state.franjas.findIndex(f=>f.id===a.franja_id)-state.franjas.findIndex(f=>f.id===b.franja_id);
+  });
+  if(!turnosVol.length) return `<div style="font-size:12px;color:var(--text3);margin-top:6px">Este voluntario no tiene turnos asignados todavía.</div>`;
+  let html=`<div class="vol-turnos" style="margin-top:8px"><div style="font-size:11px;font-weight:600;color:var(--pk-dark);margin-bottom:4px">Turnos ya asignados:</div>`;
+  turnosVol.forEach(t=>{
+    const dia=state.dias.find(d=>d.id===t.dia_id);
+    const tarea=getTarea(t.tarea_id);
+    const franja=getFranja(t.franja_id);
+    html+=`<div class="vol-turno-item">📅 ${dia?.label||t.dia_id} · ${tarea.icon} ${tarea.nombre} · 🕐 ${franjaLabel(franja)}</div>`;
+  });
+  html+='</div>';
+  return html;
+}
+function renderVolAsignaciones(selectId,contId){
+  const val=document.getElementById(selectId).value;
+  const cont=document.getElementById(contId);
+  if(!cont) return;
+  if(!val){cont.innerHTML='';return;}
+  const uid=val.split('|')[0];
+  cont.innerHTML=buildAsignacionesHtml(uid);
 }
 
 // ── Resumen del día (WhatsApp) ──────────────────────────────────────
@@ -1175,6 +1462,90 @@ async function asignarManual(){
   }catch(e){msg.innerHTML=`<div class="msg msg-err">Error: ${e.message}</div>`;}
 }
 
+// ── Cambiar voluntario a otro turno ──────────────────────────────────
+function renderCambioVolSeleccionado(){
+  const val=document.getElementById('cam-vol').value;
+  const asigCont=document.getElementById('cam-vol-asignaciones');
+  const wrap=document.getElementById('cam-turno-actual-wrap');
+  const turnoSel=document.getElementById('cam-turno-actual');
+  if(!val){asigCont.innerHTML='';wrap.style.display='none';return;}
+  const uid=val.split('|')[0];
+  asigCont.innerHTML=buildAsignacionesHtml(uid);
+  const turnosVol=allTurnos.filter(t=>t.usuario_id===uid);
+  turnoSel.innerHTML='<option value="">Selecciona turno...</option>';
+  turnosVol.forEach(t=>{
+    const dia=state.dias.find(d=>d.id===t.dia_id);
+    const tarea=getTarea(t.tarea_id);
+    const franja=getFranja(t.franja_id);
+    turnoSel.innerHTML+=`<option value="${t.id}">📅 ${dia?.label||t.dia_id} · ${tarea.icon} ${tarea.nombre} · 🕐 ${franjaLabel(franja)}</option>`;
+  });
+  document.getElementById('cam-dia').innerHTML='<option value="">Selecciona...</option>'+state.dias.map(d=>`<option value="${d.id}">${d.label}</option>`).join('');
+  document.getElementById('cam-tarea').innerHTML='<option value="">Selecciona...</option>';
+  document.getElementById('cam-franja').innerHTML='<option value="">Selecciona...</option>';
+  wrap.style.display=turnosVol.length?'block':'none';
+  if(!turnosVol.length) asigCont.innerHTML+='<div class="msg msg-info" style="margin-top:8px">Este voluntario no tiene turnos que cambiar.</div>';
+}
+
+function renderCambioTareas(){
+  const diaId=document.getElementById('cam-dia').value;
+  const sel=document.getElementById('cam-tarea');
+  sel.innerHTML='<option value="">Selecciona tarea...</option>';
+  document.getElementById('cam-franja').innerHTML='<option value="">Selecciona franja...</option>';
+  if(!diaId) return;
+  Object.keys(state.diaConfig[diaId]?.tareas||{}).forEach(tid=>{
+    const t=getTarea(tid);
+    sel.innerHTML+=`<option value="${tid}">${t.icon} ${t.nombre}</option>`;
+  });
+}
+
+function renderCambioFranjas(){
+  const diaId=document.getElementById('cam-dia').value;
+  const tareaId=document.getElementById('cam-tarea').value;
+  const sel=document.getElementById('cam-franja');
+  sel.innerHTML='<option value="">Selecciona franja...</option>';
+  if(!diaId||!tareaId) return;
+  (state.diaConfig[diaId]?.tareas[tareaId]||[]).forEach(fid=>{
+    sel.innerHTML+=`<option value="${fid}">${franjaLabel(getFranja(fid))}</option>`;
+  });
+}
+
+async function cambiarVoluntarioTurno(){
+  const volVal=document.getElementById('cam-vol').value;
+  const turnoId=document.getElementById('cam-turno-actual').value;
+  const nuevoDia=document.getElementById('cam-dia').value;
+  const nuevaTarea=document.getElementById('cam-tarea').value;
+  const nuevaFranja=document.getElementById('cam-franja').value;
+  const msg=document.getElementById('cam-msg');
+  if(!volVal||!turnoId||!nuevoDia||!nuevaTarea||!nuevaFranja){msg.innerHTML='<div class="msg msg-err">Selecciona todos los campos</div>';return;}
+  const [uid,nombre]=volVal.split('|');
+  const turnoActual=allTurnos.find(t=>t.id===turnoId);
+  if(!turnoActual){msg.innerHTML='<div class="msg msg-err">El turno actual ya no existe, recarga la lista</div>';return;}
+  if(turnoActual.dia_id===nuevoDia&&turnoActual.tarea_id===nuevaTarea&&turnoActual.franja_id===nuevaFranja){
+    msg.innerHTML='<div class="msg msg-err">Es el mismo turno, elige uno diferente</div>';return;
+  }
+  const yaEnNuevo=getVolsEnTurno(nuevoDia,nuevaTarea,nuevaFranja).some(x=>x.usuario_id===uid);
+  if(yaEnNuevo){msg.innerHTML='<div class="msg msg-err">Ya está apuntado/a en el turno de destino</div>';return;}
+  const slots=getSlotsForTurno(nuevoDia,nuevaTarea,nuevaFranja);
+  const ocupadosDestino=getVolsEnTurno(nuevoDia,nuevaTarea,nuevaFranja).length;
+  if(ocupadosDestino>=slots){msg.innerHTML='<div class="msg msg-err">El turno de destino está completo</div>';return;}
+  const conflicto=allTurnos.some(t=>t.id!==turnoId&&t.dia_id===nuevoDia&&t.franja_id===nuevaFranja&&t.tarea_id!==nuevaTarea&&t.usuario_id===uid);
+  if(conflicto){msg.innerHTML='<div class="msg msg-err">⛔ Ya tiene otro turno asignado ese día en esa franja horaria</div>';return;}
+  msg.innerHTML='<div class="msg msg-info">Cambiando...</div>';
+  try{
+    const url2=`${SB_URL}/rest/v1/turnos?id=eq.${turnoId}&apikey=${SB_KEY}`;
+    const r2=await fetch(url2,{method:'DELETE',headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Prefer':'return=minimal'}});
+    if(!r2.ok){ const txt2=await r2.text(); throw new Error(`HTTP ${r2.status}: ${txt2}`); }
+    await sb('turnos',{method:'POST',body:JSON.stringify({
+      dia_id:nuevoDia,tarea_id:nuevaTarea,franja_id:nuevaFranja,
+      usuario_id:uid,nombre_usuario:nombre,comentario:turnoActual.comentario||''
+    })});
+    await loadTurnos(); renderCalendar();
+    msg.innerHTML='<div class="msg msg-ok">✓ Turno cambiado</div>';
+    setTimeout(()=>msg.innerHTML='',3000);
+    renderCambioVolSeleccionado();
+  }catch(e){msg.innerHTML=`<div class="msg msg-err">Error: ${e.message}</div>`;}
+}
+
 function renderDelTareas(){
   const diaId=document.getElementById('del-dia').value;
   const sel=document.getElementById('del-tarea');
@@ -1207,7 +1578,8 @@ function renderDelVols(){
   sel.innerHTML='<option value="">Selecciona voluntario...</option>';
   if(!diaId||!tareaId||!franjaId) return;
   getVolsEnTurno(diaId,tareaId,franjaId).forEach(t=>{
-    sel.innerHTML+=`<option value="${t.id}">${t.nombre_usuario}</option>`;
+    const u=allUsers.find(x=>x.id===t.usuario_id);
+    sel.innerHTML+=`<option value="${t.id}" data-club="${escapeAttr(u?u.club:'')}" data-nombre="${escapeAttr(t.nombre_usuario)}">${t.nombre_usuario}</option>`;
   });
 }
 
@@ -1435,7 +1807,7 @@ function renderVistazo(){
   const totalTurnos=Object.values(porClub).reduce((a,b)=>a+b.turnos,0);
   Object.entries(porClub).sort((a,b)=>b[1].turnos-a[1].turnos).forEach(([club,d])=>{
     const p=pct(d.turnos,totalTurnos||1);
-    const bcls=club.includes('ZUAZO')?'#1565c0':club.includes('IKHOBA')?'#2e7d32':'#e65100';
+    const bcls=club.includes('ZUAZO')?'#c62828':club.includes('IKHOBA')?'#01579b':'#e65100';
     html+=`<div style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600">
         <span style="color:${bcls}">${club}</span>
@@ -1489,7 +1861,7 @@ function renderVistazo(){
   const clubCounts={};
   allUsers.forEach(u=>{const c=(u.club||'').toUpperCase(); clubCounts[c]=(clubCounts[c]||0)+1;});
   Object.entries(clubCounts).forEach(([club,n])=>{
-    const bcls=club.includes('ZUAZO')?'#1565c0':club.includes('IKHOBA')?'#2e7d32':'#e65100';
+    const bcls=club.includes('ZUAZO')?'#c62828':club.includes('IKHOBA')?'#01579b':'#e65100';
     html+=`<div style="flex:1;background:var(--bg);border-radius:10px;padding:10px;border:1px solid var(--border)">
       <div style="font-size:22px;font-weight:700;color:${bcls}">${n}</div>
       <div style="font-size:10px;color:var(--text2)">${club}</div>
