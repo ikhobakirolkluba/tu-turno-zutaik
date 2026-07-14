@@ -1438,8 +1438,12 @@ function generarResumenDia(){
       fids.forEach(fid=>{
         const f=getFranja(fid);
         const v=getVolsEnTurno(diaId,tid,fid);
-        const nombres=v.length?v.map(x=>x.nombre_usuario).join(', '):'— sin apuntar —';
-        texto+=`  🕐 ${franjaLabel(f)}: ${nombres}\n`;
+        texto+=`  🕐 ${franjaLabel(f)}:\n`;
+        if(v.length){
+          v.forEach(x=>{ texto+=`    • *${x.nombre_usuario}*\n`; });
+        } else {
+          texto+='    — sin apuntar —\n';
+        }
       });
       texto+='\n';
     });
