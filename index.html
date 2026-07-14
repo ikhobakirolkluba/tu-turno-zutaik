@@ -74,10 +74,11 @@ select{-webkit-appearance:none;appearance:none;padding-right:34px;background-ima
 .btn-ghost{border-color:transparent;color:#fff}
 .label{font-size:12px;color:var(--text2);margin-bottom:5px;margin-top:10px;font-weight:500}
 .label:first-child{margin-top:0}
-.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500;flex-shrink:0;white-space:nowrap}
 .badge-bm{background:#c62828;color:#fff}
 .badge-fk{background:#e1f5fe;color:#01579b}
 .badge-ext{background:#fff3e0;color:#e65100}
+.badge-total{background:#e8f5e9;color:#2e7d32}
 .msg{padding:10px 12px;border-radius:10px;font-size:13px;margin-top:8px}
 .msg-ok{background:var(--ok-bg);color:var(--ok-text)}
 .msg-err{background:var(--err-bg);color:var(--err-text)}
@@ -255,7 +256,7 @@ select{-webkit-appearance:none;appearance:none;padding-right:34px;background-ima
   <div id="sec-voluntarios" class="section">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
       <span style="font-size:15px;font-weight:600;color:var(--pk-dark)">Voluntarios</span>
-      <span class="badge badge-bm" id="vol-count">0 personas</span>
+      <span class="badge badge-total" id="vol-count">0 personas</span>
     </div>
     <div class="card">
       <input type="text" id="vol-search" placeholder="Buscar por nombre..." style="margin-bottom:10px" oninput="renderVolList()">
@@ -323,14 +324,9 @@ select{-webkit-appearance:none;appearance:none;padding-right:34px;background-ima
         <div class="card-title">✅ Gestionar tareas</div>
         <div class="row-flex">
           <input type="text" id="new-tarea" placeholder="Nombre de tarea">
-          <select id="new-tarea-icon" style="max-width:75px">
-            <option value="🔧">🔧</option><option value="✨">✨</option>
-            <option value="🛒">🛒</option><option value="🥣">🥣</option>
-            <option value="🔥">🔥</option><option value="🍺">🍺</option>
-            <option value="📍">📍</option><option value="🤾">🤾</option>
-            <option value="📋">📋</option>
-          </select>
+          <input type="text" id="new-tarea-icon" placeholder="🔧" maxlength="8" style="max-width:75px;text-align:center;font-size:20px">
         </div>
+        <p style="font-size:11px;color:var(--text3);margin-top:4px">Toca el campo del icono y usa el teclado de emojis de tu móvil u ordenador para elegir el que quieras.</p>
         <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="addTarea()">Añadir tarea</button>
         <div class="sep"></div>
         <p style="font-size:11px;color:var(--text3);margin-bottom:8px">Usa ▲▼ para reordenar</p>
@@ -527,6 +523,7 @@ let state = { dias:[], tareas:[], franjas:[], diaConfig:{} };
 let allTurnos = [];
 let allUsers = [];
 let asigCollapsedTasks = new Set();
+let calSelectedDiaId = null; // Día actualmente visible en la vista Calendario (se conserva al entrar/salir de detalles)
 
 // ── Supabase ────────────────────────────────────────────────────────
 async function sb(path, opts={}) {
@@ -626,12 +623,14 @@ async function tryAutoLogin() {
 function doLogout() {
   localStorage.removeItem('zutaik_uid');
   currentUser = null;
+  calSelectedDiaId = null;
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('main-app').style.display='none';
 }
 
 // ── Init ─────────────────────────────────────────────────────────────
 async function initApp() {
+  calSelectedDiaId = null; // al iniciar sesión/registrarse siempre se parte del día actual
   document.getElementById('login-screen').style.display='none';
   document.getElementById('main-app').style.display='block';
   const fullName = nombreCompleto(currentUser);
@@ -718,6 +717,15 @@ function parseDiaLabel(label){
   const monthIdx=MESES_ES.findIndex(mm=>mm===m[2].trim());
   if(monthIdx<0||isNaN(dayNum)) return null;
   return {day:dayNum,month:monthIdx};
+}
+function esDiaPasado(diaId){
+  const dia=state.dias.find(d=>d.id===diaId);
+  if(!dia) return false;
+  const p=parseDiaLabel(dia.label);
+  if(!p) return false;
+  const hoy=new Date(); hoy.setHours(0,0,0,0);
+  const diaDate=new Date(hoy.getFullYear(),p.month,p.day);
+  return diaDate.getTime()<hoy.getTime();
 }
 function getDefaultDiaIndex(){
   if(!state.dias.length) return 0;
@@ -865,13 +873,17 @@ function renderCalendar(){
   const pills=document.getElementById('day-pills');
   pills.innerHTML=''; view.innerHTML='';
   let total=0,filled=0;
-  const defaultIdx=getDefaultDiaIndex();
+  // Si ya había un día seleccionado (y sigue existiendo), lo mantenemos; si no, usamos el día actual
+  let defaultIdx=state.dias.findIndex(d=>d.id===calSelectedDiaId);
+  if(defaultIdx<0) defaultIdx=getDefaultDiaIndex();
+  if(state.dias[defaultIdx]) calSelectedDiaId=state.dias[defaultIdx].id;
   let activePill=null;
   state.dias.forEach((dia,di)=>{
     const pill=document.createElement('button');
     pill.className='day-pill'+(di===defaultIdx?' active':'');
     pill.textContent=dia.label.split(' ').slice(0,2).join(' ');
     pill.onclick=()=>{
+      calSelectedDiaId=dia.id;
       document.querySelectorAll('.day-pill').forEach(p=>p.classList.remove('active'));
       pill.classList.add('active');
       document.querySelectorAll('.day-card').forEach((c,i)=>c.style.display=(i===di?'block':'none'));
@@ -954,14 +966,21 @@ function showSlotDetail(diaId,tareaId,franjaId){
     html+=`</div>`;
   }
 
+  const diaPasado=!currentUser.es_admin&&esDiaPasado(diaId);
   if(yaApuntado){
     const miTurno=v.find(x=>x.usuario_id===currentUser.id);
-    html+=`<div style="margin-top:12px">
+    if(diaPasado){
+      html+=`<div class="msg msg-info" style="margin-top:12px">Este día ya ha pasado. Si necesitas corregir algo de tu comentario o cobertura, ponte en contacto con el administrador. Si quieres, puedes desapuntarte del turno.</div>`;
+    } else {
+      html+=`<div style="margin-top:12px">
       <div class="label" style="margin-top:0">💬 Tu comentario (visible para todos)</div>
       <textarea id="mi-comentario" rows="2" style="width:100%;padding:8px;border:1px solid var(--border2);border-radius:8px;font-size:13px;resize:none" placeholder="Ej: Llegaré un poco tarde...">${miTurno?.comentario||''}</textarea>
       <button class="btn btn-primary btn-sm" style="width:100%;margin-top:6px" onclick="guardarComentario('${miTurno?.id}')">Guardar comentario</button>
-    </div>
-    <button class="btn btn-danger" style="width:100%;margin-top:8px" onclick="desapuntarseModal('${diaId}','${tareaId}','${franjaId}')">Desapuntarme de este turno</button>`;
+    </div>`;
+    }
+    html+=`<button class="btn btn-danger" style="width:100%;margin-top:8px" onclick="desapuntarseModal('${diaId}','${tareaId}','${franjaId}')">Desapuntarme de este turno</button>`;
+  } else if(diaPasado){
+    html+=`<div class="msg msg-info" style="text-align:center;margin-top:12px">Este día ya ha pasado. Para apuntarte o hacer cambios, ponte en contacto con el administrador.</div>`;
   } else if(tieneConflictoHorario(diaId,franjaId,tareaId)){
     html+=`<div class="msg msg-err" style="text-align:center;margin-top:12px">⛔ Ya tienes otro turno asignado en esta franja horaria</div>`;
   } else if(v.length<slots){
@@ -1015,7 +1034,9 @@ function renderSignupTasks(){
   const diaLabel=state.dias.find(d=>d.id===diaId)?.label||'';
   if(sticky){sticky.textContent='📅 '+diaLabel;sticky.style.display='block';}
   const cfg=state.diaConfig[diaId]||{tareas:{}};
+  const diaPasado=!currentUser.es_admin&&esDiaPasado(diaId);
   let html='';
+  if(diaPasado) html+=`<div class="msg msg-info" style="margin-top:10px">Este día ya ha pasado. Solo puedes desapuntarte de turnos; para cualquier otro cambio, contacta con el administrador.</div>`;
   state.tareas.map(t=>t.id).filter(tid=>cfg.tareas&&cfg.tareas[tid]).forEach(tid=>{
     const fids=cfg.tareas[tid];
     const t=getTarea(tid);
@@ -1032,6 +1053,7 @@ function renderSignupTasks(){
         <div class="slot-header">${ya?'<span style="color:#2e7d32;margin-right:4px">▶</span>':''}🕐 ${franjaLabel(f)} · ${v.length}/${slots} personas</div>
         <div class="progress-bar" style="margin-bottom:8px"><div class="progress-fill" style="width:${pct}%;background:${col}"></div></div>
         ${ya?`<button class="btn btn-sm btn-danger" style="width:100%" onclick="desapuntarseSignup('${diaId}','${tid}','${fid}')">Desapuntarme</button>`
+           :diaPasado?`<div style="font-size:12px;color:var(--text3);text-align:center;font-weight:500">Día pasado · contacta con el administrador</div>`
            :lleno?`<div style="font-size:12px;color:#c62828;text-align:center;font-weight:500">Turno completo</div>`
            :conflicto?`<div style="font-size:12px;color:#c62828;text-align:center;font-weight:500">⛔ Ya tienes turno en esta franja</div>`
            :`<button class="btn btn-primary btn-sm" style="width:100%" onclick="apuntarseSignup('${diaId}','${tid}','${fid}')">✋ Apuntarme</button>`}
@@ -1044,6 +1066,7 @@ function renderSignupTasks(){
 }
 
 async function apuntarse(diaId,tareaId,franjaId){
+  if(!currentUser.es_admin&&esDiaPasado(diaId)){alert('Este día ya ha pasado. Ponte en contacto con el administrador para apuntarte o hacer cambios.');return;}
   const v=getVolsEnTurno(diaId,tareaId,franjaId);
   const slots=getSlotsForTurno(diaId,tareaId,franjaId);
   if(v.length>=slots){alert('Lo sentimos, este turno acaba de completarse.');await loadTurnos();renderSignupTasks();return;}
@@ -1126,8 +1149,8 @@ function renderVolList(){
       turnosHtml+='</div>';
     }
     return `<div class="vol-item" style="flex-direction:column;align-items:flex-start;gap:6px">
-      <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
-        <div><div class="vol-name">${nombreCompleto(v)}</div><div class="vol-meta">${v.vinculo}${v.telefono?' · '+formatPhone(v.telefono):''}</div></div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;width:100%;gap:8px">
+        <div style="min-width:0"><div class="vol-name">${nombreCompleto(v)}</div><div class="vol-meta">${v.vinculo}${v.telefono?' · '+formatPhone(v.telefono):''}</div></div>
         ${clubBadgeHtml(v.club)}
       </div>${turnosHtml}
     </div>`;
@@ -1208,10 +1231,11 @@ function renderTareasList(){
 
 async function addTarea(){
   const nombre=document.getElementById('new-tarea').value.trim();
-  const icon=document.getElementById('new-tarea-icon').value;
+  const icon=document.getElementById('new-tarea-icon').value.trim()||'📋';
   if(!nombre) return;
   state.tareas.push({id:'t'+Date.now(),nombre,icon});
   document.getElementById('new-tarea').value='';
+  document.getElementById('new-tarea-icon').value='';
   await saveConfig('tareas',state.tareas);
   renderTareasList();
 }
@@ -1352,14 +1376,20 @@ function populateAdminSelects(){
   ['asig-dia','man-dia','del-dia','resumen-dia','cam-dia'].forEach(id=>{
     const el=document.getElementById(id);
     if(!el) return;
+    const prevVal=el.value; // conservamos la selección actual (p.ej. al volver de un modal con "atrás")
     el.innerHTML='<option value="">Selecciona día...</option>';
     state.dias.forEach(d=>el.innerHTML+=`<option value="${d.id}">${d.label}</option>`);
+    if(prevVal && state.dias.some(d=>d.id===prevVal)) el.value=prevVal;
+    syncFakeSelect(id);
   });
   ['man-vol','cam-vol'].forEach(id=>{
     const mv=document.getElementById(id);
     if(!mv) return;
+    const prevVal=mv.value;
     mv.innerHTML='<option value="">Selecciona voluntario...</option>';
     allUsers.forEach(v=>mv.innerHTML+=`<option value="${v.id}|${nombreCompleto(v)}" data-club="${escapeAttr(v.club)}" data-nombre="${escapeAttr(nombreCompleto(v))}">${nombreCompleto(v)} (${v.club})</option>`);
+    if(prevVal && Array.from(mv.options).some(o=>o.value===prevVal)) mv.value=prevVal;
+    syncFakeSelect(id);
   });
 }
 
@@ -1662,13 +1692,13 @@ function renderAdminUsers(){
   if(!filtered.length){list.innerHTML='<div style="color:var(--text3);font-size:13px;text-align:center;padding:14px">Sin usuarios</div>';return;}
   list.innerHTML=filtered.map(v=>{
     return `<div class="vol-item" style="flex-direction:column;align-items:flex-start;gap:6px">
-      <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
-        <div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;width:100%;gap:8px">
+        <div style="min-width:0">
           <div class="vol-name">${nombreCompleto(v)}</div>
           <div class="vol-meta">${v.email}</div>
           <div class="vol-meta">${v.vinculo}${v.telefono?' · '+formatPhone(v.telefono):''}</div>
         </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
           ${clubBadgeHtml(v.club)}
           <button class="btn btn-sm btn-danger" onclick="deleteUser('${v.id}')">🗑</button>
         </div>
