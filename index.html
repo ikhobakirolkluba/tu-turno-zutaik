@@ -59,6 +59,8 @@ select{-webkit-appearance:none;appearance:none;padding-right:34px;background-ima
 .picker-sort-bar{display:flex;gap:6px;margin-bottom:10px}
 .picker-sort-btn{flex:1;padding:6px 10px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--pk);font-size:12px;cursor:pointer;font-weight:500}
 .picker-sort-btn.active{background:var(--pk);color:#fff;border-color:var(--pk)}
+.picker-search-input{width:100%;box-sizing:border-box;padding:9px 12px;margin-bottom:10px;border:1px solid var(--border2);border-radius:8px;font-size:14px;background:var(--surface);color:var(--text)}
+.picker-search-input:focus{outline:none;border-color:var(--pk)}
 .picker-empty{text-align:center;color:var(--text3);padding:20px;font-size:13px}
 /* Configurar: plegar/desplegar franjas por tarea */
 .asig-task-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;cursor:pointer}
@@ -383,7 +385,7 @@ select{-webkit-appearance:none;appearance:none;padding-right:34px;background-ima
         </div>
         <select id="man-franja" class="real-select-hidden"><option value="">Selecciona...</option></select>
         <div class="label">Voluntario</div>
-        <div class="fake-select" onclick="openPicker('man-vol',{title:'👤 Selecciona voluntario',sortable:true})">
+        <div class="fake-select" onclick="openPicker('man-vol',{title:'👤 Selecciona voluntario',sortable:true,search:true})">
           <span class="fs-label placeholder" id="man-vol-fs-label">Selecciona voluntario...</span><span class="fs-arrow">▾</span>
         </div>
         <select id="man-vol" class="real-select-hidden" onchange="renderVolAsignaciones('man-vol','man-vol-asignaciones')"><option value="">Selecciona voluntario...</option></select>
@@ -394,7 +396,7 @@ select{-webkit-appearance:none;appearance:none;padding-right:34px;background-ima
       <div class="card">
         <div class="card-title">🔄 Cambiar voluntario a otro turno</div>
         <div class="label">Voluntario</div>
-        <div class="fake-select" onclick="openPicker('cam-vol',{title:'👤 Selecciona voluntario',sortable:true})">
+        <div class="fake-select" onclick="openPicker('cam-vol',{title:'👤 Selecciona voluntario',sortable:true,search:true})">
           <span class="fs-label placeholder" id="cam-vol-fs-label">Selecciona voluntario...</span><span class="fs-arrow">▾</span>
         </div>
         <select id="cam-vol" class="real-select-hidden" onchange="renderCambioVolSeleccionado()"><option value="">Selecciona voluntario...</option></select>
@@ -443,7 +445,7 @@ select{-webkit-appearance:none;appearance:none;padding-right:34px;background-ima
         </div>
         <select id="del-franja" class="real-select-hidden" onchange="renderDelVols()"><option value="">Selecciona...</option></select>
         <div class="label">Voluntario a quitar</div>
-        <div class="fake-select" onclick="openPicker('del-vol',{title:'👤 Selecciona voluntario'})">
+        <div class="fake-select" onclick="openPicker('del-vol',{title:'👤 Selecciona voluntario',search:true})">
           <span class="fs-label placeholder" id="del-vol-fs-label">Selecciona...</span><span class="fs-arrow">▾</span>
         </div>
         <select id="del-vol" class="real-select-hidden"><option value="">Selecciona...</option></select>
@@ -781,16 +783,28 @@ function initFakeSelects(){
 function openPicker(selectId,opts){
   const sel=document.getElementById(selectId);
   if(!sel) return;
-  currentPicker={selectId,sortable:!!(opts&&opts.sortable),sortMode:(opts&&opts.defaultSort)||'nombre',title:(opts&&opts.title)||'Selecciona'};
+  currentPicker={selectId,sortable:!!(opts&&opts.sortable),sortMode:(opts&&opts.defaultSort)||'nombre',title:(opts&&opts.title)||'Selecciona',search:!!(opts&&opts.search),searchText:''};
   openModal(buildPickerHtml());
+  focusPickerSearch();
 }
 function setPickerSort(mode){
   if(!currentPicker) return;
   currentPicker.sortMode=mode;
   updateModalContent(buildPickerHtml());
+  focusPickerSearch();
+}
+function filterPickerSearch(val){
+  if(!currentPicker) return;
+  currentPicker.searchText=val;
+  updateModalContent(buildPickerHtml());
+  focusPickerSearch();
+}
+function focusPickerSearch(){
+  const inp=document.getElementById('picker-search-input');
+  if(inp){ inp.focus(); const pos=inp.value.length; inp.setSelectionRange(pos,pos); }
 }
 function buildPickerHtml(){
-  const {selectId,sortable,sortMode,title}=currentPicker;
+  const {selectId,sortable,sortMode,title,search,searchText}=currentPicker;
   const sel=document.getElementById(selectId);
   if(!sel) return '';
   let items=Array.from(sel.options).filter(o=>o.value!=='').map(o=>({
@@ -802,6 +816,10 @@ function buildPickerHtml(){
       return a.nombre.localeCompare(b.nombre);
     });
   }
+  if(search&&searchText&&searchText.trim()){
+    const q=searchText.trim().toLocaleLowerCase();
+    items=items.filter(it=>it.nombre.toLocaleLowerCase().includes(q));
+  }
   const fs=pickerFontSize(items.length);
   const curVal=sel.value;
   let html=`<div class="modal-title">${title}</div>`;
@@ -811,9 +829,12 @@ function buildPickerHtml(){
       <button class="picker-sort-btn ${sortMode==='club'?'active':''}" onclick="setPickerSort('club')">🏅 Por club</button>
     </div>`;
   }
+  if(search){
+    html+=`<input type="text" id="picker-search-input" class="picker-search-input" placeholder="🔎 Buscar por nombre..." value="${escapeAttr(searchText||'')}" oninput="filterPickerSearch(this.value)">`;
+  }
   html+=`<div class="picker-list" style="font-size:${fs}px">`;
   if(!items.length){
-    html+=`<div class="picker-empty">Sin opciones disponibles</div>`;
+    html+=`<div class="picker-empty">${search&&searchText?'Sin resultados para la búsqueda':'Sin opciones disponibles'}</div>`;
   } else {
     items.forEach(it=>{
       const tag=it.club?clubBadgeHtml(it.club,'picker-club-tag'):'';
@@ -947,11 +968,11 @@ function showSlotDetail(diaId,tareaId,franjaId){
     if(v[i]){
       const u=allUsers.find(x=>x.id===v[i].usuario_id);
       html+=`<div class="person-slot" style="margin-bottom:5px">
-        <span style="display:flex;align-items:center;gap:6px;overflow:hidden">
-          <span style="font-weight:600">${i+1}. ${v[i].nombre_usuario}</span>
+        <span style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${i+1}. ${v[i].nombre_usuario}</span>
+        <span style="display:flex;align-items:center;gap:10px;flex-shrink:0">
           ${u?clubBadgeHtml(u.club,'','font-size:11px'):''}
+          ${currentUser.es_admin?`<button class="admin-slot-menu-btn" onclick="showAdminSlotMenu('${diaId}','${tareaId}','${franjaId}','${v[i].id}')" title="Opciones de administrador">⋮</button>`:''}
         </span>
-        ${currentUser.es_admin?`<button class="admin-slot-menu-btn" onclick="showAdminSlotMenu('${diaId}','${tareaId}','${franjaId}','${v[i].id}')" title="Opciones de administrador">⋮</button>`:''}
       </div>`;
     } else {
       html+=`<div class="person-slot empty-slot" style="margin-bottom:5px">
@@ -1036,33 +1057,58 @@ async function adminQuitarVolDeSlot(diaId,tareaId,franjaId,turnoId){
   }catch(e){ alert('Error: '+e.message); }
 }
 
+let calAdminVolPicker=null;
 function showAdminAddVol(diaId,tareaId,franjaId){
   if(!currentUser.es_admin) return;
   const slots=getSlotsForTurno(diaId,tareaId,franjaId);
   const v=getVolsEnTurno(diaId,tareaId,franjaId);
   if(v.length>=slots){ alert('Este turno ya está completo.'); return; }
-  const html=`<div class="modal-title">➕ Añadir voluntario</div>
-    ${buildAdminVolPickerHtml(diaId,franjaId,'adminAsignarVolASlot',[diaId,tareaId,franjaId])}
-    <button class="btn" style="width:100%;margin-top:12px" onclick="showSlotDetail('${diaId}','${tareaId}','${franjaId}')">← Volver</button>`;
-  updateModalContent(html);
+  calAdminVolPicker={mode:'add',diaId,tareaId,franjaId,turnoId:null,searchText:''};
+  renderCalAdminVolPicker();
 }
 
 function showAdminChangeVol(diaId,tareaId,franjaId,turnoId){
   if(!currentUser.es_admin) return;
-  const html=`<div class="modal-title">🔄 Cambiar voluntario</div>
-    ${buildAdminVolPickerHtml(diaId,franjaId,'adminReemplazarVolEnSlot',[diaId,tareaId,franjaId,turnoId])}
-    <button class="btn" style="width:100%;margin-top:12px" onclick="showAdminSlotMenu('${diaId}','${tareaId}','${franjaId}','${turnoId}')">← Volver</button>`;
+  calAdminVolPicker={mode:'change',diaId,tareaId,franjaId,turnoId,searchText:''};
+  renderCalAdminVolPicker();
+}
+
+function renderCalAdminVolPicker(){
+  const {mode,diaId,tareaId,franjaId,turnoId,searchText}=calAdminVolPicker;
+  const title=mode==='add'?'➕ Añadir voluntario':'🔄 Cambiar voluntario';
+  const onSelectFnName=mode==='add'?'adminAsignarVolASlot':'adminReemplazarVolEnSlot';
+  const extraArgs=mode==='add'?[diaId,tareaId,franjaId]:[diaId,tareaId,franjaId,turnoId];
+  const volverFn=mode==='add'
+    ? `showSlotDetail('${diaId}','${tareaId}','${franjaId}')`
+    : `showAdminSlotMenu('${diaId}','${tareaId}','${franjaId}','${turnoId}')`;
+  const html=`<div class="modal-title">${title}</div>
+    <input type="text" id="cal-admin-vol-search" class="picker-search-input" placeholder="🔎 Buscar por nombre..." value="${escapeAttr(searchText)}" oninput="filterCalAdminVolSearch(this.value)">
+    ${buildAdminVolPickerHtml(diaId,franjaId,onSelectFnName,extraArgs,searchText)}
+    <button class="btn" style="width:100%;margin-top:12px" onclick="${volverFn}">← Volver</button>`;
   updateModalContent(html);
+  const inp=document.getElementById('cal-admin-vol-search');
+  if(inp){ inp.focus(); const pos=inp.value.length; inp.setSelectionRange(pos,pos); }
+}
+
+function filterCalAdminVolSearch(val){
+  if(!calAdminVolPicker) return;
+  calAdminVolPicker.searchText=val;
+  renderCalAdminVolPicker();
 }
 
 // Construye el listado de voluntarios para elegir, atenuando/deshabilitando a quienes
-// ya tienen un turno asignado ese día en esa misma franja horaria (misma tarea u otra)
-function buildAdminVolPickerHtml(diaId,franjaId,onSelectFnName,extraArgs){
+// ya tienen un turno asignado ese día en esa misma franja horaria (misma tarea u otra),
+// y filtrando opcionalmente por texto de búsqueda sobre el nombre completo
+function buildAdminVolPickerHtml(diaId,franjaId,onSelectFnName,extraArgs,searchText){
   const ocupadosFranja=new Set(allTurnos.filter(t=>t.dia_id===diaId&&t.franja_id===franjaId).map(t=>t.usuario_id));
-  const sorted=[...allUsers].sort((a,b)=>(a.apellido1||'').localeCompare(b.apellido1||''));
+  let sorted=[...allUsers].sort((a,b)=>(a.apellido1||'').localeCompare(b.apellido1||''));
+  if(searchText&&searchText.trim()){
+    const q=searchText.trim().toLocaleLowerCase();
+    sorted=sorted.filter(u=>nombreCompleto(u).toLocaleLowerCase().includes(q));
+  }
   const extra=extraArgs.map(a=>`'${a}'`).join(',');
   let html=`<div class="picker-list" style="font-size:14px">`;
-  if(!sorted.length) html+=`<div class="picker-empty">Sin voluntarios</div>`;
+  if(!sorted.length) html+=`<div class="picker-empty">Sin voluntarios${searchText?' que coincidan con la búsqueda':''}</div>`;
   sorted.forEach(u=>{
     const ocupado=ocupadosFranja.has(u.id);
     const nombre=nombreCompleto(u);
