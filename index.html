@@ -130,6 +130,8 @@ select{-webkit-appearance:none;appearance:none;padding-right:34px;background-ima
 .loading{text-align:center;padding:40px;color:var(--text2);font-size:14px}
 .spinner{display:inline-block;width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--pk);border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:10px}
 @keyframes spin{to{transform:rotate(360deg)}}
+@keyframes blinkAlert{0%,100%{color:inherit}50%{color:#c62828}}
+.blink-alert{animation:blinkAlert 1s step-start infinite}
 /* Login */
 .login-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:var(--bg)}
 .login-logo{width:72px;height:72px;border-radius:18px;overflow:hidden;margin-bottom:16px}
@@ -393,7 +395,7 @@ select{-webkit-appearance:none;appearance:none;padding-right:34px;background-ima
         <button class="btn btn-primary" style="margin-top:12px;width:100%" onclick="asignarManual()">Apuntar</button>
         <div id="man-msg"></div>
       </div>
-      <div class="card">
+      <div class="card" id="cam-card">
         <div class="card-title">🔄 Cambiar voluntario a otro turno</div>
         <div class="label">Voluntario</div>
         <div class="fake-select" onclick="openPicker('cam-vol',{title:'👤 Selecciona voluntario',sortable:true,search:true})">
@@ -928,17 +930,22 @@ function renderCalendar(){
     else tareaIds.forEach(tid=>{
       const fids=cfg.tareas[tid];
       const t=getTarea(tid);
-      html+=`<div class="task-row"><div class="task-name"><span>${t.icon}</span>${t.nombre}</div>`;
+      const anyAlertTarea=(fids||[]).some(fid=>isAlertActive(dia.id,tid,fid));
+      html+=`<div class="task-row"><div class="task-name${anyAlertTarea?' blink-alert':''}"><span>${t.icon}</span>${t.nombre}</div>`;
       (fids||[]).forEach(fid=>{
         const f=getFranja(fid); const v=getVolsEnTurno(dia.id,tid,fid);
         const slots=getSlotsForTurno(dia.id,tid,fid);
         const yaEnSlot=estaApuntado(dia.id,tid,fid);
+        const alertaActiva=isAlertActive(dia.id,tid,fid);
         total+=slots; filled+=Math.min(v.length,slots);
         const pct=Math.min(100,Math.round((v.length/slots)*100));
         const col=v.length>=slots?'#2e7d32':(v.length>0?'#e65100':'#c62828');
         html+=`<div class="slot-row" onclick="showSlotDetail('${dia.id}','${tid}','${fid}')">
-          <span class="slot-label">${yaEnSlot?'<span style="color:#2e7d32;margin-right:4px">▶</span>':''}🕐 ${franjaLabel(f)}</span>
-          <span style="font-size:12px;color:${col};font-weight:600">${v.length}/${slots}</span>
+          <span class="slot-label${alertaActiva?' blink-alert':''}">${yaEnSlot?'<span style="color:#2e7d32;margin-right:4px">▶</span>':''}🕐 ${franjaLabel(f)}</span>
+          <span style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:12px;color:${col};font-weight:600">${v.length}/${slots}</span>
+            ${currentUser.es_admin?`<button class="admin-slot-menu-btn" onclick="event.stopPropagation();showAdminTurnoMenu('${dia.id}','${tid}','${fid}')" title="Opciones de administrador">⋮</button>`:''}
+          </span>
         </div>
         <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${col}"></div></div>`;
       });
@@ -962,6 +969,7 @@ function showSlotDetail(diaId,tareaId,franjaId){
   const v=getVolsEnTurno(diaId,tareaId,franjaId);
   const slots=getSlotsForTurno(diaId,tareaId,franjaId);
   const yaApuntado=estaApuntado(diaId,tareaId,franjaId);
+  const alertaActiva=isAlertActive(diaId,tareaId,franjaId);
   let html=`<div class="modal-title">${t.icon} ${t.nombre}</div>
   <p style="font-size:13px;color:var(--text2);margin-bottom:14px">${dia.label} · ${franjaLabel(f)}</p>`;
   for(let i=0;i<slots;i++){
@@ -976,7 +984,7 @@ function showSlotDetail(diaId,tareaId,franjaId){
       </div>`;
     } else {
       html+=`<div class="person-slot empty-slot" style="margin-bottom:5px">
-        <span>${i+1}. Libre</span>
+        <span${alertaActiva?' class="blink-alert"':''}>${i+1}. Libre</span>
         <span style="display:flex;align-items:center;gap:8px">
           <span style="color:var(--pk);font-size:11px">● Disponible</span>
           ${currentUser.es_admin?`<button class="admin-slot-menu-btn" onclick="showAdminAddVol('${diaId}','${tareaId}','${franjaId}')" title="Añadir voluntario">⋮</button>`:''}
@@ -1146,6 +1154,101 @@ async function adminReemplazarVolEnSlot(diaId,tareaId,franjaId,turnoId,uid,nombr
   }catch(e){ alert('Error: '+e.message); }
 }
 
+// ── Menú admin sobre un turno de la tarea (franja / nº voluntarios / alerta) ──
+function isAlertActive(diaId,tareaId,franjaId){
+  return !!(state.diaConfig[diaId]&&state.diaConfig[diaId].alertas&&state.diaConfig[diaId].alertas[tareaId+'_'+franjaId]);
+}
+
+function showAdminTurnoMenu(diaId,tareaId,franjaId){
+  if(!currentUser.es_admin) return;
+  const dia=state.dias.find(d=>d.id===diaId);
+  const t=getTarea(tareaId); const f=getFranja(franjaId);
+  const alertaActiva=isAlertActive(diaId,tareaId,franjaId);
+  const html=`<div class="modal-title">⚙️ ${t.icon} ${t.nombre}</div>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:12px">${dia?dia.label:''} · 🕐 ${franjaLabel(f)}</p>
+    <button class="btn" style="width:100%;margin-bottom:8px" onclick="showAdminCambiarFranja('${diaId}','${tareaId}','${franjaId}')">🕐 Modificar franja horaria</button>
+    <button class="btn" style="width:100%;margin-bottom:8px" onclick="adminModificarSlots('${diaId}','${tareaId}','${franjaId}')">👥 Modificar nº de voluntarios necesarios</button>
+    ${alertaActiva
+      ?`<button class="btn btn-danger" style="width:100%;margin-bottom:8px" onclick="adminMarcarFinalizado('${diaId}','${tareaId}','${franjaId}',false)">✅ Marcar turno finalizado</button>
+        <button class="btn btn-danger" style="width:100%" onclick="adminMarcarFinalizado('${diaId}','${tareaId}','${franjaId}',true)">✅ Marcar tarea finalizada</button>`
+      :`<button class="btn btn-primary" style="width:100%" onclick="adminActivarAlerta('${diaId}','${tareaId}','${franjaId}')">🚨 Activar Alerta</button>`}`;
+  openModal(html);
+}
+
+function showAdminCambiarFranja(diaId,tareaId,franjaId){
+  if(!currentUser.es_admin) return;
+  const cfg=state.diaConfig[diaId];
+  const yaUsadas=new Set((cfg&&cfg.tareas[tareaId])||[]);
+  const opciones=state.franjas.filter(fr=>fr.id===franjaId||!yaUsadas.has(fr.id));
+  let html=`<div class="modal-title">🕐 Cambiar franja horaria</div>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:10px">Franja actual: ${franjaLabel(getFranja(franjaId))}</p>
+    <div class="picker-list" style="font-size:14px">`;
+  if(!opciones.length) html+='<div class="picker-empty">No hay otras franjas disponibles</div>';
+  opciones.forEach(fr=>{
+    html+=`<div class="picker-option${fr.id===franjaId?' selected':''}"${fr.id===franjaId?'':` onclick="adminCambiarFranjaTarea('${diaId}','${tareaId}','${franjaId}','${fr.id}')"`}>
+      <span class="picker-option-name">${franjaLabel(fr)}</span>
+    </div>`;
+  });
+  html+=`</div>
+    <button class="btn" style="width:100%;margin-top:12px" onclick="showAdminTurnoMenu('${diaId}','${tareaId}','${franjaId}')">← Volver</button>`;
+  updateModalContent(html);
+}
+
+async function adminCambiarFranjaTarea(diaId,tareaId,oldFranjaId,newFranjaId){
+  if(oldFranjaId===newFranjaId) return;
+  if(!confirm('¿Cambiar la franja horaria de esta tarea? Los voluntarios ya apuntados se mantienen, solo cambia el horario.')) return;
+  const cfg=state.diaConfig[diaId];
+  if(!cfg||!cfg.tareas[tareaId]){ alert('No se encuentra la configuración de esta tarea.'); return; }
+  const arr=cfg.tareas[tareaId];
+  const idx=arr.indexOf(oldFranjaId);
+  if(idx<0){ alert('No se encuentra la franja actual.'); return; }
+  arr[idx]=newFranjaId;
+  const oldKey=tareaId+'_'+oldFranjaId, newKey=tareaId+'_'+newFranjaId;
+  if(!cfg.slots) cfg.slots={};
+  if(cfg.slots[oldKey]!==undefined){ cfg.slots[newKey]=cfg.slots[oldKey]; delete cfg.slots[oldKey]; }
+  if(cfg.alertas&&cfg.alertas[oldKey]!==undefined){ cfg.alertas[newKey]=cfg.alertas[oldKey]; delete cfg.alertas[oldKey]; }
+  try{
+    await sb(`turnos?dia_id=eq.${diaId}&tarea_id=eq.${tareaId}&franja_id=eq.${oldFranjaId}`,{method:'PATCH',body:JSON.stringify({franja_id:newFranjaId})});
+    await saveConfig('diaConfig',state.diaConfig);
+    await loadTurnos();
+    renderCalendar();
+    closeModal();
+  }catch(e){ alert('Error: '+e.message); }
+}
+
+async function adminModificarSlots(diaId,tareaId,franjaId){
+  const actual=getSlotsForTurno(diaId,tareaId,franjaId);
+  const val=prompt('Nº de voluntarios necesarios para este turno:',actual);
+  if(val===null) return;
+  const n=parseInt(val,10);
+  if(isNaN(n)||n<1){ alert('Introduce un número válido (mínimo 1).'); return; }
+  await updateSlots(diaId,tareaId,franjaId,n);
+  closeModal();
+}
+
+async function adminActivarAlerta(diaId,tareaId,franjaId){
+  if(!state.diaConfig[diaId]) return;
+  if(!state.diaConfig[diaId].alertas) state.diaConfig[diaId].alertas={};
+  state.diaConfig[diaId].alertas[tareaId+'_'+franjaId]=true;
+  await saveConfig('diaConfig',state.diaConfig);
+  renderCalendar();
+  closeModal();
+}
+
+async function adminMarcarFinalizado(diaId,tareaId,franjaId,todaLaTarea){
+  const cfg=state.diaConfig[diaId];
+  if(cfg&&cfg.alertas){
+    if(todaLaTarea){
+      (cfg.tareas[tareaId]||[]).forEach(fid=>{ delete cfg.alertas[tareaId+'_'+fid]; });
+    } else {
+      delete cfg.alertas[tareaId+'_'+franjaId];
+    }
+    await saveConfig('diaConfig',state.diaConfig);
+    renderCalendar();
+  }
+  closeModal();
+}
+
 function openModal(html){
   document.getElementById('modal-container').innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
     <div class="modal">${html}<button class="btn" style="width:100%;margin-top:12px" onclick="closeModal()">Cerrar</button></div></div>`;
@@ -1287,7 +1390,10 @@ function renderVolList(){
         const dia=state.dias.find(d=>d.id===t.dia_id);
         const tarea=getTarea(t.tarea_id);
         const franja=getFranja(t.franja_id);
-        turnosHtml+=`<div class="vol-turno-item">📅 ${dia?.label||t.dia_id} · ${tarea.icon} ${tarea.nombre} · 🕐 ${franjaLabel(franja)}</div>`;
+        turnosHtml+=`<div class="vol-turno-item" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">📅 ${dia?.label||t.dia_id} · ${tarea.icon} ${tarea.nombre} · 🕐 ${franjaLabel(franja)}</span>
+          ${currentUser.es_admin?`<button class="admin-slot-menu-btn" onclick="showAdminVolTurnoMenu('${t.id}')" title="Opciones de administrador">⋮</button>`:''}
+        </div>`;
       });
       turnosHtml+='</div>';
     }
@@ -1298,6 +1404,51 @@ function renderVolList(){
       </div>${turnosHtml}
     </div>`;
   }).join('');
+}
+
+// ── Menú admin sobre un turno asignado, desde la pestaña Voluntarios ──
+function showAdminVolTurnoMenu(turnoId){
+  if(!currentUser.es_admin) return;
+  const t=allTurnos.find(x=>x.id===turnoId);
+  if(!t){ alert('Este turno ya no existe, recarga la lista.'); return; }
+  const dia=state.dias.find(d=>d.id===t.dia_id);
+  const tarea=getTarea(t.tarea_id);
+  const franja=getFranja(t.franja_id);
+  const html=`<div class="modal-title">⚙️ ${t.nombre_usuario}</div>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:12px">📅 ${dia?dia.label:t.dia_id} · ${tarea.icon} ${tarea.nombre} · 🕐 ${franjaLabel(franja)}</p>
+    <button class="btn btn-primary" style="width:100%;margin-bottom:8px" onclick="adminIrACambiarTurnoVol('${t.id}')">🔄 Cambiar este turno</button>
+    <button class="btn btn-danger" style="width:100%" onclick="adminQuitarVolDesdeVolTab('${t.id}')">🗑️ Eliminar este turno</button>`;
+  openModal(html);
+}
+
+async function adminQuitarVolDesdeVolTab(turnoId){
+  if(!confirm('¿Eliminar este turno del voluntario?')) return;
+  try{
+    const url2=`${SB_URL}/rest/v1/turnos?id=eq.${turnoId}&apikey=${SB_KEY}`;
+    const r2=await fetch(url2,{method:'DELETE',headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Prefer':'return=minimal'}});
+    if(!r2.ok){ const txt2=await r2.text(); throw new Error(`HTTP ${r2.status}: ${txt2}`); }
+    await loadTurnos(); renderCalendar(); renderVolList();
+    closeModal();
+  }catch(e){ alert('Error: '+e.message); }
+}
+
+// Lleva al admin al panel "Cambiar voluntario a otro turno" ya preseleccionado,
+// reutilizando ese flujo existente en vez de duplicar los 3 selectores de día/tarea/franja
+function adminIrACambiarTurnoVol(turnoId){
+  const t=allTurnos.find(x=>x.id===turnoId);
+  if(!t){ alert('Este turno ya no existe, recarga la lista.'); closeModal(); return; }
+  closeModal();
+  showSection('admin');
+  showAdminTab('gestionar');
+  const camVol=document.getElementById('cam-vol');
+  if(!camVol) return;
+  camVol.value=`${t.usuario_id}|${t.nombre_usuario}`;
+  syncFakeSelect('cam-vol');
+  renderCambioVolSeleccionado();
+  const camTurnoSel=document.getElementById('cam-turno-actual');
+  if(camTurnoSel){ camTurnoSel.value=t.id; syncFakeSelect('cam-turno-actual'); }
+  const card=document.getElementById('cam-card');
+  if(card) card.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 // ── Admin ────────────────────────────────────────────────────────────
