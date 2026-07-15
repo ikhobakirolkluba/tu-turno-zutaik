@@ -112,6 +112,9 @@ select{-webkit-appearance:none;appearance:none;padding-right:34px;background-ima
 .slot-header{font-size:13px;font-weight:600;margin-bottom:6px;color:var(--pk-dark)}
 .person-slot{display:flex;justify-content:space-between;align-items:center;padding:5px 10px;border-radius:8px;background:var(--surface);border:1px solid var(--border);font-size:12px;margin-bottom:4px}
 .person-slot.empty-slot{color:var(--text3);border-style:dashed}
+.admin-slot-menu-btn{border:none;background:var(--border);color:var(--text2);width:24px;height:24px;min-width:24px;border-radius:6px;font-size:15px;line-height:1;cursor:pointer;flex-shrink:0}
+.admin-slot-menu-btn:active{background:var(--pk-light);color:var(--pk-dark)}
+.picker-option.admin-vol-disabled{opacity:.45;cursor:not-allowed}
 .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.55);z-index:200;display:flex;align-items:flex-end;justify-content:center}
 .modal{background:var(--surface);border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:440px;max-height:88vh;overflow-y:auto}
 .modal-title{font-size:16px;font-weight:600;margin-bottom:12px;color:var(--pk-dark)}
@@ -944,12 +947,19 @@ function showSlotDetail(diaId,tareaId,franjaId){
     if(v[i]){
       const u=allUsers.find(x=>x.id===v[i].usuario_id);
       html+=`<div class="person-slot" style="margin-bottom:5px">
-        <span style="font-weight:600">${i+1}. ${v[i].nombre_usuario}</span>
-        ${u?clubBadgeHtml(u.club,'','font-size:11px'):''}
+        <span style="display:flex;align-items:center;gap:6px;overflow:hidden">
+          <span style="font-weight:600">${i+1}. ${v[i].nombre_usuario}</span>
+          ${u?clubBadgeHtml(u.club,'','font-size:11px'):''}
+        </span>
+        ${currentUser.es_admin?`<button class="admin-slot-menu-btn" onclick="showAdminSlotMenu('${diaId}','${tareaId}','${franjaId}','${v[i].id}')" title="Opciones de administrador">⋮</button>`:''}
       </div>`;
     } else {
       html+=`<div class="person-slot empty-slot" style="margin-bottom:5px">
-        <span>${i+1}. Libre</span><span style="color:var(--pk);font-size:11px">● Disponible</span>
+        <span>${i+1}. Libre</span>
+        <span style="display:flex;align-items:center;gap:8px">
+          <span style="color:var(--pk);font-size:11px">● Disponible</span>
+          ${currentUser.es_admin?`<button class="admin-slot-menu-btn" onclick="showAdminAddVol('${diaId}','${tareaId}','${franjaId}')" title="Añadir voluntario">⋮</button>`:''}
+        </span>
       </div>`;
     }
   }
@@ -1001,6 +1011,93 @@ async function desapuntarseModal(diaId,tareaId,franjaId){
   closeModal();
   await desapuntarse(diaId,tareaId,franjaId);
   renderCalendar();
+}
+
+// ── Menú admin sobre un turno (añadir / cambiar / eliminar voluntario) ──
+function showAdminSlotMenu(diaId,tareaId,franjaId,turnoId){
+  if(!currentUser.es_admin) return;
+  const turno=allTurnos.find(x=>x.id===turnoId);
+  if(!turno){ alert('Este turno ya no existe, recarga la lista.'); showSlotDetail(diaId,tareaId,franjaId); return; }
+  const html=`<div class="modal-title">⚙️ ${turno.nombre_usuario}</div>
+    <button class="btn btn-primary" style="width:100%;margin-bottom:8px" onclick="showAdminChangeVol('${diaId}','${tareaId}','${franjaId}','${turnoId}')">🔄 Cambiar voluntario</button>
+    <button class="btn btn-danger" style="width:100%" onclick="adminQuitarVolDeSlot('${diaId}','${tareaId}','${franjaId}','${turnoId}')">🗑️ Eliminar del turno</button>
+    <button class="btn" style="width:100%;margin-top:12px" onclick="showSlotDetail('${diaId}','${tareaId}','${franjaId}')">← Volver</button>`;
+  updateModalContent(html);
+}
+
+async function adminQuitarVolDeSlot(diaId,tareaId,franjaId,turnoId){
+  if(!confirm('¿Quitar a este voluntario del turno?')) return;
+  try{
+    const url2=`${SB_URL}/rest/v1/turnos?id=eq.${turnoId}&apikey=${SB_KEY}`;
+    const r2=await fetch(url2,{method:'DELETE',headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Prefer':'return=minimal'}});
+    if(!r2.ok){ const txt2=await r2.text(); throw new Error(`HTTP ${r2.status}: ${txt2}`); }
+    await loadTurnos(); renderCalendar();
+    showSlotDetail(diaId,tareaId,franjaId);
+  }catch(e){ alert('Error: '+e.message); }
+}
+
+function showAdminAddVol(diaId,tareaId,franjaId){
+  if(!currentUser.es_admin) return;
+  const slots=getSlotsForTurno(diaId,tareaId,franjaId);
+  const v=getVolsEnTurno(diaId,tareaId,franjaId);
+  if(v.length>=slots){ alert('Este turno ya está completo.'); return; }
+  const html=`<div class="modal-title">➕ Añadir voluntario</div>
+    ${buildAdminVolPickerHtml(diaId,franjaId,'adminAsignarVolASlot',[diaId,tareaId,franjaId])}
+    <button class="btn" style="width:100%;margin-top:12px" onclick="showSlotDetail('${diaId}','${tareaId}','${franjaId}')">← Volver</button>`;
+  updateModalContent(html);
+}
+
+function showAdminChangeVol(diaId,tareaId,franjaId,turnoId){
+  if(!currentUser.es_admin) return;
+  const html=`<div class="modal-title">🔄 Cambiar voluntario</div>
+    ${buildAdminVolPickerHtml(diaId,franjaId,'adminReemplazarVolEnSlot',[diaId,tareaId,franjaId,turnoId])}
+    <button class="btn" style="width:100%;margin-top:12px" onclick="showAdminSlotMenu('${diaId}','${tareaId}','${franjaId}','${turnoId}')">← Volver</button>`;
+  updateModalContent(html);
+}
+
+// Construye el listado de voluntarios para elegir, atenuando/deshabilitando a quienes
+// ya tienen un turno asignado ese día en esa misma franja horaria (misma tarea u otra)
+function buildAdminVolPickerHtml(diaId,franjaId,onSelectFnName,extraArgs){
+  const ocupadosFranja=new Set(allTurnos.filter(t=>t.dia_id===diaId&&t.franja_id===franjaId).map(t=>t.usuario_id));
+  const sorted=[...allUsers].sort((a,b)=>(a.apellido1||'').localeCompare(b.apellido1||''));
+  const extra=extraArgs.map(a=>`'${a}'`).join(',');
+  let html=`<div class="picker-list" style="font-size:14px">`;
+  if(!sorted.length) html+=`<div class="picker-empty">Sin voluntarios</div>`;
+  sorted.forEach(u=>{
+    const ocupado=ocupadosFranja.has(u.id);
+    const nombre=nombreCompleto(u);
+    html+=`<div class="picker-option${ocupado?' admin-vol-disabled':''}"${ocupado?'':` onclick="${onSelectFnName}(${extra},'${u.id}','${escapeAttr(nombre)}')"`}>
+      <span class="picker-option-name">${nombre}</span>
+      <span style="display:flex;align-items:center;gap:6px">${ocupado?'<span style="font-size:11px;color:var(--text3)">Ocupado/a</span>':''}${clubBadgeHtml(u.club,'picker-club-tag')}</span>
+    </div>`;
+  });
+  html+='</div>';
+  return html;
+}
+
+async function adminAsignarVolASlot(diaId,tareaId,franjaId,uid,nombre){
+  const slots=getSlotsForTurno(diaId,tareaId,franjaId);
+  const v=getVolsEnTurno(diaId,tareaId,franjaId);
+  if(v.length>=slots){ alert('Este turno ya está completo.'); showSlotDetail(diaId,tareaId,franjaId); return; }
+  if(v.find(x=>x.usuario_id===uid)){ alert('Ya está en este turno.'); showSlotDetail(diaId,tareaId,franjaId); return; }
+  try{
+    await sb('turnos',{method:'POST',body:JSON.stringify({dia_id:diaId,tarea_id:tareaId,franja_id:franjaId,usuario_id:uid,nombre_usuario:nombre})});
+    await loadTurnos(); renderCalendar();
+    showSlotDetail(diaId,tareaId,franjaId);
+  }catch(e){ alert('Error: '+e.message); }
+}
+
+async function adminReemplazarVolEnSlot(diaId,tareaId,franjaId,turnoId,uid,nombre){
+  const turnoActual=allTurnos.find(t=>t.id===turnoId);
+  if(!turnoActual){ alert('Este turno ya no existe, recarga la lista.'); showSlotDetail(diaId,tareaId,franjaId); return; }
+  try{
+    const url2=`${SB_URL}/rest/v1/turnos?id=eq.${turnoId}&apikey=${SB_KEY}`;
+    const r2=await fetch(url2,{method:'DELETE',headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Prefer':'return=minimal'}});
+    if(!r2.ok){ const txt2=await r2.text(); throw new Error(`HTTP ${r2.status}: ${txt2}`); }
+    await sb('turnos',{method:'POST',body:JSON.stringify({dia_id:diaId,tarea_id:tareaId,franja_id:franjaId,usuario_id:uid,nombre_usuario:nombre,comentario:turnoActual.comentario||''})});
+    await loadTurnos(); renderCalendar();
+    showSlotDetail(diaId,tareaId,franjaId);
+  }catch(e){ alert('Error: '+e.message); }
 }
 
 function openModal(html){
