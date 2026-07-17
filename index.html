@@ -100,7 +100,10 @@ select{-webkit-appearance:none;appearance:none;padding-right:34px;background-ima
 .day-header.mon{background:#e3f2fd;color:#0d47a1}
 .day-header.tue{background:#fffde7;color:#f57f17}
 .task-row{padding:10px 16px;border-top:1px solid var(--border)}
-.task-name{font-size:13px;font-weight:600;display:flex;align-items:center;gap:5px;margin-bottom:6px;color:var(--pk-dark)}
+.task-row-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.task-name{font-size:13px;font-weight:600;display:flex;align-items:center;gap:5px;color:var(--pk-dark)}
+.info-btn{border:none;background:var(--border);color:var(--pk-dark);width:24px;height:24px;min-width:24px;border-radius:6px;font-size:13px;line-height:1;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.info-btn:active{background:var(--pk-light)}
 .slot-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:13px;cursor:pointer}
 .slot-label{color:var(--text2);display:flex;align-items:center;gap:4px}
 .progress-bar{height:5px;border-radius:3px;background:var(--border);margin-top:4px;overflow:hidden}
@@ -132,6 +135,33 @@ select{-webkit-appearance:none;appearance:none;padding-right:34px;background-ima
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes blinkAlert{0%,100%{color:inherit}50%{color:#c62828}}
 .blink-alert{animation:blinkAlert 1s step-start infinite}
+@keyframes blinkAlertStrong{0%,100%{color:inherit;font-weight:inherit}50%{color:#c62828;font-weight:800}}
+.blink-alert-strong{animation:blinkAlertStrong .5s step-start infinite}
+@keyframes blinkSiren{0%,100%{opacity:0}50%{opacity:1}}
+.siren-blink{animation:blinkSiren .5s step-start infinite;margin-left:2px}
+/* Trabajos / checklist */
+.trabajo-row{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.trabajo-row:last-child{border-bottom:none}
+.trabajo-check{width:20px;height:20px;flex-shrink:0;margin-top:1px;accent-color:var(--pk)}
+.trabajo-nombre{font-size:14px;font-weight:500;line-height:1.3}
+.trabajo-nombre.hecho{color:var(--ok-text);text-decoration:line-through;text-decoration-color:var(--ok-text)}
+.trabajo-meta{font-size:11px;color:var(--text3);margin-top:2px}
+.trabajo-del{border:none;background:transparent;color:var(--err-text);font-size:15px;cursor:pointer;flex-shrink:0;padding:2px 4px}
+.trabajo-dia-group{margin-bottom:14px}
+.trabajo-dia-group:last-child{margin-bottom:0}
+.trabajo-dia-label{font-size:12px;font-weight:700;color:var(--pk-dark);margin-bottom:4px}
+/* Info: instrucciones / tutoriales */
+.info-subtabs{display:flex;gap:6px;margin-bottom:12px}
+.info-subtab-btn{flex:1;padding:8px;border-radius:10px;border:1px solid var(--border2);background:transparent;color:var(--pk);font-size:13px;cursor:pointer;font-weight:500}
+.info-subtab-btn.active{background:var(--pk);color:#fff;border-color:var(--pk)}
+.info-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px}
+.info-item-title{font-size:14px;font-weight:600;color:var(--pk-dark);margin-bottom:4px}
+.info-item-text{font-size:13px;color:var(--text);white-space:pre-wrap;line-height:1.4}
+.info-item-link{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:13px;font-weight:600;color:var(--pk);text-decoration:none}
+.info-item-link:active{opacity:.7}
+.tutorial-item{display:flex;justify-content:space-between;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px}
+.tutorial-link{font-size:14px;font-weight:600;color:var(--pk-dark);text-decoration:none;flex:1}
+.tutorial-link:active{opacity:.7}
 /* Login */
 .login-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:var(--bg)}
 .login-logo{width:72px;height:72px;border-radius:18px;overflow:hidden;margin-bottom:16px}
@@ -220,6 +250,8 @@ select{-webkit-appearance:none;appearance:none;padding-right:34px;background-ima
     <button class="nav-btn active" data-section="calendario" onclick="showSection('calendario',this)">📅 Calendario</button>
     <button class="nav-btn" data-section="apuntarse" onclick="showSection('apuntarse',this)">✋ Apuntarse</button>
     <button class="nav-btn" data-section="voluntarios" onclick="showSection('voluntarios',this)">👥 Voluntarios</button>
+    <button class="nav-btn" data-section="tareas" onclick="showSection('tareas',this)">📋 Tareas</button>
+    <button class="nav-btn" data-section="info" onclick="showSection('info',this)">ℹ️ Info</button>
     <button class="nav-btn" id="admin-nav-btn" data-section="admin" onclick="showSection('admin',this)" style="display:none">⚙️ Admin</button>
   </div>
 
@@ -272,6 +304,46 @@ select{-webkit-appearance:none;appearance:none;padding-right:34px;background-ima
         <option value="club">Ordenar por club</option>
       </select>
       <div id="vol-list"></div>
+    </div>
+  </div>
+
+  <!-- TAREAS (info genérica, en qué consiste cada tarea y sus trabajos por día) -->
+  <div id="sec-tareas" class="section">
+    <div style="font-size:15px;font-weight:600;color:var(--pk-dark);margin-bottom:10px">📋 Tareas</div>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Qué trabajos incluye cada tarea, día a día.</p>
+    <div id="tareas-info-view"></div>
+  </div>
+
+  <!-- INFO (instrucciones y tutoriales, gestionados por el admin) -->
+  <div id="sec-info" class="section">
+    <div style="font-size:15px;font-weight:600;color:var(--pk-dark);margin-bottom:10px">ℹ️ Info</div>
+    <div class="info-subtabs">
+      <button class="info-subtab-btn active" data-infotab="instrucciones" onclick="switchInfoTab('instrucciones',this)">📖 Instrucciones</button>
+      <button class="info-subtab-btn" data-infotab="tutoriales" onclick="switchInfoTab('tutoriales',this)">🎬 Tutoriales</button>
+    </div>
+    <div id="info-tab-instrucciones" class="tab-content active">
+      <div class="card" id="admin-add-instruccion-card" style="display:none">
+        <div class="card-title">➕ Añadir instrucción</div>
+        <div class="label">Título</div>
+        <input type="text" id="new-instr-titulo" placeholder="Ej: Encendido de cámaras">
+        <div class="label">Descripción</div>
+        <textarea id="new-instr-texto" rows="3" style="width:100%;padding:8px;border:1px solid var(--border2);border-radius:8px;font-size:13px;font-family:inherit" placeholder="Explica aquí los pasos..."></textarea>
+        <div class="label">Enlace a foto (Google Photos, opcional)</div>
+        <input type="url" id="new-instr-foto" placeholder="https://photos.app.goo.gl/...">
+        <button class="btn btn-primary btn-sm" style="margin-top:10px;width:100%" onclick="addInstruccion()">Añadir</button>
+      </div>
+      <div id="info-instrucciones-list"></div>
+    </div>
+    <div id="info-tab-tutoriales" class="tab-content">
+      <div class="card" id="admin-add-tutorial-card" style="display:none">
+        <div class="card-title">➕ Añadir tutorial</div>
+        <div class="label">Título del vídeo</div>
+        <input type="text" id="new-tut-titulo" placeholder="Ej: Cómo montar la barra">
+        <div class="label">Enlace al vídeo (canal Ikhoba)</div>
+        <input type="url" id="new-tut-url" placeholder="https://youtube.com/...">
+        <button class="btn btn-primary btn-sm" style="margin-top:10px;width:100%" onclick="addTutorial()">Añadir</button>
+      </div>
+      <div id="info-tutoriales-list"></div>
     </div>
   </div>
 
@@ -338,6 +410,10 @@ select{-webkit-appearance:none;appearance:none;padding-right:34px;background-ima
         <div class="sep"></div>
         <p style="font-size:11px;color:var(--text3);margin-bottom:8px">Usa ▲▼ para reordenar</p>
         <div id="tareas-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">🗒️ Trabajos por tarea y día</div>
+        <p style="font-size:12px;color:var(--text2)">Los trabajos de cada tarea (ej. Montaje → Recepción de Txozna, Instalación Eléctrica...) se configuran día a día desde la vista <b>Calendario</b>, pulsando el icono ℹ️ que aparece junto al nombre de la tarea. Ahí puedes añadir, quitar y consultar los trabajos de esa tarea para ese día concreto.</p>
       </div>
     </div>
 
@@ -526,7 +602,7 @@ const SB_URL = 'https://gyhmskhjqrfmrlkhnsmb.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5aG1za2hqcXJmbXJsa2huc21iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NjM1MzMsImV4cCI6MjA5NzEzOTUzM30.pb2-JujA3b7RLSnvl85kotFzmVNHKkjTfUWU0uJGGps';
 
 let currentUser = null;
-let state = { dias:[], tareas:[], franjas:[], diaConfig:{} };
+let state = { dias:[], tareas:[], franjas:[], diaConfig:{}, trabajos:{}, trabajosCheck:{}, infoInstrucciones:[], infoTutoriales:[] };
 let allTurnos = [];
 let allUsers = [];
 let asigCollapsedTasks = new Set();
@@ -665,13 +741,24 @@ async function loadConfig() {
     else if (r.clave==='tareas') state.tareas=r.valor||[];
     else if (r.clave==='franjas') state.franjas=r.valor||[];
     else if (r.clave==='diaConfig') state.diaConfig=r.valor||{};
+    else if (r.clave==='trabajos') state.trabajos=r.valor||{};
+    else if (r.clave==='trabajosCheck') state.trabajosCheck=r.valor||{};
+    else if (r.clave==='infoInstrucciones') state.infoInstrucciones=r.valor||[];
+    else if (r.clave==='infoTutoriales') state.infoTutoriales=r.valor||[];
   });
 }
 
 async function saveConfig(clave, valor) {
-  await sb(`configuracion?clave=eq.${clave}`,{
+  // PATCH (la clave ya existe en la tabla). Si no existe ninguna fila (claves nuevas
+  // como 'trabajos', 'infoInstrucciones'...), se inserta con POST.
+  const r = await sb(`configuracion?clave=eq.${clave}`,{
     method:'PATCH', body:JSON.stringify({valor, updated_at:new Date().toISOString()})
   });
+  if (!r || !r.length) {
+    await sb('configuracion',{
+      method:'POST', body:JSON.stringify({clave, valor, updated_at:new Date().toISOString()})
+    });
+  }
 }
 
 async function loadTurnos() {
@@ -691,6 +778,9 @@ function getSlotsForTurno(diaId,tareaId,franjaId){
 }
 function getVolsEnTurno(dId,tId,fId){ return allTurnos.filter(t=>t.dia_id===dId&&t.tarea_id===tId&&t.franja_id===fId); }
 function estaApuntado(dId,tId,fId){ return allTurnos.some(t=>t.dia_id===dId&&t.tarea_id===tId&&t.franja_id===fId&&t.usuario_id===currentUser.id); }
+function usuarioEnTareaDia(dId,tId){ return allTurnos.some(t=>t.dia_id===dId&&t.tarea_id===tId&&t.usuario_id===currentUser.id); }
+function getTrabajos(dId,tId){ return (state.trabajos[dId]&&state.trabajos[dId][tId])||[]; }
+function getTrabajoCheck(dId,tId,wId){ return (state.trabajosCheck[dId]&&state.trabajosCheck[dId][tId]&&state.trabajosCheck[dId][tId][wId])||null; }
 function tieneConflictoHorario(dId,fId,tIdActual){ return allTurnos.some(t=>t.dia_id===dId&&t.franja_id===fId&&t.tarea_id!==tIdActual&&t.usuario_id===currentUser.id); }
 function nombreCompleto(u){ return `${u.nombre} ${u.apellido1}${u.apellido2?' '+u.apellido2:''}`; }
 function clubBadge(club){
@@ -890,6 +980,8 @@ function showSection(id,btn,fromPop){
   if(id==='voluntarios') renderVolList();
   if(id==='apuntarse') initApuntarse();
   if(id==='admin') renderAdminPanels();
+  if(id==='tareas') renderTareasInfoView();
+  if(id==='info') renderInfoView();
   if(!fromPop) pushNavState({type:'section',id});
 }
 
@@ -931,7 +1023,11 @@ function renderCalendar(){
       const fids=cfg.tareas[tid];
       const t=getTarea(tid);
       const anyAlertTarea=(fids||[]).some(fid=>isAlertActive(dia.id,tid,fid));
-      html+=`<div class="task-row"><div class="task-name${anyAlertTarea?' blink-alert':''}"><span>${t.icon}</span>${t.nombre}</div>`;
+      const numTrabajosTarea=getTrabajos(dia.id,tid).length;
+      html+=`<div class="task-row"><div class="task-row-head">
+        <div class="task-name${anyAlertTarea?' blink-alert-strong':''}"><span>${t.icon}</span>${t.nombre}${anyAlertTarea?'<span class="siren-blink">🚨</span>':''}</div>
+        <button class="info-btn" onclick="event.stopPropagation();showTrabajosModal('${dia.id}','${tid}')" title="Información y trabajos de la tarea">ℹ️${numTrabajosTarea?`<span style="font-size:9px;margin-left:2px">${numTrabajosTarea}</span>`:''}</button>
+      </div>`;
       (fids||[]).forEach(fid=>{
         const f=getFranja(fid); const v=getVolsEnTurno(dia.id,tid,fid);
         const slots=getSlotsForTurno(dia.id,tid,fid);
@@ -941,7 +1037,7 @@ function renderCalendar(){
         const pct=Math.min(100,Math.round((v.length/slots)*100));
         const col=v.length>=slots?'#2e7d32':(v.length>0?'#e65100':'#c62828');
         html+=`<div class="slot-row" onclick="showSlotDetail('${dia.id}','${tid}','${fid}')">
-          <span class="slot-label${alertaActiva?' blink-alert':''}">${yaEnSlot?'<span style="color:#2e7d32;margin-right:4px">▶</span>':''}🕐 ${franjaLabel(f)}</span>
+          <span class="slot-label${alertaActiva?' blink-alert-strong':''}">${yaEnSlot?'<span style="color:#2e7d32;margin-right:4px">▶</span>':''}🕐 ${franjaLabel(f)}</span>
           <span style="display:flex;align-items:center;gap:8px">
             <span style="font-size:12px;color:${col};font-weight:600">${v.length}/${slots}</span>
             ${currentUser.es_admin?`<button class="admin-slot-menu-btn" onclick="event.stopPropagation();showAdminTurnoMenu('${dia.id}','${tid}','${fid}')" title="Opciones de administrador">⋮</button>`:''}
@@ -984,7 +1080,7 @@ function showSlotDetail(diaId,tareaId,franjaId){
       </div>`;
     } else {
       html+=`<div class="person-slot empty-slot" style="margin-bottom:5px">
-        <span${alertaActiva?' class="blink-alert"':''}>${i+1}. Libre</span>
+        <span${alertaActiva?' class="blink-alert-strong"':''}>${i+1}. Libre</span>
         <span style="display:flex;align-items:center;gap:8px">
           <span style="color:var(--pk);font-size:11px">● Disponible</span>
           ${currentUser.es_admin?`<button class="admin-slot-menu-btn" onclick="showAdminAddVol('${diaId}','${tareaId}','${franjaId}')" title="Añadir voluntario">⋮</button>`:''}
@@ -1040,6 +1136,83 @@ async function desapuntarseModal(diaId,tareaId,franjaId){
   closeModal();
   await desapuntarse(diaId,tareaId,franjaId);
   renderCalendar();
+}
+
+// ── Info de tarea (icono ℹ️): trabajos a realizar y su checklist ──────
+function showTrabajosModal(diaId,tareaId){
+  const dia=state.dias.find(d=>d.id===diaId);
+  const t=getTarea(tareaId);
+  const trabajos=getTrabajos(diaId,tareaId);
+  const puedeMarcar=currentUser.es_admin||usuarioEnTareaDia(diaId,tareaId);
+  let html=`<div class="modal-title">${t.icon} ${t.nombre}</div>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:12px">${dia?dia.label:''}</p>`;
+  if(!trabajos.length){
+    html+=`<div style="font-size:13px;color:var(--text3);text-align:center;padding:10px 0">Todavía no hay trabajos definidos para esta tarea este día.</div>`;
+  } else {
+    trabajos.forEach(w=>{
+      const chk=getTrabajoCheck(diaId,tareaId,w.id);
+      const hecho=!!(chk&&chk.hecho);
+      html+=`<div class="trabajo-row">
+        <input type="checkbox" class="trabajo-check" ${hecho?'checked':''} ${puedeMarcar?'':'disabled'} onchange="toggleTrabajoCheck('${diaId}','${tareaId}','${w.id}',this.checked)">
+        <div style="flex:1">
+          <div class="trabajo-nombre${hecho?' hecho':''}">${escapeAttr(w.nombre)}</div>
+          ${hecho&&chk.por?`<div class="trabajo-meta">✔️ Hecho por ${escapeAttr(chk.por)}</div>`:''}
+        </div>
+        ${currentUser.es_admin?`<button class="trabajo-del" onclick="removeTrabajoItem('${diaId}','${tareaId}','${w.id}')" title="Eliminar trabajo">🗑</button>`:''}
+      </div>`;
+    });
+  }
+  if(!puedeMarcar&&trabajos.length){
+    html+=`<div class="msg msg-info" style="margin-top:10px">Solo los voluntarios apuntados a esta tarea este día pueden marcar los trabajos como hechos.</div>`;
+  }
+  if(currentUser.es_admin){
+    html+=`<div class="sep"></div>
+      <div class="label" style="margin-top:0">➕ Añadir trabajo</div>
+      <div class="row-flex">
+        <input type="text" id="new-trabajo-input" placeholder="Ej: Instalación eléctrica" onkeydown="if(event.key==='Enter')addTrabajoItem('${diaId}','${tareaId}')">
+        <button class="btn btn-primary btn-sm" style="max-width:70px" onclick="addTrabajoItem('${diaId}','${tareaId}')">Añadir</button>
+      </div>`;
+  }
+  openModal(html);
+}
+
+async function addTrabajoItem(diaId,tareaId){
+  const inp=document.getElementById('new-trabajo-input');
+  const nombre=(inp&&inp.value||'').trim();
+  if(!nombre) return;
+  if(!state.trabajos[diaId]) state.trabajos[diaId]={};
+  if(!state.trabajos[diaId][tareaId]) state.trabajos[diaId][tareaId]=[];
+  state.trabajos[diaId][tareaId].push({id:'w'+Date.now(),nombre});
+  await saveConfig('trabajos',state.trabajos);
+  renderCalendar();
+  showTrabajosModal(diaId,tareaId);
+}
+
+async function removeTrabajoItem(diaId,tareaId,wId){
+  if(!confirm('¿Eliminar este trabajo de la lista?')) return;
+  if(state.trabajos[diaId]&&state.trabajos[diaId][tareaId]){
+    state.trabajos[diaId][tareaId]=state.trabajos[diaId][tareaId].filter(w=>w.id!==wId);
+  }
+  if(state.trabajosCheck[diaId]&&state.trabajosCheck[diaId][tareaId]){
+    delete state.trabajosCheck[diaId][tareaId][wId];
+  }
+  await saveConfig('trabajos',state.trabajos);
+  await saveConfig('trabajosCheck',state.trabajosCheck);
+  renderCalendar();
+  showTrabajosModal(diaId,tareaId);
+}
+
+async function toggleTrabajoCheck(diaId,tareaId,wId,checked){
+  if(!currentUser.es_admin&&!usuarioEnTareaDia(diaId,tareaId)){ renderCalendar(); showTrabajosModal(diaId,tareaId); return; }
+  if(!state.trabajosCheck[diaId]) state.trabajosCheck[diaId]={};
+  if(!state.trabajosCheck[diaId][tareaId]) state.trabajosCheck[diaId][tareaId]={};
+  if(checked){
+    state.trabajosCheck[diaId][tareaId][wId]={hecho:true,por:nombreCompleto(currentUser),en:new Date().toISOString()};
+  } else {
+    delete state.trabajosCheck[diaId][tareaId][wId];
+  }
+  await saveConfig('trabajosCheck',state.trabajosCheck);
+  showTrabajosModal(diaId,tareaId);
 }
 
 // ── Menú admin sobre un turno (añadir / cambiar / eliminar voluntario) ──
@@ -1404,6 +1577,117 @@ function renderVolList(){
       </div>${turnosHtml}
     </div>`;
   }).join('');
+}
+
+// ── Sección "Tareas": en qué consiste cada tarea, agrupado por día ────
+function renderTareasInfoView(){
+  const cont=document.getElementById('tareas-info-view');
+  if(!cont) return;
+  let html='';
+  state.tareas.forEach(t=>{
+    // Días (en orden de calendario) en los que esta tarea tiene trabajos definidos
+    const diasConTrabajos=state.dias.filter(d=>getTrabajos(d.id,t.id).length);
+    html+=`<div class="card">
+      <div class="card-title">${t.icon} ${t.nombre}</div>`;
+    if(!diasConTrabajos.length){
+      html+=`<div style="font-size:13px;color:var(--text3)">Todavía no hay trabajos definidos para esta tarea.</div>`;
+    } else {
+      diasConTrabajos.forEach(d=>{
+        const trabajos=getTrabajos(d.id,t.id);
+        html+=`<div class="trabajo-dia-group">
+          <div class="trabajo-dia-label">📅 ${d.label}</div>
+          <ul style="padding-left:18px;font-size:13px;color:var(--text)">
+            ${trabajos.map(w=>`<li style="margin-bottom:2px">${escapeAttr(w.nombre)}</li>`).join('')}
+          </ul>
+        </div>`;
+      });
+    }
+    html+='</div>';
+  });
+  if(!state.tareas.length) html='<div class="msg msg-info">Todavía no hay tareas configuradas.</div>';
+  cont.innerHTML=html;
+}
+
+// ── Sección "Info": Instrucciones y Tutoriales (gestionado por admin) ─
+function switchInfoTab(tab,btn){
+  document.querySelectorAll('#sec-info .tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.info-subtab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('info-tab-'+tab).classList.add('active');
+  const activeBtn=btn||document.querySelector('.info-subtab-btn[data-infotab="'+tab+'"]');
+  if(activeBtn) activeBtn.classList.add('active');
+}
+
+function renderInfoView(){
+  document.getElementById('admin-add-instruccion-card').style.display=currentUser.es_admin?'block':'none';
+  document.getElementById('admin-add-tutorial-card').style.display=currentUser.es_admin?'block':'none';
+  renderInfoInstrucciones();
+  renderInfoTutoriales();
+}
+
+function renderInfoInstrucciones(){
+  const cont=document.getElementById('info-instrucciones-list');
+  if(!state.infoInstrucciones.length){
+    cont.innerHTML='<div class="msg msg-info">Todavía no hay instrucciones publicadas.</div>';
+    return;
+  }
+  cont.innerHTML=state.infoInstrucciones.map(it=>`
+    <div class="info-item">
+      <div class="info-item-title">${escapeAttr(it.titulo)}</div>
+      ${it.texto?`<div class="info-item-text">${escapeAttr(it.texto)}</div>`:''}
+      ${it.foto?`<a class="info-item-link" href="${escapeAttr(it.foto)}" target="_blank" rel="noopener">📷 Ver foto</a>`:''}
+      ${currentUser.es_admin?`<div style="margin-top:8px"><button class="btn btn-sm btn-danger" onclick="removeInstruccion('${it.id}')">🗑 Eliminar</button></div>`:''}
+    </div>`).join('');
+}
+
+function renderInfoTutoriales(){
+  const cont=document.getElementById('info-tutoriales-list');
+  if(!state.infoTutoriales.length){
+    cont.innerHTML='<div class="msg msg-info">Todavía no hay tutoriales publicados.</div>';
+    return;
+  }
+  cont.innerHTML=state.infoTutoriales.map(it=>`
+    <div class="tutorial-item">
+      <a class="tutorial-link" href="${escapeAttr(it.url)}" target="_blank" rel="noopener">🎬 ${escapeAttr(it.titulo)}</a>
+      ${currentUser.es_admin?`<button class="trabajo-del" onclick="removeTutorial('${it.id}')" title="Eliminar">🗑</button>`:''}
+    </div>`).join('');
+}
+
+async function addInstruccion(){
+  const titulo=document.getElementById('new-instr-titulo').value.trim();
+  const texto=document.getElementById('new-instr-texto').value.trim();
+  const foto=document.getElementById('new-instr-foto').value.trim();
+  if(!titulo){ alert('Introduce al menos un título.'); return; }
+  state.infoInstrucciones.push({id:'i'+Date.now(),titulo,texto,foto});
+  document.getElementById('new-instr-titulo').value='';
+  document.getElementById('new-instr-texto').value='';
+  document.getElementById('new-instr-foto').value='';
+  await saveConfig('infoInstrucciones',state.infoInstrucciones);
+  renderInfoInstrucciones();
+}
+
+async function removeInstruccion(id){
+  if(!confirm('¿Eliminar esta instrucción?')) return;
+  state.infoInstrucciones=state.infoInstrucciones.filter(x=>x.id!==id);
+  await saveConfig('infoInstrucciones',state.infoInstrucciones);
+  renderInfoInstrucciones();
+}
+
+async function addTutorial(){
+  const titulo=document.getElementById('new-tut-titulo').value.trim();
+  const url=document.getElementById('new-tut-url').value.trim();
+  if(!titulo||!url){ alert('Introduce título y enlace del vídeo.'); return; }
+  state.infoTutoriales.push({id:'y'+Date.now(),titulo,url});
+  document.getElementById('new-tut-titulo').value='';
+  document.getElementById('new-tut-url').value='';
+  await saveConfig('infoTutoriales',state.infoTutoriales);
+  renderInfoTutoriales();
+}
+
+async function removeTutorial(id){
+  if(!confirm('¿Eliminar este tutorial?')) return;
+  state.infoTutoriales=state.infoTutoriales.filter(x=>x.id!==id);
+  await saveConfig('infoTutoriales',state.infoTutoriales);
+  renderInfoTutoriales();
 }
 
 // ── Menú admin sobre un turno asignado, desde la pestaña Voluntarios ──
