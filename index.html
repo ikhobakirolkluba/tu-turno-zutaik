@@ -1023,10 +1023,9 @@ function renderCalendar(){
       const fids=cfg.tareas[tid];
       const t=getTarea(tid);
       const anyAlertTarea=(fids||[]).some(fid=>isAlertActive(dia.id,tid,fid));
-      const numTrabajosTarea=getTrabajos(dia.id,tid).length;
       html+=`<div class="task-row"><div class="task-row-head">
         <div class="task-name${anyAlertTarea?' blink-alert-strong':''}"><span>${t.icon}</span>${t.nombre}${anyAlertTarea?'<span class="siren-blink">🚨</span>':''}</div>
-        <button class="info-btn" onclick="event.stopPropagation();showTrabajosModal('${dia.id}','${tid}')" title="Información y trabajos de la tarea">ℹ️${numTrabajosTarea?`<span style="font-size:9px;margin-left:2px">${numTrabajosTarea}</span>`:''}</button>
+        <button class="info-btn" onclick="event.stopPropagation();showTrabajosModal('${dia.id}','${tid}')" title="Información y trabajos de la tarea">ℹ️</button>
       </div>`;
       (fids||[]).forEach(fid=>{
         const f=getFranja(fid); const v=getVolsEnTurno(dia.id,tid,fid);
@@ -1149,7 +1148,7 @@ function showTrabajosModal(diaId,tareaId){
   if(!trabajos.length){
     html+=`<div style="font-size:13px;color:var(--text3);text-align:center;padding:10px 0">Todavía no hay trabajos definidos para esta tarea este día.</div>`;
   } else {
-    trabajos.forEach(w=>{
+    trabajos.forEach((w,idx)=>{
       const chk=getTrabajoCheck(diaId,tareaId,w.id);
       const hecho=!!(chk&&chk.hecho);
       html+=`<div class="trabajo-row">
@@ -1158,7 +1157,11 @@ function showTrabajosModal(diaId,tareaId){
           <div class="trabajo-nombre${hecho?' hecho':''}">${escapeAttr(w.nombre)}</div>
           ${hecho&&chk.por?`<div class="trabajo-meta">✔️ Hecho por ${escapeAttr(chk.por)}</div>`:''}
         </div>
-        ${currentUser.es_admin?`<button class="trabajo-del" onclick="removeTrabajoItem('${diaId}','${tareaId}','${w.id}')" title="Eliminar trabajo">🗑</button>`:''}
+        ${currentUser.es_admin?`<div style="display:flex;gap:2px;align-items:center">
+          ${idx>0?`<button class="btn btn-sm" style="padding:4px 7px" onclick="moveTrabajoItem('${diaId}','${tareaId}',${idx},-1)">▲</button>`:'<span style="width:27px"></span>'}
+          ${idx<trabajos.length-1?`<button class="btn btn-sm" style="padding:4px 7px" onclick="moveTrabajoItem('${diaId}','${tareaId}',${idx},1)">▼</button>`:'<span style="width:27px"></span>'}
+          <button class="trabajo-del" onclick="removeTrabajoItem('${diaId}','${tareaId}','${w.id}')" title="Eliminar trabajo">🗑</button>
+        </div>`:''}
       </div>`;
     });
   }
@@ -1183,6 +1186,15 @@ async function addTrabajoItem(diaId,tareaId){
   if(!state.trabajos[diaId]) state.trabajos[diaId]={};
   if(!state.trabajos[diaId][tareaId]) state.trabajos[diaId][tareaId]=[];
   state.trabajos[diaId][tareaId].push({id:'w'+Date.now(),nombre});
+  await saveConfig('trabajos',state.trabajos);
+  renderCalendar();
+  showTrabajosModal(diaId,tareaId);
+}
+
+async function moveTrabajoItem(diaId,tareaId,idx,dir){
+  const arr=state.trabajos[diaId]&&state.trabajos[diaId][tareaId];
+  if(!arr) return;
+  moveItem(arr,idx,dir,()=>{});
   await saveConfig('trabajos',state.trabajos);
   renderCalendar();
   showTrabajosModal(diaId,tareaId);
