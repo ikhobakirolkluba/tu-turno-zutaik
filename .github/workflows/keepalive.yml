@@ -7,11 +7,7 @@ jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          curl -sf -o /dev/null \
-            -X PATCH \
-            "${{ secrets.SUPABASE_URL }}/rest/v1/configuracion?clave=eq.keepalive_ping" \
-            -H "apikey: ${{ secrets.SUPABASE_KEY }}" \
-            -H "Content-Type: application/json" \
-            -H "Prefer: return=minimal" \
-            -d "{\"updated_at\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}"
+      - name: Instalar cliente de PostgreSQL
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Conectar y hacer una consulta real
+        run: psql "${{ secrets.SUPABASE_DB_URL }}" -c "update configuracion set updated_at = now() where clave = 'keepalive_ping';"
